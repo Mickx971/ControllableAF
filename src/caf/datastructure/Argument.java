@@ -13,12 +13,9 @@ public class Argument {
     private Set<Attack> attacks;
 
     public enum Type {
-        CERTAIN,
+        FIXE,
+        CONTROL,
         UNCERTAIN
-    }
-
-    public Argument(String argName) {
-        this(argName, Type.CERTAIN);
     }
 
     public Argument(String argName, Type type) {
@@ -32,15 +29,15 @@ public class Argument {
     }
 
     public boolean isCertain() {
-        return type == Type.CERTAIN;
-    }
-
-    public void setCertain() {
-        type = Type.CERTAIN;
+        return type != Type.UNCERTAIN;
     }
 
     public void setType(Type type) {
         this.type = type;
+    }
+
+    public Type getType() {
+        return type;
     }
 
     public void addAttack(Attack att) {
@@ -89,6 +86,8 @@ public class Argument {
     public String toString() {
         if(type == Type.UNCERTAIN)
             return CafGenerator.CafTag.u_arg.name() + "(" + name + ").";
-        return CafGenerator.CafTag.arg.name() + "(" + name + ").";
+        if(type == Type.CONTROL)
+            return CafGenerator.CafTag.c_arg.name() + "(" + name + ").";
+        return CafGenerator.CafTag.f_arg.name() + "(" + name + ").";
     }
 }
