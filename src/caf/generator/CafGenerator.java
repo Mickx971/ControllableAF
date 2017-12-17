@@ -1,24 +1,32 @@
 package caf.generator;
 
-import caf.datastructure.Caf;
-import caf.datastructure.CafConfiguration;
+import caf.datastructure.*;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class CafGenerator {
 
     private Pattern afPattern = Pattern.compile("^(arg\\([\\pL\\pN]+|att\\([\\pL\\pN]+,[\\pL\\pN]+)\\)\\.\\s*$");
     private Pattern cafPattern = Pattern.compile("^(f_arg\\([\\pL\\pN]+|c_arg\\([\\pL\\pN]+|u_arg\\([\\pL\\pN]+|att\\([\\pL\\pN]+,[\\pL\\pN]+|u_att\\([\\pL\\pN]+,[\\pL\\pN]+|ud_att\\([\\pL\\pN]+,[\\pL\\pN]+)\\)\\.\\s*$");
 
-    public enum CafTag {
+    public enum AfTag {
         arg,
+        att
+    }
+
+    public enum CafTag {
         f_arg,
         c_arg,
         u_arg,
@@ -37,7 +45,7 @@ public class CafGenerator {
 
             if(matcher.find()) {
                 String[] words = matcher.group().split("\\(");
-                CafTag type = CafTag.valueOf(words[0]);
+                AfTag type = AfTag.valueOf(words[0]);
                 words = words[1].substring(0,words[1].indexOf(")")).split(",");
 
                 switch(type) {
@@ -48,7 +56,6 @@ public class CafGenerator {
                         caf.addAttack(words[0], words[1]);
                         break;
                 }
-
             }
             else {
                 throw new IOException("Error at line: " + (i+1));
@@ -91,7 +98,6 @@ public class CafGenerator {
                         caf.addUndirectedAttack(words[0], words[1]);
                         break;
                 }
-
             }
             else {
                 throw new IOException("Error at line: " + (i+1));
@@ -101,17 +107,154 @@ public class CafGenerator {
         return caf;
     }
 
+    private void configureCaf(Caf outputCaf, CafConfiguration conf, Caf inputAf, LinkedList<Argument> allArg) {
+
+        int fixedArgPart = (int)((conf.FixedPartRate/100) * allArg.size());
+        int uncertainArgPart = (int)((conf.UncertainPartRate/100) * inputAf.getArguments().size());
+        int unknownArgPart = (int)((conf.UnknownArgumentRate/100) * inputAf.getArguments().size());
+
+        Collections.shuffle(allArg);
+        Set<Argument> unknownArgs = new HashSet<>();
+        for(int i = 0; i < unknownArgPart; i++) {
+            unknownArgs.add(allArg.removeFirst());
+        }
+
+        Collections.shuffle(allArg);
+        for(int i = 0; i < fixedArgPart; i++) {
+            outputCaf.addFixedArgument(allArg.removeFirst().getName());
+        }
+
+        Collections.shuffle(allArg);
+        for(int i = 0; i < uncertainArgPart; i++) {
+            outputCaf.addUncertainArgument(allArg.removeFirst().getName());
+        }
+
+        for(Argument a : allArg) {
+            outputCaf.addControlArgument(a.getName());
+        }
+
+        HashSet<Attack> allUAttackSet =  new HashSet<>();
+        for(Argument arg : outputCaf.getUncertainArguments()) {
+            allUAttackSet.addAll(inputAf.getAllArgAttack(arg.getName()).stream().filter(
+                    att -> {
+                        Argument[] arguments = att.getArguments();
+                        return !unknownArgs.contains(arguments[0]) && !unknownArgs.contains(arguments[1]);
+                    }
+            ).collect(Collectors.toSet()));
+        }
+
+        LinkedList<Attack> allUAttack =  new LinkedList<>(allUAttackSet);
+        HashSet<Attack> otherAttacks = new HashSet<>(inputAf.getAttacks());
+
+        Collection<Argument> uncertainArguments = outputCaf.getUncertainArguments();
+        otherAttacks.removeIf( att -> {
+            Argument[] arguments = att.getArguments();
+            boolean unknown = unknownArgs.contains(arguments[0]) || unknownArgs.contains(arguments[1]);
+            boolean uncertain = uncertainArguments.contains(arguments[0]) || uncertainArguments.contains(arguments[1]);
+            return unknown || uncertain;
+        });
+
+        int undirectedAttackPart = (int)((conf.UndirectedAttackRate/100) * allUAttack.size());
+        int uncertainAttackPart = (int)((conf.UncertainAttackRate/100) * allUAttack.size());
+
+        Collections.shuffle(allUAttack);
+        for(int i = 0; i < undirectedAttackPart; i++) {
+            Argument[] arguments = allUAttack.removeFirst().getArguments();
+            outputCaf.addUndirectedAttack(arguments[0].getName(), arguments[1].getName());
+        }
+
+        Collections.shuffle(allUAttack);
+        for(int i = 0; i < uncertainAttackPart; i++) {
+            Argument[] arguments = allUAttack.removeFirst().getArguments();
+            outputCaf.addUncertainAttack(arguments[0].getName(), arguments[1].getName());
+        }
+
+        for(Attack att : allUAttack) {
+            Argument[] arguments = att.getArguments();
+            outputCaf.addAttack(arguments[0].getName(), arguments[1].getName());
+        }
+
+        for(Attack att : otherAttacks) {
+            Argument[] arguments = att.getArguments();
+            outputCaf.addAttack(arguments[0].getName(), arguments[1].getName());
+        }
+    }
+
+    public Caf createCaf(Caf af, CafConfiguration conf) {
+        Caf caf = new Caf();
+        LinkedList<Argument> allArg = new LinkedList<>(af.getArguments());
+        configureCaf(caf, conf, af, allArg);
+        return caf;
+    }
+
+    public List<Caf> createCafs(Caf af, CafCommonConfiguration conf) {
+        List<Caf> cafs = new ArrayList<>();
+        for(int i = 0; i < conf.getConfs().size(); i++) {
+            cafs.add(new Caf());
+        }
+
+        float minFixedPart = conf.getConfs().stream().min( (c1,c2) -> {
+            if(c1.FixedPartRate > c2.FixedPartRate)
+                return 1;
+            return -1;
+        }).get().FixedPartRate;
+
+        LinkedList<Argument> allArg = new LinkedList<>(af.getArguments());
+        int commonFixedArgPart = (int)((conf.CommonFixedPartRate/100) * (minFixedPart/100) * allArg.size());
+
+        Collections.shuffle(allArg);
+        for(int i = 0; i < commonFixedArgPart; i++) {
+            String argName = allArg.removeFirst().getName();
+            for(Caf caf : cafs) {
+                caf.addFixedArgument(argName);
+            }
+        }
+
+        float commonFixedRate = ((float) commonFixedArgPart * 100) / af.getArguments().size();
+
+        for(int i = 0; i < conf.getConfs().size(); i++) {
+            CafConfiguration c = conf.getConfs().get(i);
+            c.FixedPartRate -= commonFixedRate;
+            configureCaf(cafs.get(i), c, af, new LinkedList<>(allArg));
+        }
+
+        return cafs;
+    }
+
     public Caf generateCafFromAF(String filename, CafConfiguration conf) throws IOException {
-        Caf caf = parseAF(filename);
-        return caf.transform(conf);
+        Caf af = parseAF(filename);
+        return createCaf(af, conf);
+    }
+
+    public List<Caf> generateCafsFromAF(String filename, CafCommonConfiguration conf) throws IOException {
+        Caf af = parseAF(filename);
+        return createCafs(af, conf);
     }
 
     public static void main(String[] args) {
         CafGenerator g = new CafGenerator();
         try {
-            CafConfiguration conf = new CafConfiguration(50, 30, 30,30);
-            Caf caf = g.generateCafFromAF("/Users/mickx/Desktop/A/1/stb_190_70.apx", conf);
-            System.out.println(caf);
+            String filename = "/Users/mickx/Desktop/A/1/stb_190_70.apx";
+            String outputPath = "/Users/mickx/Desktop";
+//            CafConfiguration conf = new CafConfiguration(50, 30, 30,30, 10);
+//            Caf caf = g.generateCafFromAF(filename, conf);
+//            System.out.println(caf);
+
+
+            List<CafConfiguration> confs = new ArrayList<>();
+            confs.add(new CafConfiguration(20, 30, 30,30));
+            confs.add(new CafConfiguration(20, 30, 30,30, 10));
+            CafCommonConfiguration cconf = new CafCommonConfiguration(confs,10);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS");
+
+            List<Caf> cafs = g.generateCafsFromAF(filename, cconf);
+            for(Caf caf : cafs) {
+                Path outputFileName = Paths.get(outputPath).resolve("caf" + sdf.format(new Date()));
+                PrintWriter writer = new PrintWriter(outputFileName.toFile(), "UTF-8");
+                writer.println(caf);
+                writer.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

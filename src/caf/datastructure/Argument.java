@@ -90,4 +90,16 @@ public class Argument {
             return CafGenerator.CafTag.c_arg.name() + "(" + name + ").";
         return CafGenerator.CafTag.f_arg.name() + "(" + name + ").";
     }
+
+    public boolean equals(Object other) {
+        if(other == null)
+            return false;
+        if(!(other instanceof Argument))
+            return false;
+        return name.equals(((Argument)other).name);
+    }
+
+    public int hashCode() {
+        return name.hashCode() * 31;
+    }
 }

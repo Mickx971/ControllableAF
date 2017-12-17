@@ -42,8 +42,24 @@ public class Caf {
         attacks.removeAll(arg.getAllAttacks());
     }
 
-    public Collection<Argument> getUncertainArgument() {
-        return args.values().stream().filter(arg -> arg.getType() == Argument.Type.UNCERTAIN).collect(Collectors.toSet());
+    private Collection<Argument> getTypedArguments(Argument.Type type) {
+        return args.values().stream().filter(arg -> arg.getType() == type).collect(Collectors.toSet());
+    }
+
+    public Collection<Argument> getUncertainArguments() {
+        return getTypedArguments(Argument.Type.UNCERTAIN);
+    }
+
+    public Collection<Argument> getFixedArguments() {
+        return getTypedArguments(Argument.Type.FIXE);
+    }
+
+    public Collection<Argument> getControlArguments() {
+        return getTypedArguments(Argument.Type.CONTROL);
+    }
+
+    public Collection<Argument> getArguments() {
+        return args.values();
     }
 
     public void addAttack(String fromArg, String toArg) {
@@ -72,79 +88,69 @@ public class Caf {
     }
 
     public Collection<Attack> getAllArgAttack(String argName) {
-        Argument arg = args.remove(argName);
+        Argument arg = args.get(argName);
         return arg.getAllAttacks();
+    }
+
+    public Set<Attack> getAttacks() {
+        return attacks;
+    }
+
+    private Collection<Attack> getTypedAttacks(Attack.Type type) {
+        return attacks.stream().filter(att -> att.getType() == type).collect(Collectors.toSet());
+    }
+
+    public Collection<Attack> getCertainAttacks() {
+        return getTypedAttacks(Attack.Type.CERTAIN);
+    }
+
+    public Collection<Attack> getUncertainAttacks() {
+        return getTypedAttacks(Attack.Type.UNCERTAIN);
+    }
+
+    public Collection<Attack> getUndirectedAttacks() {
+        return getTypedAttacks(Attack.Type.UNDIRECTED);
     }
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (Argument arg: args.values()) {
+
+        List<Argument> arguments = new LinkedList<>(getFixedArguments());
+        Collections.sort(arguments, Comparator.comparing(Argument::getName));
+        for(Argument arg : arguments) {
             sb.append(arg.toString()).append("\n");
         }
-        for (Attack att: attacks) {
+
+        arguments = new LinkedList<>(getControlArguments());
+        Collections.sort(arguments, Comparator.comparing(Argument::getName));
+        for(Argument arg : arguments) {
+            sb.append(arg.toString()).append("\n");
+        }
+
+        arguments = new LinkedList<>(getUncertainArguments());
+        Collections.sort(arguments, Comparator.comparing(Argument::getName));
+        for(Argument arg : arguments) {
+            sb.append(arg.toString()).append("\n");
+        }
+
+        List<Attack> atts = new LinkedList<>(getCertainAttacks());
+        Collections.sort(atts, Comparator.comparing(Attack::toString));
+        for (Attack att: atts) {
             sb.append(att.toString()).append("\n");
         }
+
+        atts = new LinkedList<>(getUncertainAttacks());
+        Collections.sort(atts, Comparator.comparing(Attack::toString));
+        for (Attack att: atts) {
+            sb.append(att.toString()).append("\n");
+        }
+
+        atts = new LinkedList<>(getUndirectedAttacks());
+        Collections.sort(atts, Comparator.comparing(Attack::toString));
+        for (Attack att: atts) {
+            sb.append(att.toString()).append("\n");
+        }
+
         return sb.toString();
-    }
-
-    public Caf transform(CafConfiguration conf) {
-        Caf caf = new Caf();
-        LinkedList<Argument> allArg = new LinkedList<>(args.values());
-
-        int fixedArgPart = (int)((conf.FixedPartRate/100) * args.size());
-        int uncertainArgPart = (int)((conf.UncertainPartRate/100) * args.size());
-
-        int unknownArgPart = (int)((conf.UnknownArgumentRate/100) * args.size());
-        Collections.shuffle(allArg);
-        Set<Argument> unknownArgs = new HashSet<>();
-        for(int i = 0; i < unknownArgPart; i++) {
-            unknownArgs.add(allArg.removeFirst());
-        }
-
-        Collections.shuffle(allArg);
-        for(int i = 0; i < fixedArgPart; i++) {
-            caf.addFixedArgument(allArg.removeFirst().getName());
-        }
-
-        Collections.shuffle(allArg);
-        for(int i = 0; i < uncertainArgPart; i++) {
-            caf.addUncertainArgument(allArg.removeFirst().getName());
-        }
-
-        for(Argument a : allArg) {
-            caf.addControlArgument(a.getName());
-        }
-
-        LinkedList<Attack> allUAttack =  new LinkedList<>();
-        for(Argument arg : caf.getUncertainArgument()) {
-            allUAttack.addAll(getAllArgAttack(arg.getName()).stream().filter(
-                    att -> {
-                        Argument[] arguments = att.getArguments();
-                        return !unknownArgs.contains(arguments[0]) && !unknownArgs.contains(arguments[1]);
-                    }
-            ).collect(Collectors.toSet()));
-        }
-
-        int undirectedAttackPart = (int)((conf.UndirectedAttackRate/100) * allUAttack.size());
-        int uncertainAttackPart = (int)((conf.UncertainAttackRate/100) * allUAttack.size());
-
-        Collections.shuffle(allUAttack);
-        for(int i = 0; i < undirectedAttackPart; i++) {
-            Argument[] arguments = allUAttack.removeFirst().getArguments();
-            caf.addUndirectedAttack(arguments[0].getName(), arguments[1].getName());
-        }
-
-        Collections.shuffle(allUAttack);
-        for(int i = 0; i < uncertainAttackPart; i++) {
-            Argument[] arguments = allUAttack.removeFirst().getArguments();
-            caf.addUncertainAttack(arguments[0].getName(), arguments[1].getName());
-        }
-
-        for(Attack att : allUAttack) {
-            Argument[] arguments = att.getArguments();
-            caf.addAttack(arguments[0].getName(), arguments[1].getName());
-        }
-
-        return caf;
     }
 }
