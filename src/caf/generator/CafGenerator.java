@@ -65,7 +65,7 @@ public class CafGenerator {
         return caf;
     }
 
-    private Caf parseCAF(String filename) throws IOException {
+    public Caf parseCAF(String filename) throws IOException {
         Caf caf = new Caf();
         List<String> lines = Files.readAllLines(Paths.get(filename));
 
