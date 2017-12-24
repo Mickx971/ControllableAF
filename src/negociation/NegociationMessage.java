@@ -14,15 +14,15 @@ import java.util.List;
 public class NegociationMessage {
 
     private MessageType type;
-    Offer offre;
-    Argument practicalArgument;
-    Collection<Argument> supportingArguments;
-    Collection<Attack> supportingAttacks;
+    private Offer offre;
+    private Argument practicalArgument;
+    private Collection<Argument> supportingArguments;
+    private Collection<Attack> supportingAttacks;
 
 
 
     public enum MessageType{
-        ACCEPT, REJECT, NOTHING, NOTHING_TOO, GIVEN_TOKEN, OFFER
+        ACCEPT, REJECT, NOTHING, NOTHING_TOO, GIVE_TOKEN, OFFER
     }
 
     public NegociationMessage() { }
@@ -67,8 +67,8 @@ public class NegociationMessage {
         Argument[] arguments = {new Argument("arg1"), new Argument("arg2")};
         negociationMessage.setSupportingArguments(Arrays.asList(arguments));
 
-        Attack[] attacks = {new Attack(arguments[0], arguments[1])};
-        negociationMessage.setSupportingAttacks(Arrays.asList(attacks));
+        //Attack[] attacks = {new Attack(arguments[0], arguments[1])};
+        //negociationMessage.setSupportingAttacks(Arrays.asList(attacks));
 
         ACLMessage aclMessage = null;
         try {
@@ -80,6 +80,7 @@ public class NegociationMessage {
         System.out.println(aclMessage.getContent());
 
         System.out.println(negociationMessage.getOffre().getName());
+        System.out.println(negociationMessage.getSupportingAttacks());
 
     }
     public void setType(MessageType type) {
