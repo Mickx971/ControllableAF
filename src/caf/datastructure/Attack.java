@@ -29,15 +29,19 @@ public class Attack {
         return this.type;
     }
 
-    public Argument getSource() throws Exception {
-        if(type == Type.UNDIRECTED)
-            throw new Exception("Error: Try to get source of " + this.toString());
+    public Argument getSource() {
+        if(type == Type.UNDIRECTED) {
+            System.err.println("Error: Try to get source of " + this.toString());
+            return null;
+        }
         return arg1;
     }
 
-    public Argument getTarget() throws Exception {
-        if (type == Type.UNDIRECTED)
-            throw new Exception("Error: Try to get target of " + this.toString());
+    public Argument getTarget() {
+        if (type == Type.UNDIRECTED) {
+            System.err.println("Error: Try to get target of " + this.toString());
+            return null;
+        }
         return arg2;
     }
 

@@ -1,23 +1,21 @@
 package Agents;
 
 import jade.core.AID;
-import jade.core.behaviours.OneShotBehaviour;
-import jade.lang.acl.ACLMessage;
-import negociation.NegociationBehaviour;
+import negotiation.NegotiationBehaviour;
 
-public class NegociationAgent extends jade.core.Agent{
+public class NegotiationAgent extends jade.core.Agent{
 
     private AID opponent;
     private boolean startsNegotiation;
 
-    public NegociationAgent() {
+    public NegotiationAgent() {
         opponent = new AID();
         opponent.setName("rma@172.17.0.1:8888/JADE");
         startsNegotiation = false;
     }
 
 
-    public NegociationAgent(AID opponent, boolean startsNegotiation) {
+    public NegotiationAgent(AID opponent, boolean startsNegotiation) {
         this.opponent = opponent;
         this.startsNegotiation = startsNegotiation;
     }
@@ -27,7 +25,7 @@ public class NegociationAgent extends jade.core.Agent{
         Object arguemnts[] = getArguments();
         this.opponent = (AID)(arguemnts[0]);
         this.startsNegotiation = (Boolean)(arguemnts[1]);
-        addBehaviour(new NegociationBehaviour(this));
+        addBehaviour(new NegotiationBehaviour(this));
     }
 
     public AID getOpponent() {

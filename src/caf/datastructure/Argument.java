@@ -56,7 +56,7 @@ public class Argument {
     public Set<Attack> getInAttacks() {
         return attacks.stream().filter(att -> {
             try {
-                if (att.getType() != Attack.Type.UNDIRECTED && att.getSource() == this)
+                if (att.getType() != Attack.Type.UNDIRECTED && att.getTarget() == this)
                     return true;
             }
             catch (Exception e) {
@@ -69,7 +69,7 @@ public class Argument {
     public Set<Attack> getOutAttacks() {
         return attacks.stream().filter(att -> {
             try {
-                if (att.getType() != Attack.Type.UNDIRECTED && att.getTarget() == this)
+                if (att.getType() != Attack.Type.UNDIRECTED && att.getSource() == this)
                     return true;
             }
             catch (Exception e) {

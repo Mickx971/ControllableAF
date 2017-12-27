@@ -6,17 +6,16 @@ public class Attack {
     private Argument target;
 
 
-    public Attack() {
-    }
+    public Attack() {}
 
     public Attack(Argument source, Argument target) {
         this.source = source;
         this.target = target;
     }
-    public Attack(caf.datastructure.Attack attack) throws Exception{
+
+    public Attack(caf.datastructure.Attack attack) {
         this.source = new Argument(attack.getSource());
         this.target = new Argument(attack.getSource());
-
     }
 
     public Argument getSource() {

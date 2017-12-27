@@ -7,6 +7,7 @@ public class Caf {
 
     public Map<String, Argument> args;
     public Set<Attack> attacks;
+    private Map<String, Queue<Set<Argument>>> potentSets;
 
     public Caf() {
         args = new HashMap<>();
@@ -62,6 +63,21 @@ public class Caf {
         return args.values();
     }
 
+    public Argument getArgument(String name) {
+        return args.get(name);
+    }
+
+    public void setArgumentCertain(String name) throws Exception {
+        Argument arg = getArgument(name);
+        if(arg == null)
+            throw new Exception("Unknown argument: " + name);
+        arg.setType(Argument.Type.FIXE);
+    }
+
+    public boolean isControlArgument(String name) {
+        return getControlArguments().stream().anyMatch(arg -> arg.getName().equals(name));
+    }
+
     public void addAttack(String fromArg, String toArg) {
         Attack attack = new Attack(args.get(fromArg), args.get(toArg), Attack.Type.CERTAIN);
         attacks.add(attack);
@@ -110,6 +126,63 @@ public class Caf {
 
     public Collection<Attack> getUndirectedAttacks() {
         return getTypedAttacks(Attack.Type.UNDIRECTED);
+    }
+
+    public Optional<Attack> getAttack(String source, String target) {
+        return getCertainAttacks().stream().filter(a -> {
+            try {
+                return a.getSource().getName().equals(source)
+                        && a.getTarget().getName().equals(target);
+            } catch (Exception e) {
+                return false;
+            }
+        }).findFirst();
+    }
+
+    public Optional<Attack> getUncertainAttack(String source, String target) {
+        return getUncertainAttacks().stream().filter(a -> {
+            try {
+                return a.getSource().getName().equals(source)
+                        && a.getTarget().getName().equals(target);
+            } catch (Exception e) {
+                return false;
+            }
+        }).findFirst();
+    }
+
+    public Optional<Attack> getUndirectedAttack(String arg1, String arg2) {
+        return getUndirectedAttacks().stream().filter(att -> {
+            Argument[] arguments = att.getArguments();
+            return arguments[0].equals(arg1) && arguments[1].equals(arg2) ||
+                    arguments[1].equals(arg1) && arguments[0].equals(arg2);
+        }).findFirst();
+    }
+
+
+    public Set<Attack> getFUAttacksFor(Set<Argument> potentSet) {
+        Set<Attack> attacks = new HashSet<>();
+        for(Argument arg : potentSet) {
+            attacks.addAll(arg.getOutAttacks().stream().filter(att -> att.getType() == Attack.Type.CERTAIN)
+                .filter(att -> {
+                    try {
+                        return !isControlArgument(att.getTarget().getName());
+                    } catch (Exception e) {}
+                    return false;
+                }
+            ).collect(Collectors.toSet()));
+        }
+        return attacks;
+    }
+
+    public Set<Argument> computePSA(String practicalArgument) {
+        if(potentSets.containsKey(practicalArgument)) {
+            Set<Argument> potentSet = potentSets.get(practicalArgument).poll();
+            if(potentSet == null || potentSets.get(practicalArgument).isEmpty()) {
+                potentSets.remove(practicalArgument);
+            }
+            return potentSet;
+        }
+        return null;
     }
 
     public String toString() {
