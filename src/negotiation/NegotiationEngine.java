@@ -3,12 +3,10 @@ package negotiation;
 import Communication.datastructure.Argument;
 import Communication.datastructure.Attack;
 import caf.datastructure.Caf;
-import javafx.util.Pair;
-import theory.Theory;
+import theory.datastructure.Theory;
 import theory.datastructure.Offer;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,12 +43,12 @@ public class NegotiationEngine {
         proposition.setPracticalArgument(new Argument(practicalArgument));
         proposition.setType(NegotiationMessage.MessageType.OFFER);
 
-        if(theory.argumentIsCredulouslyAccepted(practicalArgument)) {
+        if(caf.argumentIsCredulouslyAccepted(practicalArgument)) {
             theory.removeOfferSupport(offer, practicalArgument);
             communicator.sendMessage(proposition);
         }
         else {
-            Set<caf.datastructure.Argument> potentSet = caf.computePSA(practicalArgument);
+            Set<caf.datastructure.Argument> potentSet = caf.getNextPSA(practicalArgument);
             if(potentSet != null) {
                 proposition.setJustificationArguments(
                     potentSet.stream().map(
@@ -82,57 +80,56 @@ public class NegotiationEngine {
         }
     }
 
-    public void decideUponOffer() {
+    public void decideUponOffer(NegotiationMessage message) throws Exception {
+        if(!message.getJustificationArguments().isEmpty()) {
+            theory.update(message.getJustificationArguments(), message.getJustificationAttacks());
+            update(message.getJustificationArguments(), message.getJustificationAttacks());
+        }
 
+        String argName = message.getPracticalArgument().getName();
+        if(theory.argumentIsCredulouslyAccepted(message.getPracticalArgument())) {
+            communicator.sendAccept(message.getOffer());
+        }
+        else {
+//            Set<Argument> ext = theory.getNextExtensionAttackingArgument(argName);
+//            Set<Attack> extAtt = theory.getExtensionOutCertainAttacks(ext);
+//            extAtt.removeAll(att -> !att.getTarget().getName().equals(argName));
+//            Collection<Argument> attackSources = extAtt.stream().map(att -> att.getSource());
+
+            NegotiationMessage reject = new NegotiationMessage();
+//            reject.setOffer(message.getOffer());
+//            reject.setPracticalArgument(message.getPracticalArgument());
+//            reject.setType(NegotiationMessage.MessageType.REJECT);
+//            reject.setJustificationArguments(attackSources);
+//            reject.setJustificationAttacks(extAtt);
+
+            communicator.sendMessage(reject);
+        }
     }
 
     public void updateOnRejection(NegotiationMessage message) throws Exception {
-        for(Argument arg : message.getJustificationArguments()) {
+        update(message.getJustificationArguments(), message.getJustificationAttacks());
+    }
+
+    public void update(Collection<Argument> justificationArguments, Collection<Attack> justificationAttacks) throws Exception {
+        for(Argument arg : justificationArguments) {
             caf.setArgumentCertain(arg.getName());
         }
-        for(Attack att : message.getJustificationAttacks()) {
-            Optional<caf.datastructure.Attack> uAtt = caf.getUndirectedAttack(att.getSource().getName(), att.getTarget().getName());
+        for(Attack att : justificationAttacks) {
+            Optional<caf.datastructure.Attack> uAtt = caf.getUncertainAttack(att.getSource().getName(), att.getTarget().getName());
 
             if(uAtt.isPresent())
                 uAtt.get().setCertain();
 
             Optional<caf.datastructure.Attack> udAtt = caf.getUndirectedAttack(att.getSource().getName(), att.getTarget().getName());
-            if(udAtt.isPresent())
+            if(udAtt.isPresent()) {
                 caf.removeAttack(udAtt.get());
+                caf.addAttack(att.getSource().getName(), att.getTarget().getName());
+            }
         }
     }
 
     public boolean hasOffer() {
         return false;
-    }
-
-    public static<T> Pair<Set<T>, Set<T>> addOperator(Set<T> s1, Set<T> s2, Set<T> s3) {
-        Set<T> set2 = new HashSet<>(s1);
-        set2.retainAll(s3);
-
-        Set<T> set1 = new HashSet<>(s1);
-        set1.removeAll(set2);
-
-        set2.addAll(s2);
-
-        return  new Pair<>(set1, set2);
-    }
-
-    public static void main(String args[]) {
-        Integer s1[] = {1,2,3,4};
-        Integer s2[] = {1};
-        Integer s3[] = {3,4,5,6};
-        Pair<Set<Integer>, Set<Integer>> pair =
-                addOperator(new HashSet<Integer>(Arrays.asList(s1)),
-                        new HashSet<Integer>(Arrays.asList(s2)),
-                        new HashSet<Integer>(Arrays.asList(s3)));
-
-        for (Integer i: pair.getKey()) {
-            System.out.println(i);
-        }
-
-        for (Integer i: pair.getValue()) {
-            System.out.print(i);
-        }
     }
 }

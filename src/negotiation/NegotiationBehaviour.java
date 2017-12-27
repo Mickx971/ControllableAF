@@ -3,6 +3,7 @@ package negotiation;
 import Agents.NegotiationAgent;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
+import theory.datastructure.Offer;
 
 public class NegotiationBehaviour extends OneShotBehaviour{
 
@@ -39,7 +40,7 @@ public class NegotiationBehaviour extends OneShotBehaviour{
                         negotiationEngine.chooseBestOffer();
                         break;
                     case OFFER:
-                        negotiationEngine.decideUponOffer();
+                        negotiationEngine.decideUponOffer(message);
                         break;
                     case NOTHING: {
                         if (negotiationEngine.hasOffer()) {
@@ -88,6 +89,13 @@ public class NegotiationBehaviour extends OneShotBehaviour{
     public void sendNothing() throws Exception {
         NegotiationMessage answer = new NegotiationMessage();
         answer.setType(NegotiationMessage.MessageType.NOTHING);
+        sendMessage(answer);
+    }
+
+    public void sendAccept(Offer offer) throws Exception {
+        NegotiationMessage answer = new NegotiationMessage();
+        answer.setType(NegotiationMessage.MessageType.ACCEPT);
+        answer.setOffer(offer);
         sendMessage(answer);
     }
 }

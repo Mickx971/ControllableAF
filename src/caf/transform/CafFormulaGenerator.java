@@ -57,14 +57,8 @@ public class CafFormulaGenerator {
 
         for(Attack attack : caf.getCertainAttacks())
         {
-            try {
-                stableFormula.add(new Proposition(ATTACK_PROPOSITION +
-                        attack.getSource().getName() + attack.getTarget().getName()));
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
+            stableFormula.add(new Proposition(ATTACK_PROPOSITION +
+                attack.getSource().getName() + attack.getTarget().getName()));
         }
 
         for(Attack attack : caf.getUndirectedAttacks())
@@ -81,15 +75,7 @@ public class CafFormulaGenerator {
         Set<Pair<Argument, Argument>> attacks = new HashSet<>();
 
         Stream.concat(caf.getCertainAttacks().stream(), caf.getUncertainAttacks().stream())
-                .forEach(t ->{
-                    try {
-                        attacks.add(new Pair<Argument, Argument>(t.getSource(), t.getTarget()));
-                    }
-                    catch(Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                });
+                .forEach(t -> attacks.add(new Pair<Argument, Argument>(t.getSource(), t.getTarget())));
 
         caf.getUndirectedAttacks().stream().forEach(t->{
             Argument[] arguments = t.getArguments();

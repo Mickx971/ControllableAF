@@ -54,33 +54,21 @@ public class Argument {
     }
 
     public Set<Attack> getInAttacks() {
-        return attacks.stream().filter(att -> {
-            try {
-                if (att.getType() != Attack.Type.UNDIRECTED && att.getTarget() == this)
-                    return true;
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-            return false;
-        }).collect(Collectors.toSet());
+        return attacks.stream().filter(
+            att -> att.getType() != Attack.Type.UNDIRECTED && att.getTarget() == this
+        ).collect(Collectors.toSet());
     }
 
     public Set<Attack> getOutAttacks() {
-        return attacks.stream().filter(att -> {
-            try {
-                if (att.getType() != Attack.Type.UNDIRECTED && att.getSource() == this)
-                    return true;
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-            return false;
-        }).collect(Collectors.toSet());
+        return attacks.stream().filter(
+            att -> att.getType() != Attack.Type.UNDIRECTED && att.getSource() == this
+        ).collect(Collectors.toSet());
     }
 
     public Set<Attack> getUndirectedAttacks() {
-        return attacks.stream().filter(att -> att.getType() == Attack.Type.UNDIRECTED).collect(Collectors.toSet());
+        return attacks.stream().filter(
+            att -> att.getType() == Attack.Type.UNDIRECTED
+        ).collect(Collectors.toSet());
     }
 
     public String toString() {

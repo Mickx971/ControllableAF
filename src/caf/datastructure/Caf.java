@@ -129,25 +129,15 @@ public class Caf {
     }
 
     public Optional<Attack> getAttack(String source, String target) {
-        return getCertainAttacks().stream().filter(a -> {
-            try {
-                return a.getSource().getName().equals(source)
-                        && a.getTarget().getName().equals(target);
-            } catch (Exception e) {
-                return false;
-            }
-        }).findFirst();
+        return getCertainAttacks().stream().filter(
+            a -> a.getSource().getName().equals(source) && a.getTarget().getName().equals(target)
+        ).findFirst();
     }
 
     public Optional<Attack> getUncertainAttack(String source, String target) {
-        return getUncertainAttacks().stream().filter(a -> {
-            try {
-                return a.getSource().getName().equals(source)
-                        && a.getTarget().getName().equals(target);
-            } catch (Exception e) {
-                return false;
-            }
-        }).findFirst();
+        return getUncertainAttacks().stream().filter(
+            a -> a.getSource().getName().equals(source) && a.getTarget().getName().equals(target)
+        ).findFirst();
     }
 
     public Optional<Attack> getUndirectedAttack(String arg1, String arg2) {
@@ -158,31 +148,40 @@ public class Caf {
         }).findFirst();
     }
 
-
     public Set<Attack> getFUAttacksFor(Set<Argument> potentSet) {
         Set<Attack> attacks = new HashSet<>();
         for(Argument arg : potentSet) {
             attacks.addAll(arg.getOutAttacks().stream().filter(att -> att.getType() == Attack.Type.CERTAIN)
-                .filter(att -> {
-                    try {
-                        return !isControlArgument(att.getTarget().getName());
-                    } catch (Exception e) {}
-                    return false;
-                }
+                .filter(att -> !isControlArgument(att.getTarget().getName())
             ).collect(Collectors.toSet()));
         }
         return attacks;
     }
 
-    public Set<Argument> computePSA(String practicalArgument) {
-        if(potentSets.containsKey(practicalArgument)) {
-            Set<Argument> potentSet = potentSets.get(practicalArgument).poll();
-            if(potentSet == null || potentSets.get(practicalArgument).isEmpty()) {
-                potentSets.remove(practicalArgument);
-            }
-            return potentSet;
-        }
+    public void computePSA(String practicalArgument) {
+        Queue<Set<Argument>> sets = new LinkedList<>();
+        potentSets.put(practicalArgument, sets);
+        // Calcul avec quantum
+
+        //sets.addAll(/*result*/);
+    }
+
+    public Set<Argument> getNextPSA(String practicalArgument) {
+        if(!potentSets.containsKey(practicalArgument))
+            computePSA(practicalArgument);
+
+        if(!potentSets.get(practicalArgument).isEmpty())
+            return potentSets.get(practicalArgument).poll();
+
+        potentSets.remove(practicalArgument);
         return null;
+    }
+
+    public boolean argumentIsCredulouslyAccepted(String argName) {
+        if(!potentSets.containsKey(argName)) {
+            computePSA(argName);
+        }
+        return !potentSets.get(argName).isEmpty();
     }
 
     public String toString() {
