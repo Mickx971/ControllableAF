@@ -8,12 +8,20 @@ import theory.generator.config.TheoryBasicConfiguration;
 import theory.generator.config.GenerationConfig;
 import theory.datastructure.TheoryGeneration;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TheoryGenerator {
 
     private GenerationConfig generationConfig;
-
+    private Pattern e_arg = Pattern.compile("e_arg\\((\\w+)\\)\\.");
+    private Pattern c_arg = Pattern.compile("c_arg\\((\\w+)\\)\\.");
+    private Pattern p_arg = Pattern.compile("p_arg\\((\\w+)\\)\\.");
+    private Pattern att = Pattern.compile("att\\(\\s*(\\w+),\\s*(\\w+)\\)\\.");
+    private Pattern blankLine = Pattern.compile("\\s*");
     public final static String T1_ARG_NAME = "A";
     public final static String T2_ARG_NAME = "B";
     public final static String SHARED_ARG_NAME = "S";
@@ -56,7 +64,93 @@ public class TheoryGenerator {
         return null;
     }
 
+    public TheoryGeneration parseFromFile(String fileName) throws Exception{
+        TheoryGeneration generation = new TheoryGeneration();
+        List<String> lines = Files.readAllLines(Paths.get(fileName));
+        int lineNumber = 0;
 
+        while(lineNumber<lines.size() && !lines.get(lineNumber).equals("#sharedTheory"))
+            lineNumber++;
+        int beginningLine = lineNumber;
+        List<String> theory = new ArrayList<>();
+
+        while(lineNumber<lines.size() && !lines.get(lineNumber).equals("#T1"))
+        {
+            theory.add(lines.get(lineNumber));
+            lineNumber++;
+        }
+
+        generation.setSharedTheory(parseToTheory(theory, beginningLine));
+
+        beginningLine = lineNumber;
+        theory = new ArrayList<>();
+        while(lineNumber<lines.size() && !lines.get(lineNumber).equals("#T2"))
+        {
+            theory.add(lines.get(lineNumber));
+            lineNumber++;
+        }
+
+        generation.setT1(parseToTheory(theory, beginningLine));
+
+        beginningLine = lineNumber;
+        theory = new ArrayList<>();
+        while(lineNumber<lines.size())
+        {
+            theory.add(lines.get(lineNumber));
+            lineNumber++;
+        }
+
+        generation.setT2(parseToTheory(theory, beginningLine));
+
+        return generation;
+    }
+
+    private Theory parseToTheory(List<String> theoryLines, int beginingLine) throws Exception{
+        Theory theory = new Theory();
+        Matcher m;
+        for (int i = 0; i<theoryLines.size(); i++) {
+            m = e_arg.matcher(theoryLines.get(i));
+            if(m.matches())
+            {
+                theory.addEpistemicArgument(m.group(1));
+                continue;
+            }
+
+            m = p_arg.matcher(theoryLines.get(i));
+            if(m.matches())
+            {
+                theory.addPracticalArgument(m.group(1));
+                continue;
+            }
+
+            m = c_arg.matcher(theoryLines.get(i));
+            if(m.matches())
+            {
+                theory.addControlArgument(m.group(1));
+                continue;
+            }
+
+            m = att.matcher(theoryLines.get(i));
+            if(m.matches())
+            {
+                theory.addAttack(m.group(1), m.group(2));
+                continue;
+            }
+
+            m = blankLine.matcher(theoryLines.get(i));
+            if(m.matches())
+            {
+                continue;
+            }
+            if(theoryLines.get(i).equals("#sharedTheory") ||
+                    theoryLines.get(i).equals("#T1") ||
+                    theoryLines.get(i).equals("#T2"))
+                continue;
+
+            throw new Exception("theory input file error at line: "  + (i + beginingLine + 1));
+        }
+        return theory;
+    }
     private Theory generateTheoryFromSharedTheory(Theory sharedTheory,
                                                   TheoryBasicConfiguration config,
                                                   String ownerName){
@@ -213,28 +307,6 @@ public class TheoryGenerator {
 
     }
 
-    public static void main(String argv[])
-    {
 
 
-        try {
-            TheoryGenerator generator = new TheoryGenerator();
-            generator.getGenerationConfig().loadConfigFromFile(GenerationConfig.generationConfigFile);
-            generator.getGenerationConfig().setCoherent();;
-            TheoryGeneration g = generator.generate();
-            System.out.println(generator.getGenerationConfig());
-            System.out.println(g.getT1());
-            System.out.println(g.getT2());
-            System.out.println(g.getSharedTheory());
-            CafGenerator cg = new CafGenerator();
-            cg.setGenerationConfig(generator.getGenerationConfig());
-            cg.setTheoryGeneration(g);
-            CafGeneration cafGeneration = cg.generate();
-            //System.out.println(cafGeneration.getCaf1());
-            //System.out.println(cafGeneration.getCaf2());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

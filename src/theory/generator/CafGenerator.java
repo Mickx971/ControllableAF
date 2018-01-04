@@ -19,6 +19,10 @@ public class CafGenerator {
     TheoryGeneration theoryGeneration;
     GenerationConfig generationConfig;
 
+    public CafGenerator() {
+        generationConfig = new GenerationConfig();
+    }
+
     public CafGeneration generate()
     {
         return new CafGeneration(
@@ -27,6 +31,15 @@ public class CafGenerator {
                 ),generateCaf(
                 generationConfig.getCaf2(), theoryGeneration.getT2(), theoryGeneration.getT1()
         )
+        );
+    }
+
+    public CafGeneration parseFiles(String fileName) throws Exception
+    {
+        caf.generator.CafGenerator g = new caf.generator.CafGenerator();
+        return new CafGeneration(
+                g.parseCAF("caf1"+fileName),
+                g.parseCAF("caf2"+fileName)
         );
     }
 
@@ -153,7 +166,8 @@ public class CafGenerator {
         return generationConfig;
     }
 
-    public void setGenerationConfig(GenerationConfig generationConfig) {
-        this.generationConfig = generationConfig;
+    public void setConfigFile(String configFile) throws Exception {
+
+        generationConfig.loadConfigFromFile(configFile);
     }
 }

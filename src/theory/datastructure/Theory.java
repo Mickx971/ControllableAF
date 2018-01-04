@@ -75,6 +75,10 @@ public class Theory{
     {
         dungTheory.add(attack);
     }
+    public void addAttack(String fromArg, String toArg)
+    {
+        dungTheory.add(new Attack(new Argument(fromArg), new Argument(toArg)));
+    }
     public void addPracticalArgument(String argName)
     {
         Argument argument = new Argument(argName);
@@ -173,10 +177,27 @@ public class Theory{
                         .append(", ").append(t.getAttacked().getName())
                         .append(").\n")
         );
-
-
-
-
         return sb.toString();
+    }
+
+    public int getMaxNbOfAttacks(){
+        return controlArguments.size() * (controlArguments.size() -1)
+                +epistemicArguments.size()*(epistemicArguments.size()-1)
+                + practicalArguments.size()*(practicalArguments.size()-1)
+                + controlArguments.size()*epistemicArguments.size()
+                + (controlArguments.size()+epistemicArguments.size())
+                * practicalArguments.size();
+    }
+
+    public String getStats() {
+        return "NumberOfEpistemicArguments: " + (epistemicArguments.size()
+                + controlArguments.size())
+                + "\nNumberOfControlArguments: " + controlArguments.size()
+                + "\nNumberOfPracticalArguments: " + practicalArguments.size()
+                + "\nRateOfControlArguments: " + ((double)controlArguments.size()
+                /(controlArguments.size() + epistemicArguments.size()))
+                + "\nNumberOfAttacks: " + dungTheory.getAttacks().size()
+                + "\nAttackDensity: " + ((double)dungTheory.getAttacks().size()
+                /getMaxNbOfAttacks());
     }
 }

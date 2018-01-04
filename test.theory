@@ -1,0 +1,99 @@
+#sharedTheory
+
+#T1
+e_arg(AE4).
+e_arg(AE0).
+e_arg(AE1).
+e_arg(AE2).
+e_arg(AE3).
+p_arg(AP0).
+p_arg(AP1).
+p_arg(AP2).
+c_arg(AC2).
+c_arg(AC3).
+c_arg(AC4).
+c_arg(AC0).
+c_arg(AC1).
+att(AC3, AC1).
+att(AC0, AP2).
+att(AC3, AC0).
+att(AC3, AE0).
+att(AE2, AP0).
+att(AC2, AC4).
+att(AC4, AC2).
+att(AE3, AP2).
+att(AC1, AP1).
+att(AC4, AE0).
+att(AP0, AP2).
+att(AP0, AP1).
+att(AP2, AP1).
+att(AP2, AP0).
+att(AC2, AP2).
+att(AE4, AP0).
+att(AP1, AP2).
+att(AC3, AP1).
+att(AE1, AE0).
+att(AE0, AE4).
+att(AE0, AE3).
+att(AE0, AE2).
+att(AE2, AE0).
+att(AE1, AE2).
+att(AE0, AP1).
+att(AC1, AE1).
+att(AE3, AE1).
+att(AE2, AE3).
+att(AC0, AC1).
+att(AE1, AP2).
+att(AC2, AE2).
+att(AC2, AC0).
+att(AE4, AE2).
+att(AC2, AE1).
+att(AC2, AE0).
+att(AC1, AC4).
+att(AE3, AE4).
+#T2
+e_arg(BE4).
+e_arg(BE3).
+e_arg(BE0).
+e_arg(BE2).
+e_arg(BE1).
+p_arg(BP1).
+p_arg(BP0).
+c_arg(BC2).
+c_arg(BC1).
+c_arg(BC4).
+c_arg(BC3).
+c_arg(BC0).
+att(BE2, BP0).
+att(BC0, BP0).
+att(BC0, BP1).
+att(BC3, BE2).
+att(BC3, BE4).
+att(BC1, BE3).
+att(BC1, BC2).
+att(BE1, BP1).
+att(BE4, BE1).
+att(BC2, BC0).
+att(BE4, BE3).
+att(BC2, BE3).
+att(BE4, BP0).
+att(BC2, BP0).
+att(BE4, BP1).
+att(BP0, BP1).
+att(BE3, BP0).
+att(BC1, BP0).
+att(BC4, BC0).
+att(BC4, BE3).
+att(BC4, BC2).
+att(BC4, BC3).
+att(BC4, BP0).
+att(BC0, BE3).
+att(BC0, BC2).
+att(BC0, BC4).
+att(BE0, BP0).
+att(BC1, BE1).
+att(BE0, BP1).
+att(BE3, BE2).
+att(BC1, BE2).
+att(BE1, BE2).
+att(BE1, BE3).
