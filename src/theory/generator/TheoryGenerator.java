@@ -1,13 +1,240 @@
 package theory.generator;
 
+import net.sf.tweety.arg.dung.syntax.Argument;
+import net.sf.tweety.arg.dung.syntax.Attack;
+import theory.datastructure.CafGeneration;
+import theory.datastructure.Theory;
+import theory.generator.config.TheoryBasicConfiguration;
+import theory.generator.config.GenerationConfig;
+import theory.datastructure.TheoryGeneration;
+
+import java.util.*;
+
 public class TheoryGenerator {
+
+    private GenerationConfig generationConfig;
+
+    public final static String T1_ARG_NAME = "A";
+    public final static String T2_ARG_NAME = "B";
+    public final static String SHARED_ARG_NAME = "S";
+    public final static String CONTROL_ARG_NAME = "C";
+    public final static String EPISTEMIC_ARG_NAME = "E";
+    public final static String PRACTICAL_ARG_NAME = "P";
+
+    public enum TheoryTag{
+        e_arg, p_arg, c_arg, att
+    }
+
+    public TheoryGenerator() {
+        generationConfig = new GenerationConfig();
+    }
+
+
+
+    public GenerationConfig getGenerationConfig() {
+        return generationConfig;
+    }
+
+    public void setGenerationConfig(GenerationConfig generationConfig) {
+        this.generationConfig = generationConfig;
+    }
+
+    public TheoryGeneration generate()
+    {
+        if(generationConfig.isCoherent())
+        {
+            Theory sharedTheory = generateSharedTheory();
+            Theory T1 = generateTheoryFromSharedTheory(
+                    sharedTheory, generationConfig.getT1(), T1_ARG_NAME
+            );
+            Theory T2 = generateTheoryFromSharedTheory(
+                    sharedTheory, generationConfig.getT2(), T2_ARG_NAME
+            );
+
+            return new TheoryGeneration(T1, T2, sharedTheory);
+        }
+        return null;
+    }
+
+
+    private Theory generateTheoryFromSharedTheory(Theory sharedTheory,
+                                                  TheoryBasicConfiguration config,
+                                                  String ownerName){
+        Theory copy = new Theory(sharedTheory);
+
+        for(int i=sharedTheory.getControlArguments().size();
+                i< config.getNbControlArguments(); i++)
+        {
+            copy.addControlArgument(ownerName + CONTROL_ARG_NAME + i);
+        }
+
+        int nbEpistemicArguments =
+                config.getNbEpistemicArguments() - config.getNbControlArguments();
+
+        for(int i=sharedTheory.getEpistemicArguments().size();
+            i< nbEpistemicArguments; i++)
+        {
+            copy.addEpistemicArgument(ownerName + EPISTEMIC_ARG_NAME + i);
+        }
+
+        for(int i=sharedTheory.getPracticalArguments().size();
+            i< config.getNbPracticalArguments(); i++)
+        {
+            copy.addPracticalArgument(ownerName + PRACTICAL_ARG_NAME + i);
+        }
+
+
+
+        List<Attack> possibleAttacks = getAllPossibleAttacks(copy);
+        possibleAttacks.removeAll(copy.getDungTheory().getAttacks());
+
+        int nbAttacks = config.getNbAttacks() - copy.getDungTheory().getAttacks().size();
+
+        Random r = new Random();
+        int random;
+        for(int i = 0; i<nbAttacks; i++)
+        {
+            random = r.nextInt(possibleAttacks.size());
+            copy.addAttack(possibleAttacks.get(random));
+            possibleAttacks.remove(random);
+        }
+        possibleAttacks = null;
+        System.gc();
+
+        return copy;
+    }
+    private Theory generateSharedTheory()
+    {
+        if(generationConfig.isCoherent())
+        {
+            Theory sharedTheory = new Theory();
+            int nbEpistemicArguments =
+                    generationConfig.getSharedTheory().getNbEpistemicArguments()
+                            - generationConfig.getSharedTheory().getNbControlArguments();
+            for(int i = 0; i< nbEpistemicArguments; i++)
+            {
+                sharedTheory.addEpistemicArgument(
+                        SHARED_ARG_NAME + EPISTEMIC_ARG_NAME + i
+                );
+            }
+
+            int nbControlArguments = generationConfig.getSharedTheory()
+                    .getNbControlArguments();
+
+            for(int i = 0; i< nbControlArguments; i++)
+            {
+                sharedTheory.addControlArgument(
+                        SHARED_ARG_NAME + CONTROL_ARG_NAME + i
+                );
+            }
+
+            int nbPracticalArguments = generationConfig.getSharedTheory()
+                    .getNbPracticalArguments();
+
+            for(int i = 0; i< nbPracticalArguments; i++)
+            {
+                sharedTheory.addPracticalArgument(
+                        SHARED_ARG_NAME + PRACTICAL_ARG_NAME + i
+                );
+            }
+            List<Attack> possibleAttacks = getAllPossibleAttacks(sharedTheory);
+
+            Random r = new Random();
+            int random;
+            for(int i = 0; i< generationConfig.getSharedTheory().getNbAttacks(); i++)
+            {
+                random = r.nextInt(possibleAttacks.size());
+                sharedTheory.addAttack(possibleAttacks.get(random));
+                possibleAttacks.remove(random);
+            }
+
+            possibleAttacks = null;
+            System.gc();
+            return sharedTheory;
+
+        }
+        return null;
+    }
+
+    private List<Attack> getAllPossibleAttacks(Theory t)
+    {
+       List<Attack> possibleAttacks = getAllPossibleAttacks(
+               t.getControlArguments(),t.getEpistemicArguments()
+       );
+
+       possibleAttacks.addAll(
+               getAllPossibleAttacks(
+                       t.getControlArguments(), t.getControlArguments()
+               )
+       );
+
+
+       possibleAttacks.addAll(
+               getAllPossibleAttacks(
+                       t.getControlArguments(), t.getPracticalArguments()
+               )
+       );
+
+       possibleAttacks.addAll(
+               getAllPossibleAttacks(
+                       t.getEpistemicArguments(), t.getEpistemicArguments()
+               )
+       );
+
+       possibleAttacks.addAll(
+               getAllPossibleAttacks(
+                       t.getEpistemicArguments(), t.getPracticalArguments()
+               )
+       );
+
+        possibleAttacks.addAll(
+                getAllPossibleAttacks(
+                        t.getPracticalArguments(), t.getPracticalArguments()
+                )
+        );
+
+       return possibleAttacks;
+
+    }
+
+    private List<Attack> getAllPossibleAttacks(Set<Argument> attacker, Set<Argument> attacked)
+    {
+        List<Attack> possibleAttacks = new ArrayList<>();
+        attacker.forEach(t ->{
+            attacked.forEach(s ->{
+                if(!t.equals(s)){
+                    possibleAttacks.add(new Attack(t, s));
+                }
+            });
+        });
+
+        return possibleAttacks;
+
+
+    }
+
     public static void main(String argv[])
     {
-        int j = 10;
-        for(int i = 0; i< j; i++)
-        {
-            System.out.println(i);
-            j--;
+
+
+        try {
+            TheoryGenerator generator = new TheoryGenerator();
+            generator.getGenerationConfig().loadConfigFromFile(GenerationConfig.generationConfigFile);
+            generator.getGenerationConfig().setCoherent();;
+            TheoryGeneration g = generator.generate();
+            System.out.println(generator.getGenerationConfig());
+            System.out.println(g.getT1());
+            System.out.println(g.getT2());
+            System.out.println(g.getSharedTheory());
+            CafGenerator cg = new CafGenerator();
+            cg.setGenerationConfig(generator.getGenerationConfig());
+            cg.setTheoryGeneration(g);
+            CafGeneration cafGeneration = cg.generate();
+            //System.out.println(cafGeneration.getCaf1());
+            //System.out.println(cafGeneration.getCaf2());
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

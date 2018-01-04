@@ -6,7 +6,7 @@ import math.SimpleInterval;
 
 public class TheoryBasicConfiguration {
 
-    private int nbEpistimicArguments;
+    private int nbEpistemicArguments;
     private int nbPracticalArguments;
     private int nbAttacks;
     private int nbControlArguments;
@@ -14,40 +14,21 @@ public class TheoryBasicConfiguration {
     public TheoryBasicConfiguration() {
     }
 
-    public TheoryBasicConfiguration(int nbEpistimicArguments, int nbPracticalArguments,
-                                    int nbAttacks, int nbControlArguments) {
-
-
-        this.nbEpistimicArguments = nbEpistimicArguments;
-        this.nbPracticalArguments = nbPracticalArguments;
-        this.nbAttacks = nbAttacks;
-        this.nbControlArguments = nbControlArguments;
-
-
-    }
-
-    public TheoryBasicConfiguration(TheoryBasicConfiguration model)
-    {
-        this.nbEpistimicArguments = model.nbEpistimicArguments;
-        this.nbPracticalArguments = model.nbPracticalArguments;
-        this.nbAttacks = model.nbAttacks;
-        this.nbControlArguments = model.nbControlArguments;
-    }
 
     public boolean minimalCoherenceCheck()
     {
-        return  nbEpistimicArguments>=0 &&
+        return  nbEpistemicArguments>=0 &&
                 nbPracticalArguments >=0&&
                 nbAttacks >=0 &&
                 nbControlArguments >=0;
     }
     public boolean totalCoherenceCheck()
     {
-        return  nbEpistimicArguments>=0 &&
+        return  nbEpistemicArguments>=0 &&
                 nbPracticalArguments >=0&&
                 nbAttacks >=0&&
                 nbControlArguments >=0 &&
-                nbControlArguments<=nbEpistimicArguments &&
+                nbControlArguments<=nbEpistemicArguments &&
                 nbAttacks<= getMaxNbAttacks();
     }
 
@@ -55,27 +36,28 @@ public class TheoryBasicConfiguration {
     public int getMaxNbAttacks()
     {
         return nbControlArguments*(nbControlArguments -1)+
-                (nbEpistimicArguments - nbControlArguments)*(nbEpistimicArguments - nbControlArguments -1) +
-                nbControlArguments * (nbEpistimicArguments - nbControlArguments) +
-                nbEpistimicArguments * nbPracticalArguments +
+                (nbEpistemicArguments - nbControlArguments)*
+                (nbEpistemicArguments - nbControlArguments -1) +
+                nbControlArguments * (nbEpistemicArguments - nbControlArguments) +
+                nbEpistemicArguments * nbPracticalArguments +
                 nbPracticalArguments * (nbPracticalArguments - 1);
 
     }
 
     public int getMaxNbAttacksWithoutControlArguments()
     {
-        return  nbEpistimicArguments*(nbEpistimicArguments -1) +
+        return  nbEpistemicArguments*(nbEpistemicArguments -1) +
                 nbPracticalArguments*(nbPracticalArguments - 1) +
-                nbEpistimicArguments * nbPracticalArguments;
+                nbEpistemicArguments * nbPracticalArguments;
     }
 
     public double getGlobalMinimumOfNbAttacks()
     {
-        return -1 * Math.pow(getNbEpistimicArguments(), 2)/4
-                + getNbEpistimicArguments()*
-                (getNbEpistimicArguments() - 1) +
+        return -1 * Math.pow(getNbEpistemicArguments(), 2)/4
+                + getNbEpistemicArguments()*
+                (getNbEpistemicArguments() - 1) +
                 getNbPracticalArguments() * (getNbPracticalArguments() -1) +
-                getNbEpistimicArguments() * getNbPracticalArguments();
+                getNbEpistemicArguments() * getNbPracticalArguments();
 
     }
 
@@ -91,7 +73,7 @@ public class TheoryBasicConfiguration {
         else if(getGlobalMinimumOfNbAttacks() >= getNbAttacks()){
             SimpleInterval simpleInterval = new SimpleInterval();
             simpleInterval.setLower(0);
-            simpleInterval.setUpper(getNbEpistimicArguments());
+            simpleInterval.setUpper(getNbEpistemicArguments());
             solution.addUnion(simpleInterval);
         }
         else {
@@ -99,26 +81,27 @@ public class TheoryBasicConfiguration {
             int solution1 =  (int)Math.floor(
                     -1 * Math.sqrt(getNbAttacks()
                             - getGlobalMinimumOfNbAttacks()) +
-                            (double)getNbEpistimicArguments()/2
+                            (double)getNbEpistemicArguments()/2
             );
             int solution2 = (int)Math.ceil(
                     Math.sqrt(getNbAttacks()
                             - getGlobalMinimumOfNbAttacks()) +
-                            (double)getNbEpistimicArguments()/2
+                            (double)getNbEpistemicArguments()/2
             );
 
             solution.addUnion(new SimpleInterval(0, solution1));
-            solution.addUnion(new SimpleInterval(solution2, getNbEpistimicArguments()));
+            solution.addUnion(new SimpleInterval(solution2, getNbEpistemicArguments()));
         }
         return solution;
     }
 
-    public int getNbEpistimicArguments() {
-        return nbEpistimicArguments;
+    public int getNbEpistemicArguments() {
+        return nbEpistemicArguments;
     }
 
-    public void setNbEpistimicArguments(int nbEpistimicArguments) {
-        this.nbEpistimicArguments = nbEpistimicArguments;
+    public void setNbEpistemicArguments(int nbEpistemicArguments) {
+
+        this.nbEpistemicArguments = nbEpistemicArguments;
     }
 
     public int getNbPracticalArguments() {
@@ -133,6 +116,10 @@ public class TheoryBasicConfiguration {
         return nbAttacks;
     }
 
+    public int getTotalNumberOfArguments()
+    {
+        return nbEpistemicArguments + nbPracticalArguments;
+    }
     public void setNbAttacks(int nbAttacks) {
         this.nbAttacks = nbAttacks;
     }
@@ -143,5 +130,15 @@ public class TheoryBasicConfiguration {
 
     public void setNbControlArguments(int nbControlArguments) {
         this.nbControlArguments = nbControlArguments;
+    }
+
+    @Override
+    public String toString() {
+        return "TheoryBasicConfiguration{" +
+                "nbEpistemicArguments=" + nbEpistemicArguments +
+                ", nbPracticalArguments=" + nbPracticalArguments +
+                ", nbAttacks=" + nbAttacks +
+                ", nbControlArguments=" + nbControlArguments +
+                '}';
     }
 }
