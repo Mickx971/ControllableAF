@@ -19,8 +19,10 @@ public class CafGenerator {
     TheoryGeneration theoryGeneration;
     GenerationConfig generationConfig;
 
+    private Random r;
     public CafGenerator() {
         generationConfig = new GenerationConfig();
+        r = new Random();
     }
 
     public CafGeneration generate()
@@ -56,7 +58,6 @@ public class CafGenerator {
                 ).intValue();
         List<Argument> rest = controlArguments;
         controlArguments = new ArrayList<>();
-        Random r = new Random();
         int random;
         for(int i = 0; i<nbControlArguments; i++)
         {
@@ -154,6 +155,9 @@ public class CafGenerator {
     }
 
 
+    public void setSeed(long seed){
+        r.setSeed(seed);
+    }
     public TheoryGeneration getTheoryGeneration() {
         return theoryGeneration;
     }

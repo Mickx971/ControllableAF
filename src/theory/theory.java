@@ -1,41 +1,80 @@
 package theory;
 import net.sf.tweety.arg.dung.syntax.Argument;
+import org.apache.commons.cli.*;
 import theory.datastructure.TheoryGeneration;
 import theory.generator.TheoryGenerator;
 import theory.generator.config.GenerationConfig;
 
-import java.util.Arrays;
-import java.util.List;
 
 public class theory {
     public static void main(String argv[])
     {
         try {
-        List<String> args = Arrays.asList(argv);
-        System.out.println(args);
-        if(args.contains("stats"))
-        {
-            args.remove("stats");
-            args.remove("-t");
+
+            Options options = new Options();
+            Option generate = new Option("g", "generate", false,
+                    "if the command must generate a theory.");
+            generate.setRequired(true);
+
+            Option seed = new Option("s", "seed", true, "seed");
+            seed.setRequired(false);
+
+
+            Option output = new Option("o", "output", true, "output file");
+            output.setRequired(false);
+
+            Option details = new Option("d", "details",
+                    true, "print stats of a theory.");
+            details.setRequired(true);
+
+
+            OptionGroup exclusiveOptions = new OptionGroup();
+            exclusiveOptions.addOption(generate);
+            exclusiveOptions.addOption(details);
+            options.addOptionGroup(exclusiveOptions);
+            options.addOption(seed);
+            options.addOption(output);
+
+
+
+
+            CommandLineParser parser = new DefaultParser();
+            HelpFormatter formatter = new HelpFormatter();
+            CommandLine cmd;
+            try {
+                cmd = parser.parse(options, argv);
+            } catch (ParseException e) {
+                System.out.println(e.getMessage());
+                formatter.printHelp("theory", options);
+
+                System.exit(1);
+                return;
+            }
             TheoryGenerator generator = new TheoryGenerator();
-            TheoryGeneration generation = generator.parseFromFile(args.get(0));
+            if(cmd.hasOption('g'))
+            {
 
-        }
+                generator.getGenerationConfig().loadConfigFromFile(GenerationConfig.generationConfigFile);
+                generator.getGenerationConfig().setCoherent();
+                if(cmd.hasOption('s'))
+                {
+                    generator.setSeed(Long.parseLong(cmd.getOptionValue("s")));
+                }
+                TheoryGeneration g = generator.generate();
+                String outputFile = "output.theory";
+                if(cmd.hasOption('o'))
+                {
+                    outputFile = cmd.getOptionValue("o");
+                }
+                g.writeToFile(outputFile);
 
+            }
+            else
+            {
+                TheoryGeneration g = generator.parseFromFile(cmd.getOptionValue('d'));
+                System.out.println(g.getStats());
+            }
 
-            TheoryGenerator generator = new TheoryGenerator();
-            generator.getGenerationConfig().loadConfigFromFile(GenerationConfig.generationConfigFile);
-            generator.getGenerationConfig().setCoherent();
-            TheoryGeneration g = generator.generate();
-            //g.writeToFile("test.theory");
-
-            System.out.println(g.getStats());
-//            CafGenerator cg = new CafGenerator();
-//            cg.setGenerationConfig(generator.getGenerationConfig());
-//            cg.setTheoryGeneration(g);
-//            CafGeneration cafGeneration = cg.generate();
-//            System.out.println(cafGeneration.getCaf1());
-//            System.out.println(cafGeneration.getCaf2());
 
         } catch (Exception e) {
             e.printStackTrace();

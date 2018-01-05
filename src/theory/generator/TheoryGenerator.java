@@ -17,17 +17,24 @@ import java.util.regex.Pattern;
 public class TheoryGenerator {
 
     private GenerationConfig generationConfig;
+
     private Pattern e_arg = Pattern.compile("e_arg\\((\\w+)\\)\\.");
     private Pattern c_arg = Pattern.compile("c_arg\\((\\w+)\\)\\.");
     private Pattern p_arg = Pattern.compile("p_arg\\((\\w+)\\)\\.");
     private Pattern att = Pattern.compile("att\\(\\s*(\\w+),\\s*(\\w+)\\)\\.");
     private Pattern blankLine = Pattern.compile("\\s*");
+
+    private Random r = new Random();
+
+
     public final static String T1_ARG_NAME = "A";
     public final static String T2_ARG_NAME = "B";
     public final static String SHARED_ARG_NAME = "S";
     public final static String CONTROL_ARG_NAME = "C";
     public final static String EPISTEMIC_ARG_NAME = "E";
     public final static String PRACTICAL_ARG_NAME = "P";
+
+
 
     public enum TheoryTag{
         e_arg, p_arg, c_arg, att
@@ -184,7 +191,6 @@ public class TheoryGenerator {
 
         int nbAttacks = config.getNbAttacks() - copy.getDungTheory().getAttacks().size();
 
-        Random r = new Random();
         int random;
         for(int i = 0; i<nbAttacks; i++)
         {
@@ -233,7 +239,6 @@ public class TheoryGenerator {
             }
             List<Attack> possibleAttacks = getAllPossibleAttacks(sharedTheory);
 
-            Random r = new Random();
             int random;
             for(int i = 0; i< generationConfig.getSharedTheory().getNbAttacks(); i++)
             {
@@ -305,6 +310,10 @@ public class TheoryGenerator {
         return possibleAttacks;
 
 
+    }
+
+    public void setSeed(long seed){
+        r.setSeed(seed);
     }
 
 
