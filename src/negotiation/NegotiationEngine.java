@@ -3,6 +3,8 @@ package negotiation;
 import Communication.datastructure.Argument;
 import Communication.datastructure.Attack;
 import caf.datastructure.Caf;
+import javafx.util.Pair;
+import net.sf.tweety.arg.dung.semantics.Extension;
 import theory.datastructure.Theory;
 import theory.datastructure.Offer;
 
@@ -91,17 +93,14 @@ public class NegotiationEngine {
             communicator.sendAccept(message.getOffer());
         }
         else {
-//            Set<Argument> ext = theory.getNextExtensionAttackingArgument(argName);
-//            Set<Attack> extAtt = theory.getExtensionOutCertainAttacks(ext);
-//            extAtt.removeAll(att -> !att.getTarget().getName().equals(argName));
-//            Collection<Argument> attackSources = extAtt.stream().map(att -> att.getSource());
+            Pair<Extension, Set<net.sf.tweety.arg.dung.syntax.Attack>> reason = theory.getNextExtensionAttackingArgument(argName);
 
             NegotiationMessage reject = new NegotiationMessage();
-//            reject.setOffer(message.getOffer());
-//            reject.setPracticalArgument(message.getPracticalArgument());
-//            reject.setType(NegotiationMessage.MessageType.REJECT);
-//            reject.setJustificationArguments(attackSources);
-//            reject.setJustificationAttacks(extAtt);
+            reject.setOffer(message.getOffer());
+            reject.setPracticalArgument(message.getPracticalArgument());
+            reject.setType(NegotiationMessage.MessageType.REJECT);
+            reject.setJustificationArguments(reason.getKey());
+            reject.setJustificationAttacks(reason.getValue());
 
             communicator.sendMessage(reject);
         }

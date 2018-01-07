@@ -1,13 +1,16 @@
 package theory.datastructure;
 
-import caf.datastructure.Caf;
+import javafx.util.Pair;
+import net.sf.tweety.arg.dung.StableReasoner;
+import net.sf.tweety.arg.dung.semantics.Extension;
 import net.sf.tweety.arg.dung.syntax.Argument;
 import net.sf.tweety.arg.dung.DungTheory;
 import net.sf.tweety.arg.dung.syntax.Attack;
-import theory.datastructure.Offer;
 import theory.generator.TheoryGenerator;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Theory{
 
@@ -199,5 +202,21 @@ public class Theory{
                 + "\nNumberOfAttacks: " + dungTheory.getAttacks().size()
                 + "\nAttackDensity: " + ((double)dungTheory.getAttacks().size()
                 /getMaxNbOfAttacks());
+    }
+
+    public Pair<Extension, Set<Attack>> getNextExtensionAttackingArgument(String argName) throws Exception {
+        StableReasoner stableReasoner = new StableReasoner(dungTheory);
+        Argument theta = new Argument(argName);
+        Optional<Extension> optEx = stableReasoner.getExtensions().stream().filter(x -> dungTheory.isAttacked(theta, x)).findAny();
+        if(optEx.isPresent()) {
+            Extension ext = optEx.get();
+            Set<Argument> attakers = dungTheory.getAttackers(theta);
+            ext.retainAll(attakers);
+            Set<Attack> attacks = dungTheory.getAttacks().stream().filter(att -> att.getAttacked().equals(theta)).collect(Collectors.toSet());
+            return new Pair<>(ext, attacks);
+        }
+        else {
+            throw new Exception("Invalid state");
+        }
     }
 }
