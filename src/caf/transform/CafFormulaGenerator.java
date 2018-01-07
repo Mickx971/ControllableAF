@@ -113,6 +113,50 @@ public class CafFormulaGenerator {
         });
         return getStableSemanticFormula().combineWithAnd(conjunction);
     }
+
+    public PropositionalFormula encodeCredulousQBF(Collection<Argument> arguments)
+    {
+        PropositionalFormula credulousAcceptanceFormula =
+                getCredulousAcceptanceFormula(arguments);
+        Conjunction credulousQBF = new Conjunction();
+        Collection<Attack> undirectedAttacks = caf.getUndirectedAttacks();
+        for(Attack ua: undirectedAttacks)
+        {
+            Argument[] args = ua.getArguments();
+            //TODO replace by attack names
+            Proposition a1 = new Proposition(
+                    ATTACK_PROPOSITION + args[0].getName() + args[1].getName()
+            );
+            Proposition a2 = new Proposition(
+                    ATTACK_PROPOSITION  + args[1].getName()+args[0].getName()
+            );
+            Disjunction d = new Disjunction();
+
+
+            Conjunction temp = new Conjunction();
+            temp.add(new Negation(a1));
+            temp.add(a2);
+            temp.add(credulousAcceptanceFormula);
+            d.add(temp);
+
+            temp = new Conjunction();
+            temp.add(a1);
+            temp.add(new Negation(a2));
+            temp.add(credulousAcceptanceFormula);
+            d.add(temp);
+
+            temp = new Conjunction();
+            temp.add(a1);
+            temp.add(a2);
+            temp.add(credulousAcceptanceFormula);
+            d.add(temp);
+
+            credulousQBF.add(d);
+
+        }
+
+        return credulousQBF;
+    }
     public Caf getCaf() {
         return caf;
     }
@@ -125,15 +169,17 @@ public class CafFormulaGenerator {
         CafGenerator g = new CafGenerator();
         Caf caf;
         try {
-            caf = g.parseCAF("/media/ider/disque" +
-                    " local/workSpace/java/ControllableAF/caf2017");
+            caf = g.parseCAF("/media/ider/disque local/workSpace" +
+                    "/java/ControllableAF/caf1test.caf");
 
             CafFormulaGenerator formulaGenerator = new CafFormulaGenerator();
             formulaGenerator.setCaf(caf);
 
             try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream("/media/ider/disque local/workSpace/java/ControllableAF/caf2017.txt"), "utf-8"))) {
-                writer.write(TseitinTransformation.toCNF(formulaGenerator.getStableSemanticFormula()).toString());
+                writer.write(formulaGenerator.encodeCredulousQBF(
+                        formulaGenerator.getCaf().getFixedArguments()
+                ).toString());
             }
             System.out.println();
         }
