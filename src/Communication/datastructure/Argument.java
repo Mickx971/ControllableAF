@@ -15,6 +15,10 @@ public class Argument {
         this.name = argument.getName();
     }
 
+    public Argument(net.sf.tweety.arg.dung.syntax.Argument arg) {
+        this.name = arg.getName();
+    }
+
     public String getName() {
         return name;
     }

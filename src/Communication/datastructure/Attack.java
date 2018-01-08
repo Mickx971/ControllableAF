@@ -18,6 +18,11 @@ public class Attack {
         this.target = new Argument(attack.getSource());
     }
 
+    public Attack(net.sf.tweety.arg.dung.syntax.Attack att) {
+        this.source = new Argument(att.getAttacker());
+        this.target = new Argument(att.getAttacked());
+    }
+
     public Argument getSource() {
         return source;
     }

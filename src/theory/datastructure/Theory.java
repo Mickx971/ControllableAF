@@ -132,11 +132,15 @@ public class Theory{
     }
 
     public boolean argumentIsCredulouslyAccepted(Communication.datastructure.Argument practicalArgument) {
-        return false;
+        StableReasoner stableReasoner = new StableReasoner(dungTheory);
+        Argument dungArg = new Argument(practicalArgument.getName());
+        return stableReasoner.getExtensions().stream().anyMatch(ext -> ext.contains(dungArg));
     }
 
     public void update(Collection<Communication.datastructure.Argument> justificationArguments, Collection<Communication.datastructure.Attack> justificationAttacks) {
-
+        Collection<Argument> arguments = justificationArguments.stream().map(arg -> new Argument(arg.getName())).collect(Collectors.toSet());
+        dungTheory.addAll(arguments);
+        justificationAttacks.stream().forEach(att -> addAttack(att.getSource().getName(), att.getTarget().getName()));
     }
 
     public Set<Argument> getControlArguments() {
@@ -213,6 +217,7 @@ public class Theory{
             Set<Argument> attakers = dungTheory.getAttackers(theta);
             ext.retainAll(attakers);
             Set<Attack> attacks = dungTheory.getAttacks().stream().filter(att -> att.getAttacked().equals(theta)).collect(Collectors.toSet());
+            attacks.removeIf(att -> !ext.contains(att.getAttacker()));
             return new Pair<>(ext, attacks);
         }
         else {

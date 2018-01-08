@@ -94,13 +94,17 @@ public class NegotiationEngine {
         }
         else {
             Pair<Extension, Set<net.sf.tweety.arg.dung.syntax.Attack>> reason = theory.getNextExtensionAttackingArgument(argName);
+            Collection<Argument> arguments = reason.getKey().stream().map(arg -> new Argument(arg))
+                    .collect(Collectors.toSet());
+            Collection<Attack> attacks = reason.getValue().stream().map(att -> new Attack(att))
+                    .collect(Collectors.toSet());
 
             NegotiationMessage reject = new NegotiationMessage();
             reject.setOffer(message.getOffer());
             reject.setPracticalArgument(message.getPracticalArgument());
             reject.setType(NegotiationMessage.MessageType.REJECT);
-            reject.setJustificationArguments(reason.getKey());
-            reject.setJustificationAttacks(reason.getValue());
+            reject.setJustificationArguments(arguments);
+            reject.setJustificationAttacks(attacks);
 
             communicator.sendMessage(reject);
         }
