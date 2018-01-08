@@ -21,7 +21,7 @@ public class NegotiationBehaviour extends OneShotBehaviour{
     public void action() {
         try {
             if(agent.isStartsNegotiation()){
-                //call choose best offer
+                negotiationEngine.chooseBestOffer();
             }
             END: while (true) {
                 NegotiationMessage message = getMessage(TIMEOUT);

@@ -24,7 +24,6 @@ public class Theory{
         EPISTEMIC, PRACTICAL, CONTROL
     }
 
-
     public Theory() {
         dungTheory = new DungTheory();
         controlArguments = new HashSet<>();
@@ -100,13 +99,15 @@ public class Theory{
         return null;
     }
 
-    public void removeOfferSupport(Offer offerName, String argumentName) {
-        offers.get(offerName).remove(argumentName);
-        // retirer de la theory (argument + attaques)
+    public void removeOfferSupport(Offer offer, String argumentName) throws Exception {
+        if(offers.containsKey(offer)) {
+            offers.get(offer).remove(argumentName);
+        }
+        else throw new Exception("Unknown offer: " + offer.getName());
     }
 
-    public boolean hasSupportForOffer(Offer offerName) {
-        return !offers.get(offerName).isEmpty();
+    public boolean hasSupportForOffer(Offer offer) {
+        return offers.containsKey(offer) && !offers.get(offer).isEmpty();
     }
 
     public String getSupportForOffer(Offer offer) {
@@ -117,17 +118,32 @@ public class Theory{
     }
 
     public void removeOffer(Offer offer) {
-
-    }
-
-    public void removeOfferSupports(Offer offer) {
         for(String support : offers.get(offer)) {
-            // retirer de la theory (argument + attaques)
+            Argument practicalArgument = new Argument(support);
+            dungTheory.remove(practicalArgument);
+            practicalArguments.remove(practicalArgument);
         }
         offers.remove(offer);
     }
 
     public Offer getNextOffer() {
+        StableReasoner stableReasoner = new StableReasoner(dungTheory);
+        Optional<Extension> optExt = stableReasoner.getExtensions().stream().filter(ext -> {
+            ext.retainAll(practicalArguments);
+            return !ext.isEmpty();
+        }).findFirst();
+
+        if(optExt.isPresent()) {
+            Extension ext = optExt.get();
+            ext.retainAll(practicalArguments);
+            Optional<Argument> optArg = ext.stream().findFirst();
+            for(Map.Entry<Offer, Set<String>> entry: offers.entrySet()) {
+                if(entry.getValue().contains(optArg.get())) {
+                    return entry.getKey();
+                }
+            }
+        }
+
         return null;
     }
 
@@ -223,5 +239,9 @@ public class Theory{
         else {
             throw new Exception("Invalid state");
         }
+    }
+
+    public boolean hasOffer() {
+        return !offers.isEmpty();
     }
 }

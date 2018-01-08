@@ -50,7 +50,7 @@ public class NegotiationEngine {
             communicator.sendMessage(proposition);
         }
         else {
-            Set<caf.datastructure.Argument> potentSet = caf.getNextPSA(practicalArgument);
+            Set<caf.datastructure.Argument> potentSet = caf.computePSA(practicalArgument);
             if(potentSet != null) {
                 proposition.setJustificationArguments(
                     potentSet.stream().map(
@@ -76,7 +76,6 @@ public class NegotiationEngine {
             defendOffer(offer, support);
         }
         else {
-            theory.removeOfferSupports(offer);
             theory.removeOffer(offer);
             communicator.sendGiveToken();
         }
@@ -133,6 +132,6 @@ public class NegotiationEngine {
     }
 
     public boolean hasOffer() {
-        return false;
+        return theory.hasOffer();
     }
 }
