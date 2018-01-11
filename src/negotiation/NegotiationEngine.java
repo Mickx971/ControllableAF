@@ -45,7 +45,7 @@ public class NegotiationEngine {
         proposition.setPracticalArgument(new Argument(practicalArgument));
         proposition.setType(NegotiationMessage.MessageType.OFFER);
 
-        if(caf.argumentIsCredulouslyAccepted(practicalArgument)) {
+        if(caf.argumentIsCredulouslyAcceptedWithoutControl(practicalArgument)) {
             theory.removeOfferSupport(offer, practicalArgument);
             communicator.sendMessage(proposition);
         }

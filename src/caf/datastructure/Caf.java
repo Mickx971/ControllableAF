@@ -4,17 +4,20 @@ import caf.transform.CafFormulaGenerator;
 import net.sf.tweety.logics.pl.syntax.PropositionalFormula;
 import solver.QuantomConnector;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Caf {
 
+    private final QuantomConnector qConnector;
     private Map<String, Argument> args;
     private Set<Attack> attacks;
 
     public Caf() {
         args = new HashMap<>();
         attacks = new HashSet<>();
+        qConnector = new QuantomConnector();
     }
 
     public void addFixedArgument(String argName) {
@@ -166,13 +169,13 @@ public class Caf {
     }
 
     public Set<Argument> computePSA(String practicalArgument) {
-        // Calcul avec quantum
-        return null;
+        Caf tempCaf = createTempCaf();
+        qConnector.isCredulouslyAcceptedWithControl(tempCaf, practicalArgument);
     }
 
-    public boolean argumentIsCredulouslyAccepted(String argName) {
+    public boolean argumentIsCredulouslyAcceptedWithoutControl(String argName) throws IOException {
         Caf tempCaf = createTempCaf();
-        return QuantomConnector.isCredulouslyAccepted(tempCaf, argName);
+        return qConnector.isCredulouslyAcceptedWithoutControl(tempCaf, argName);
     }
 
     private Caf createTempCaf() {
