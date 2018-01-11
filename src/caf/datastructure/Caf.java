@@ -168,20 +168,25 @@ public class Caf {
         return attacks;
     }
 
-    public Set<Argument> computePSA(String practicalArgument) {
-        Caf tempCaf = createTempCaf();
-        qConnector.isCredulouslyAcceptedWithControl(tempCaf, practicalArgument);
+    public Collection<Argument> computePSA(String practicalArgument) throws IOException {
+        Caf tempCaf = createTempCaf(true);
+        return qConnector.isCredulouslyAcceptedWithControl(tempCaf, practicalArgument);
     }
 
     public boolean argumentIsCredulouslyAcceptedWithoutControl(String argName) throws IOException {
-        Caf tempCaf = createTempCaf();
+        Caf tempCaf = createTempCaf(false);
         return qConnector.isCredulouslyAcceptedWithoutControl(tempCaf, argName);
     }
 
-    private Caf createTempCaf() {
+    private Caf createTempCaf(boolean withControl) {
         Caf tempCaf = new Caf();
         getFixedArguments().stream().forEach(arg -> tempCaf.addFixedArgument(arg.getName()));
         getUncertainArguments().stream().forEach(arg -> tempCaf.addUncertainArgument(arg.getName()));
+
+        if(withControl) {
+            getControlArguments().stream().forEach(arg -> tempCaf.addUncertainArgument(arg.getName()));
+        }
+
         for(Attack att: getAttacks()) {
 
             String arg1, arg2;
