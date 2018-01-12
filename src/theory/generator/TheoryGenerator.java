@@ -3,6 +3,7 @@ package theory.generator;
 import net.sf.tweety.arg.dung.syntax.Argument;
 import net.sf.tweety.arg.dung.syntax.Attack;
 import theory.datastructure.CafGeneration;
+import theory.datastructure.Offer;
 import theory.datastructure.Theory;
 import theory.generator.config.TheoryBasicConfiguration;
 import theory.generator.config.GenerationConfig;
@@ -13,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class TheoryGenerator {
 
@@ -65,6 +67,9 @@ public class TheoryGenerator {
             Theory T2 = generateTheoryFromSharedTheory(
                     sharedTheory, generationConfig.getT2(), T2_ARG_NAME
             );
+
+            ///List<Map<Offer, String>> offerSupports =
+            ///        getOfferSupperts();
 
             return new TheoryGeneration(T1, T2, sharedTheory);
         }
@@ -314,6 +319,25 @@ public class TheoryGenerator {
 
     public void setSeed(long seed){
         r.setSeed(seed);
+    }
+
+    private List<HashMap<Offer, String>> getOfferSupports(Collection<Double> offersRate, Collection<Argument> practicalArguments ){
+        List<HashMap<Offer, String>> offersAttributions = new ArrayList<>();
+        List<Integer> offerNumberOfSupporting =
+                offersRate.stream().mapToInt(t->t*practicalArguments.size())
+                        .boxed().collect(Collectors.toList());
+
+        while(offerNumberOfSupporting.stream().mapToDouble(t->t).sum() < practicalArguments.size())
+        {
+            int random = r.nextInt(offerNumberOfSupporting.size());
+            offerNumberOfSupporting.set(random, offerNumberOfSupporting.get(random) + 1);
+        }
+
+        for (int :
+             ) {
+
+        }
+
     }
 
 

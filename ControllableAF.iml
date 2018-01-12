@@ -15,5 +15,9 @@
     <orderEntry type="library" name="jackson-all-1.9.0" level="project" />
     <orderEntry type="library" name="commons-cli-1.4" level="project" />
     <orderEntry type="library" name="commons-cli-1.4" level="project" />
+    <orderEntry type="library" name="commons-cli-1.4" level="project" />
+    <orderEntry type="library" name="jackson-all-1.9.0" level="project" />
+    <orderEntry type="library" name="jade" level="project" />
+    <orderEntry type="library" name="net.sf.tweety.tweety-full-1.9-with-dependencies" level="project" />
   </component>
 </module>

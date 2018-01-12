@@ -4,9 +4,12 @@ package theory.generator.config;
 import caf.datastructure.Caf;
 import math.ComplexeInterval;
 import math.SimpleInterval;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.type.TypeFactory;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -17,15 +20,8 @@ public class GenerationConfig {
     private TheoryBasicConfiguration sharedTheory;
     private CafConfig caf1;
     private CafConfig caf2;
+    private List<Double> offers;
     public final static String generationConfigFile = "generation.config";
-
-
-
-    public void cafTestCoherence() throws Exception{
-        caf1.testCoherence();
-        caf2.testCoherence();
-    }
-
 
 
     public boolean isCoherent()
@@ -271,6 +267,18 @@ public class GenerationConfig {
         );
 
         caf2 = c;
+
+        String stringOffers = prop.getProperty("offers");
+        ObjectMapper objectMapper = new ObjectMapper();
+        TypeFactory typeFactory = objectMapper.getTypeFactory();
+        List<Double> offers = objectMapper.readValue(
+                stringOffers, typeFactory.constructCollectionType(List.class, Double.class)
+        );
+        if(offers.stream().mapToDouble(d->d).sum() != 1)
+        {
+            throw new Exception("Error, Sum of offers list must be equal to 1");
+        }
+
     }
 
     @Override
