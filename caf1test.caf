@@ -5,3 +5,6 @@ u_arg(u).
 att(c,b).
 att(c,a).
 att(c,u).
+att(a,b).
+u_att(u,a).
+ud_att(u,b).

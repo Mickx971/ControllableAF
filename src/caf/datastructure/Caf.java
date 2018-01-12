@@ -168,9 +168,10 @@ public class Caf {
         return attacks;
     }
 
-    public Collection<Argument> computePSA(String practicalArgument) throws IOException {
+    public Collection<Argument> computePSA(String practicalArgument) throws Exception {
         Caf tempCaf = createTempCaf(true);
-        return qConnector.isCredulouslyAcceptedWithControl(tempCaf, practicalArgument);
+        return qConnector.isCredulouslyAcceptedWithControl(tempCaf, practicalArgument)
+                .stream().map(arg -> getArgument(arg.getName())).collect(Collectors.toSet());
     }
 
     public boolean argumentIsCredulouslyAcceptedWithoutControl(String argName) throws IOException {
