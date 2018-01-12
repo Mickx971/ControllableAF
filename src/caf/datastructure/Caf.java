@@ -158,7 +158,7 @@ public class Caf {
         }).findFirst();
     }
 
-    public Set<Attack> getFUAttacksFor(Set<Argument> potentSet) {
+    public Set<Attack> getFUAttacksFor(Collection<Argument> potentSet) {
         Set<Attack> attacks = new HashSet<>();
         for(Argument arg : potentSet) {
             attacks.addAll(arg.getOutAttacks().stream().filter(att -> att.getType() == Attack.Type.CERTAIN)

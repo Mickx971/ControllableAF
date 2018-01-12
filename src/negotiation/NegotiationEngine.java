@@ -50,7 +50,7 @@ public class NegotiationEngine {
             communicator.sendMessage(proposition);
         }
         else {
-            Set<caf.datastructure.Argument> potentSet = caf.computePSA(practicalArgument);
+            Collection<caf.datastructure.Argument> potentSet = caf.computePSA(practicalArgument);
             if(potentSet != null) {
                 proposition.setJustificationArguments(
                     potentSet.stream().map(

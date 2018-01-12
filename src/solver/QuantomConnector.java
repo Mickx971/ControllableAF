@@ -26,12 +26,13 @@ public class QuantomConnector {
     public QuantomConnector() {
         this.path = Paths.get(System.getProperty("user.dir"));
     }
-
+    // tester cette fonction quen retoune les arguments a mettre on pour que ca soit credulement
+    //accepté == compute_psa
     public Collection<Argument> isCredulouslyAcceptedWithControl(Caf tempCaf, String argName) throws IOException {
         CafFormulaGenerator formulaGen = new CafFormulaGenerator();
         formulaGen.setCaf(tempCaf);
         Argument theta = tempCaf.getArgument(argName);
-        PropositionalQuantifiedFormula qbfFormula = formulaGen.encodeCredulousQBFWithoutControl(Arrays.asList(new Argument[]{theta}));
+        PropositionalQuantifiedFormula qbfFormula = formulaGen.encodeCredulousQBFWithControl(Arrays.asList(new Argument[]{theta}));
         createCNFFile(qbfFormula, path.resolve(cnfFileName));
         Process p = Runtime.getRuntime().exec("./quantom --solvemode=0 " + path.resolve(cnfFileName));
         return readResult(p, qbfFormula);
@@ -125,7 +126,7 @@ public class QuantomConnector {
         CafGenerator g = new CafGenerator();
         Caf caf;
         try {
-            caf = g.parseCAF("/Users/mickx/git/ControllableAF/caf1test.caf");
+            caf = g.parseCAF("caf1test.caf");
 
             CafFormulaGenerator formulaGenerator = new CafFormulaGenerator();
             formulaGenerator.setCaf(caf);
@@ -133,11 +134,11 @@ public class QuantomConnector {
             PropositionalQuantifiedFormula qbf = formulaGenerator.encodeCredulousQBFWithoutControl(
                     formulaGenerator.getCaf().getFixedArguments());
 
-            Path path = Paths.get("/Users/mickx/git/ControllableAF/caf2017.txt");
+            Path path = Paths.get("caf2017.txt");
             QuantomConnector qConnector = new QuantomConnector();
 
-            //qConnector.createCNFFile(qbf, path);
-            qConnector.isCredulouslyAcceptedWithoutControl(caf, caf.getFixedArguments().stream().findFirst().get().getName());
+            qConnector.createCNFFile(qbf, path);
+            //qConnector.isCredulouslyAcceptedWithoutControl(caf, caf.getFixedArguments().stream().findFirst().get().getName());
         }
         catch (Exception e)
         {
