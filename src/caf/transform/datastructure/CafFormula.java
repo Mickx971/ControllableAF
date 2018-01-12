@@ -53,7 +53,7 @@ public class CafFormula {
     }
 
     public void addAttFor(Argument source, Argument target) {
-        attPropositions.put(new Pair<>(source, target), new Proposition(ATTACK_PROPOSITION + source.getName() + source.getName()));
+        attPropositions.put(new Pair<>(source, target), new Proposition(ATTACK_PROPOSITION + source.getName() + target.getName()));
         shouldUpdateIdentifers = true;
     }
 
