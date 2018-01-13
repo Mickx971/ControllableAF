@@ -174,7 +174,7 @@ public class Caf {
                 .stream().map(arg -> getArgument(arg.getName())).collect(Collectors.toSet());
     }
 
-    public boolean argumentIsCredulouslyAcceptedWithoutControl(String argName) throws IOException {
+    public boolean argumentIsCredulouslyAcceptedWithoutControl(String argName) throws Exception {
         Caf tempCaf = createTempCaf(false);
         return qConnector.isCredulouslyAcceptedWithoutControl(tempCaf, argName);
     }
