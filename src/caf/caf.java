@@ -75,6 +75,7 @@ public class caf {
                         theoryGenerator.parseFromFile(cmd.getOptionValue('i'));
 
                 cafGenerator.setConfigFile(GenerationConfig.generationConfigFile);
+
                 cafGenerator.setTheoryGeneration(theoryGeneration);
                 if(cmd.hasOption('s'))
                 {

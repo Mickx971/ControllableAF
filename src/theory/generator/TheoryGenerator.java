@@ -2,7 +2,6 @@ package theory.generator;
 
 import net.sf.tweety.arg.dung.syntax.Argument;
 import net.sf.tweety.arg.dung.syntax.Attack;
-import theory.datastructure.CafGeneration;
 import theory.datastructure.Offer;
 import theory.datastructure.Theory;
 import theory.generator.config.TheoryBasicConfiguration;
@@ -25,6 +24,7 @@ public class TheoryGenerator {
     private Pattern p_arg = Pattern.compile("p_arg\\((\\w+)\\)\\.");
     private Pattern att = Pattern.compile("att\\(\\s*(\\w+),\\s*(\\w+)\\)\\.");
     private Pattern blankLine = Pattern.compile("\\s*");
+    private Pattern support = Pattern.compile("support\\(\\s*(\\w+),\\s*(\\w+)\\)\\.");
 
     private Random r = new Random();
 
@@ -39,7 +39,7 @@ public class TheoryGenerator {
 
 
     public enum TheoryTag{
-        e_arg, p_arg, c_arg, att
+        e_arg, p_arg, c_arg, att, support
     }
 
     public TheoryGenerator() {
@@ -67,9 +67,13 @@ public class TheoryGenerator {
             Theory T2 = generateTheoryFromSharedTheory(
                     sharedTheory, generationConfig.getT2(), T2_ARG_NAME
             );
+            Set<Argument> allPracticalArguments = new HashSet<>(T1.getPracticalArguments());
+            allPracticalArguments.addAll(T2.getPracticalArguments());
 
-            ///List<Map<Offer, String>> offerSupports =
-            ///        getOfferSupperts();
+            HashMap<Offer, Set<String>> offerSupports = generateOfferSupports(
+                    generationConfig.getOffersRate(),allPracticalArguments);
+            T1.setOffers(intersectWithTheoryPracticalArguments(T1, offerSupports));
+            T2.setOffers(intersectWithTheoryPracticalArguments(T2, offerSupports));
 
             return new TheoryGeneration(T1, T2, sharedTheory);
         }
@@ -117,7 +121,7 @@ public class TheoryGenerator {
         return generation;
     }
 
-    private Theory parseToTheory(List<String> theoryLines, int beginingLine) throws Exception{
+    private Theory parseToTheory(List<String> theoryLines, int beginnigLine) throws Exception{
         Theory theory = new Theory();
         Matcher m;
         for (int i = 0; i<theoryLines.size(); i++) {
@@ -149,6 +153,13 @@ public class TheoryGenerator {
                 continue;
             }
 
+            m = support.matcher(theoryLines.get(i));
+            if(m.matches())
+            {
+                theory.addOfferSupport(m.group(1), m.group(2));
+                continue;
+            }
+
             m = blankLine.matcher(theoryLines.get(i));
             if(m.matches())
             {
@@ -159,7 +170,7 @@ public class TheoryGenerator {
                     theoryLines.get(i).equals("#T2"))
                 continue;
 
-            throw new Exception("theory input file error at line: "  + (i + beginingLine + 1));
+            throw new Exception("theory input file error at line: "  + (i + beginnigLine + 1));
         }
         return theory;
     }
@@ -321,24 +332,60 @@ public class TheoryGenerator {
         r.setSeed(seed);
     }
 
-    /*private List<HashMap<Offer, String>> getOfferSupports(Collection<Double> offersRate, Collection<Argument> practicalArguments ){
-        List<HashMap<Offer, String>> offersAttributions = new ArrayList<>();
-        List<Integer> offerNumberOfSupporting =
-                offersRate.stream().mapToInt(t->t*practicalArguments.size())
-                        .boxed().collect(Collectors.toList());
+    private HashMap<Offer, Set<String>> generateOfferSupports(Collection<Double> offersRate, Collection<Argument> practicalArguments ){
+        HashMap<Offer, Set<String>> offersAttributions = new HashMap<>();
+        List<Integer> offerNumberOfSupportingArgs =
+                offersRate.stream().mapToDouble(t->t*practicalArguments.size())
+                        .boxed().mapToInt(t -> t.intValue()).boxed().
+                        collect(Collectors.toList());
 
-        while(offerNumberOfSupporting.stream().mapToDouble(t->t).sum() < practicalArguments.size())
+
+
+        List<Argument> practicalArgumentsList = practicalArguments.stream().collect(Collectors.toList());
+
+        int random;
+        while(offerNumberOfSupportingArgs.stream().mapToInt(t->t).sum() < practicalArguments.size())
         {
-            int random = r.nextInt(offerNumberOfSupporting.size());
-            offerNumberOfSupporting.set(random, offerNumberOfSupporting.get(random) + 1);
+            random = r.nextInt(offerNumberOfSupportingArgs.size());
+            offerNumberOfSupportingArgs.set(random, offerNumberOfSupportingArgs.get(random) + 1);
         }
 
-        for (int :
-             ) {
-
+        Integer nbSupports;
+        for (int i = 0; i< offerNumberOfSupportingArgs.size(); i++) {
+            Offer o = new Offer("O" + i);
+            offersAttributions.put(o, new HashSet<>());
+            nbSupports = offerNumberOfSupportingArgs.get(i);
+            for(int j = 0; j < nbSupports; j++){
+                random = r.nextInt(practicalArgumentsList.size());
+                offersAttributions.get(o).add(practicalArgumentsList.get(random).getName());
+                practicalArgumentsList.remove(random);
+            }
         }
 
-    }*/
+        return offersAttributions;
+
+    }
+
+    private HashMap<Offer, Set<String>> intersectWithTheoryPracticalArguments(
+            Theory theory,
+            HashMap<Offer, Set<String>> offerArgumentAttribution
+            )
+    {
+        HashMap<Offer, Set<String>> intersection = new HashMap<>();
+
+        Set<String> allTheoryArguments = theory.getPracticalArguments().stream()
+                .map(a -> a.getName()).collect(Collectors.toSet());
+
+        offerArgumentAttribution.keySet().forEach(o->{
+
+            HashSet clone = new HashSet<>(offerArgumentAttribution.get(o));
+            clone.retainAll(allTheoryArguments);
+            intersection.put(o, clone);
+        });
+
+       return intersection;
+    }
+
 
 
 

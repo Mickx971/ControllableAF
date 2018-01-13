@@ -21,10 +21,14 @@ public class GenerationConfig {
     private TheoryBasicConfiguration sharedTheory;
     private CafConfig caf1;
     private CafConfig caf2;
-    private List<Double> offers;
+    private List<Double> offersRate;
     public final static String generationConfigFile = "generation.config";
 
 
+    public void testCoherence() throws Exception {
+        caf1.testCoherence();
+        caf2.testCoherence();
+    }
     public boolean isCoherent()
     {
         try{
@@ -128,6 +132,7 @@ public class GenerationConfig {
     }
 
     public void setCoherent()throws Exception{
+        testCoherence();
         int coherentNumberOfControlArguments = getClosestCoherentNumberOfControlArguments();
         if(coherentNumberOfControlArguments != sharedTheory.getNbControlArguments())
             System.out.println("Warning, the number of shared control arguments is " +
@@ -239,6 +244,12 @@ public class GenerationConfig {
                 )
         );
 
+        c.setDensityOfControlAttacks(
+                Double.parseDouble(
+                        prop.getProperty("caf1.densityOfControlAttacks")
+                )
+        );
+
         caf1 = c;
         c = new CafConfig();
         c.setRateOfFixedArguments(
@@ -266,25 +277,38 @@ public class GenerationConfig {
                         prop.getProperty("caf2.rateOfUndirectedAttacks")
                 )
         );
+        c.setDensityOfControlAttacks(
+                Double.parseDouble(
+                        prop.getProperty("caf2.densityOfControlAttacks")
+                )
+        );
 
         caf2 = c;
 
         String stringOffers = prop.getProperty("offers");
         ObjectMapper objectMapper = new ObjectMapper();
         TypeFactory typeFactory = objectMapper.getTypeFactory();
-        offers = objectMapper.readValue(
+        offersRate = objectMapper.readValue(
                 stringOffers, typeFactory.constructCollectionType(List.class, Double.class)
         );
-        for (Double o : offers) {
+        for (Double o : offersRate) {
             if(o < 0)
                 throw new Exception("Error, Offers must be positive");
         }
 
-        if(offers.stream().mapToDouble(d->d).sum() != 1)
+        if(offersRate.stream().mapToDouble(d->d).sum() != 1)
         {
             throw new Exception("Error, Sum of offers list must be equal to 1");
         }
 
+    }
+
+    public List<Double> getOffersRate() {
+        return offersRate;
+    }
+
+    public void setOffersRate(List<Double> offersRate) {
+        this.offersRate = offersRate;
     }
 
     @Override
@@ -293,7 +317,7 @@ public class GenerationConfig {
                 "T1=" + T1 +
                 ",\nT2=" + T2 +
                 ",\nsharedTheory=" + sharedTheory +
-                ",\noffers=" + offers +
+                ",\noffers=" + offersRate +
                 "\n}";
     }
 

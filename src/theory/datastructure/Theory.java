@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 public class Theory{
 
     private DungTheory dungTheory;
-    private Map<Offer, Set<String>> offers;
+    private Map<Offer, Set<String>> offers = new HashMap<>();
     private Set<net.sf.tweety.arg.dung.syntax.Argument> controlArguments;
     private Set<net.sf.tweety.arg.dung.syntax.Argument> epistemicArguments;
     private Set<net.sf.tweety.arg.dung.syntax.Argument> practicalArguments;
@@ -200,6 +200,19 @@ public class Theory{
                         .append(", ").append(t.getAttacked().getName())
                         .append(").\n")
         );
+        for(Map.Entry<Offer, Set<String>> e : offers.entrySet())
+        {
+            for(String practicalArgument: e.getValue())
+            {
+                sb.append(TheoryGenerator.TheoryTag.support.name())
+                        .append("(")
+                        .append(practicalArgument)
+                        .append(",")
+                        .append(e.getKey().getName())
+                        .append(").\n");
+            }
+
+        }
         return sb.toString();
     }
 
@@ -221,7 +234,8 @@ public class Theory{
                 /(controlArguments.size() + epistemicArguments.size()))
                 + "\nNumberOfAttacks: " + dungTheory.getAttacks().size()
                 + "\nAttackDensity: " + ((double)dungTheory.getAttacks().size()
-                /getMaxNbOfAttacks());
+                /getMaxNbOfAttacks()
+                +"\nNumberOfOffers:" + offers.size());
     }
 
     public Pair<Extension, Set<Attack>> getNextExtensionAttackingArgument(String argName) throws Exception {
@@ -241,7 +255,30 @@ public class Theory{
         }
     }
 
+    public Map<Offer, Set<String>> getOffers() {
+        return offers;
+    }
+
+    public void setOffers(Map<Offer, Set<String>> offers) {
+        this.offers = offers;
+    }
+
+    public void addOfferSupport(String practicalArgument, String offer)
+    {
+        Offer copy = new Offer(offer);
+        if(offers.get(copy) == null)
+            offers.put(copy, new HashSet());
+        offers.get(copy).add(practicalArgument);
+
+
+    }
+
     public boolean hasOffer() {
         return !offers.isEmpty();
+    }
+
+    public boolean contains(String arg)
+    {
+        return dungTheory.contains(new Argument(arg));
     }
 }

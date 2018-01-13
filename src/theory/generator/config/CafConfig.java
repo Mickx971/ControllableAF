@@ -6,6 +6,7 @@ public class CafConfig {
     private double rateOfCertainAttacks;
     private double rateOfUncertainAttacks;
     private double rateOfUndirectedAttacks;
+    private double densityOfControlAttacks;
 
 
 
@@ -37,6 +38,11 @@ public class CafConfig {
         if(rateOfCertainAttacks + rateOfUndirectedAttacks + rateOfUncertainAttacks > 1)
         {
             throw new Exception("the sum of attacks rates is superior than 1");
+        }
+
+        if(densityOfControlAttacks<0 || densityOfControlAttacks > 1)
+        {
+            throw new Exception("density of control Attacks must be in [0,1]");
         }
 
 
@@ -81,5 +87,13 @@ public class CafConfig {
 
     public void setRateOfUndirectedAttacks(double rateOfUndirectedAttacks) {
         this.rateOfUndirectedAttacks = rateOfUndirectedAttacks;
+    }
+
+    public double getDensityOfControlAttacks() {
+        return densityOfControlAttacks;
+    }
+
+    public void setDensityOfControlAttacks(double densityOfControlAttacks) {
+        this.densityOfControlAttacks = densityOfControlAttacks;
     }
 }

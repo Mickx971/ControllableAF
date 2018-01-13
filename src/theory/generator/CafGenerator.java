@@ -1,18 +1,18 @@
 package theory.generator;
 
 import caf.datastructure.Caf;
+import javafx.util.Pair;
 import net.sf.tweety.arg.dung.semantics.ArgumentStatus;
 import net.sf.tweety.arg.dung.syntax.Argument;
 import net.sf.tweety.arg.dung.syntax.Attack;
+import scala.collection.parallel.ParIterableLike;
 import theory.datastructure.CafGeneration;
 import theory.datastructure.Theory;
 import theory.generator.config.CafConfig;
 import theory.generator.config.GenerationConfig;
 import theory.datastructure.TheoryGeneration;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CafGenerator {
@@ -25,8 +25,8 @@ public class CafGenerator {
         r = new Random();
     }
 
-    public CafGeneration generate()
-    {
+    public CafGeneration generate() throws Exception {
+        generationConfig.testCoherence();
         return new CafGeneration(
                 generateCaf(
                         generationConfig.getCaf1(), theoryGeneration.getT1(), theoryGeneration.getT2()
@@ -151,6 +151,33 @@ public class CafGenerator {
         });
 
 
+        List<caf.datastructure.Argument> otherArgumentsThanControl =
+                new ArrayList<>(caf.getFixedArguments());
+        otherArgumentsThanControl.addAll(caf.getUncertainArguments());
+        //random generation of attacks from c to u and f
+        for(Pair<String, String> attack: generateRandomAttacks(caf.getControlArguments(),
+                otherArgumentsThanControl, cafConfig.getDensityOfControlAttacks()))
+        {
+            caf.addAttack(attack.getKey(), attack.getValue());
+        }
+
+        //adding existing attacks from c to f from my theory
+        Set<Attack> atts = myTheory.getDungTheory().getAttacks().stream()
+                .filter(attack ->
+                    myTheory.getControlArguments().contains(attack.getAttacker())
+                            && caf.hasArgument(attack.getAttacker().getName())
+                            && caf.hasArgument(attack.getAttacked().getName())
+                 )
+                .collect(Collectors.toSet());
+
+        for (Attack attack:atts) {
+            caf.addAttack(attack.getAttacker().getName(), attack.getAttacked().getName());
+        }
+
+
+
+
+
         return caf;
     }
 
@@ -173,5 +200,35 @@ public class CafGenerator {
     public void setConfigFile(String configFile) throws Exception {
 
         generationConfig.loadConfigFromFile(configFile);
+
+    }
+
+    private List<Pair<String, String>> generateRandomAttacks(
+            Collection<caf.datastructure.Argument> sources,
+            Collection<caf.datastructure.Argument> targets,
+            double rate)
+    {
+        List<Pair<String, String>> possibleAttacks = new ArrayList<>();
+        for( caf.datastructure.Argument src: sources)
+        {
+            for(caf.datastructure.Argument trg: targets)
+                if(!src.equals(trg))
+                {
+                    possibleAttacks.add(new Pair<>(src.getName(), trg.getName()));
+                }
+        }
+
+        List<Pair<String, String>> randomAttacks = new ArrayList<>();
+        int random;
+        int nbAttacks = new Double(rate * possibleAttacks.size()).intValue();
+        for(int i = 0; i < nbAttacks; i++)
+        {
+            random = r.nextInt(possibleAttacks.size());
+            randomAttacks.add(possibleAttacks.get(random));
+            possibleAttacks.remove(random);
+
+
+        }
+        return randomAttacks;
     }
 }
