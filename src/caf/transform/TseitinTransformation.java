@@ -13,10 +13,13 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class TseitinTransformation {
 
     public static CafFormula toCNF(CafFormula cafFormula) {
+
         Set<Proposition> newVariables = new HashSet<>();
         cafFormula.setFormula(
-                __toCNF(cafFormula.getFormula().collapseAssociativeFormulas(), new MutableInt(0), newVariables)
+                //__toCNF(cafFormula.getFormula().collapseAssociativeFormulas(), new MutableInt(0), newVariables)
+                cafFormula.getFormula().toCnf()
         );
+
         cafFormula.addFakeVariables(newVariables);
         return cafFormula;
     }

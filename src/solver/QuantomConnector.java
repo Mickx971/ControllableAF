@@ -122,10 +122,10 @@ public class QuantomConnector {
 
         try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(path))) {
 
-            System.out.println(qbfFormula.getPropositionalFormula().toString());
+            //System.out.println(qbfFormula.getPropositionalFormula().toString());
 
             Conjunction formula = (Conjunction) qbfFormula.getPropositionalFormula();
-            writer.println("p qbf " + qbfFormula.getNbVariables() + " " + formula.size());
+            writer.println("p cnf " + qbfFormula.getNbVariables() + " " + formula.size());
 
             //Quantificateurs
             for(int i = 0; i < qbfFormula.getDegree(); i++) {
@@ -140,8 +140,7 @@ public class QuantomConnector {
                     writer.printf(" " + qbfFormula.getIdentifier(p));
                 }
 
-                writer.printf(" 0");
-                writer.println();
+                writer.println(" 0");
             }
 
             //Clauses
@@ -178,11 +177,14 @@ public class QuantomConnector {
 
             PropositionalQuantifiedFormula qbf = formulaGenerator.encodeCredulousQBFWithControl(
                     formulaGenerator.getCaf().getFixedArguments()
-                            .stream().filter(a -> a.getName().equals("a"))
+                            .stream().filter(a -> a.getName().equals("b"))
                             .collect(Collectors.toSet()));
+
+            System.out.println(qbf.getCafFormula().getFormula());
             Path path = Paths.get("caf2017.txt");
             QuantomConnector qConnector = new QuantomConnector();
             qConnector.createCNFFile(qbf, path);
+
             //Collection<Argument> res = qConnector.isCredulouslyAcceptedWithControl(caf, caf.getFixedArguments().stream().findFirst().get().getName());
             //res.forEach(a -> System.out.println(a));
         }

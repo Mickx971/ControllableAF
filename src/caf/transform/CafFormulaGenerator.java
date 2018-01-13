@@ -92,6 +92,7 @@ public class CafFormulaGenerator {
         );
 
         cafFormula.setFormula(stableFormula);
+        System.out.println(stableFormula);
 
         return cafFormula;
     }
@@ -121,6 +122,7 @@ public class CafFormulaGenerator {
         Conjunction credulousAcceptance = new Conjunction();
         Collection<Attack> undirectedAttacks = caf.getUndirectedAttacks();
 
+        System.out.println(cafFormula.getFormula());
         if(undirectedAttacks.isEmpty())
             return TseitinTransformation.toCNF(cafFormula);
 
@@ -156,6 +158,7 @@ public class CafFormulaGenerator {
         cafFormula.setFormula(credulousAcceptance);
 
         return TseitinTransformation.toCNF(cafFormula);
+
     }
 
     public PropositionalQuantifiedFormula encodeCredulousQBFWithControl(Collection<Argument> arguments)
@@ -176,13 +179,17 @@ public class CafFormulaGenerator {
 
         ExistQuantifiedPrefix onAcPrefix = new ExistQuantifiedPrefix();
         onAcPrefix.addAll(cafFormula.getAllOnAc());
+        System.out.println(cafFormula.getAllOnAc());
 
         AllQuantifiedPrefix onUAndAttPrefix = new AllQuantifiedPrefix();
         onUAndAttPrefix.addAll(cafFormula.getAllOnU());
         onUAndAttPrefix.addAll(cafFormula.getAllAtt());
+        System.out.println(cafFormula.getAllAtt());
+        System.out.println(cafFormula.getAllOnU());
 
         QuantifiedPrefix accPrefix = new ExistQuantifiedPrefix();
         accPrefix.addAll(cafFormula.getAllAcc());
+        System.out.println(cafFormula.getAllAcc());
 
         if(withControl) {
             credulousQbf.addQuantifiedPrefix(onAcPrefix);

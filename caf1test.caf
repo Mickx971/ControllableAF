@@ -1,5 +1,3 @@
-f_arg(a).
+f_arg(b).
 c_arg(c).
-u_arg(u).
-att(c,u).
-att(c,a).
+att(c,b).
