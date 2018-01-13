@@ -122,14 +122,16 @@ public class QuantomConnector {
 
         try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(path))) {
 
-            //System.out.println(qbfFormula.getPropositionalFormula().toString());
-
             Conjunction formula = (Conjunction) qbfFormula.getPropositionalFormula();
             writer.println("p cnf " + qbfFormula.getNbVariables() + " " + formula.size());
 
             //Quantificateurs
             for(int i = 0; i < qbfFormula.getDegree(); i++) {
                 QuantifiedPrefix prefix = qbfFormula.getQuantifiedPrefix(i);
+
+                if(prefix.getQuantifiedProposition().isEmpty())
+                    continue;
+
                 if(prefix.getType() == QuantifiedPrefix.QuantifiedPrefixType.EXIST) {
                     writer.print("e");
                 }

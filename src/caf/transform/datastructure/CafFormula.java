@@ -1,6 +1,7 @@
 package caf.transform.datastructure;
 
 import caf.datastructure.Argument;
+import caf.datastructure.Attack;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import javafx.util.Pair;
@@ -21,6 +22,7 @@ public class CafFormula {
     private BiMap<Argument, Proposition> onAcPropositions;
     private BiMap<Argument, Proposition> onUPropositions;
     private BiMap<Pair<Argument, Argument>, Proposition> attPropositions;
+    private BiMap<Pair<Argument, Argument>, Proposition> uattPropositions;
     private BiMap<Argument, Proposition> accPropositions;
     private Set<Proposition> fakeVariables;
     private BiMap<Proposition, Integer> identifiers;
@@ -33,6 +35,7 @@ public class CafFormula {
         onUPropositions = HashBiMap.create();
         attPropositions = HashBiMap.create();
         accPropositions = HashBiMap.create();
+        uattPropositions = HashBiMap.create();
         fakeVariables = new HashSet<>();
         shouldUpdateIdentifers = false;
     }
@@ -55,6 +58,11 @@ public class CafFormula {
     public void addAttFor(Argument source, Argument target) {
         attPropositions.put(new Pair<>(source, target), new Proposition(ATTACK_PROPOSITION + source.getName() + target.getName()));
         shouldUpdateIdentifers = true;
+    }
+
+    public void setUAtt(Attack att) {
+        Pair<Argument, Argument> pair = new Pair<>(att.getSource(), att.getTarget());
+        uattPropositions.put(pair, attPropositions.get(pair));
     }
 
     public Proposition getOnAcFor(Argument arg) {
@@ -95,6 +103,10 @@ public class CafFormula {
 
     public Collection<Proposition> getAllAtt() {
         return attPropositions.values();
+    }
+
+    public Collection<Proposition> getAllUAtt() {
+        return uattPropositions.values();
     }
 
     public Collection<Proposition> getAllAcc() {
@@ -169,5 +181,4 @@ public class CafFormula {
         }
         return null;
     }
-
 }

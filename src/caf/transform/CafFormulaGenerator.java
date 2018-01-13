@@ -25,6 +25,7 @@ public class CafFormulaGenerator {
     {
         CafFormula cafFormula = new CafFormula();
         caf.getArguments().forEach(a1 -> caf.getArguments().forEach(a2 -> cafFormula.addAttFor(a1, a2)));
+        caf.getUncertainAttacks().forEach(att -> cafFormula.setUAtt(att));
         caf.getControlArguments().forEach(a -> cafFormula.addOnAcFor(a));
         caf.getUncertainArguments().forEach(a -> cafFormula.addOnUFor(a));
         caf.getArguments().forEach(a -> cafFormula.addAccFor(a));
@@ -179,17 +180,13 @@ public class CafFormulaGenerator {
 
         ExistQuantifiedPrefix onAcPrefix = new ExistQuantifiedPrefix();
         onAcPrefix.addAll(cafFormula.getAllOnAc());
-        System.out.println(cafFormula.getAllOnAc());
 
         AllQuantifiedPrefix onUAndAttPrefix = new AllQuantifiedPrefix();
         onUAndAttPrefix.addAll(cafFormula.getAllOnU());
-        onUAndAttPrefix.addAll(cafFormula.getAllAtt());
-        System.out.println(cafFormula.getAllAtt());
-        System.out.println(cafFormula.getAllOnU());
+        onUAndAttPrefix.addAll(cafFormula.getAllUAtt());
 
         QuantifiedPrefix accPrefix = new ExistQuantifiedPrefix();
         accPrefix.addAll(cafFormula.getAllAcc());
-        System.out.println(cafFormula.getAllAcc());
 
         if(withControl) {
             credulousQbf.addQuantifiedPrefix(onAcPrefix);
