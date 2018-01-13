@@ -37,12 +37,12 @@ public class PropositionalQuantifiedFormula {
     }
 
     public String getIdentifier(Proposition var) {
-        return Integer.toBinaryString(cafFormula.getIdentifier(var));
+        return String.valueOf(cafFormula.getIdentifier(var));
     }
 
     public String getIdentifier(Negation var) {
         Proposition prop = var.getAtoms().iterator().next();
-        return Integer.toBinaryString(cafFormula.getIdentifier(prop));
+        return String.valueOf(cafFormula.getIdentifier(prop));
     }
 
     public void setCafFormula(CafFormula cafFormula) {

@@ -125,7 +125,7 @@ public class QuantomConnector {
             System.out.println(qbfFormula.getPropositionalFormula().toString());
 
             Conjunction formula = (Conjunction) qbfFormula.getPropositionalFormula();
-            writer.println("p cnf " + qbfFormula.getNbVariables() + " " + formula.size());
+            writer.println("p qbf " + qbfFormula.getNbVariables() + " " + formula.size());
 
             //Quantificateurs
             for(int i = 0; i < qbfFormula.getDegree(); i++) {
@@ -139,6 +139,8 @@ public class QuantomConnector {
                 for(Proposition p : prefix.getQuantifiedProposition()) {
                     writer.printf(" " + qbfFormula.getIdentifier(p));
                 }
+
+                writer.printf(" 0");
                 writer.println();
             }
 
@@ -169,20 +171,20 @@ public class QuantomConnector {
         CafGenerator g = new CafGenerator();
         Caf caf;
         try {
-            caf = g.parseCAF("caf2test.caf");
+            caf = g.parseCAF("caf1test.caf");
 
             CafFormulaGenerator formulaGenerator = new CafFormulaGenerator();
             formulaGenerator.setCaf(caf);
 
             PropositionalQuantifiedFormula qbf = formulaGenerator.encodeCredulousQBFWithControl(
-                    formulaGenerator.getCaf().getFixedArguments());
-
+                    formulaGenerator.getCaf().getFixedArguments()
+                            .stream().filter(a -> a.getName().equals("a"))
+                            .collect(Collectors.toSet()));
             Path path = Paths.get("caf2017.txt");
             QuantomConnector qConnector = new QuantomConnector();
-
-            //qConnector.createCNFFile(qbf, path);
-            Collection<Argument> res = qConnector.isCredulouslyAcceptedWithControl(caf, caf.getFixedArguments().stream().findFirst().get().getName());
-            res.forEach(a -> System.out.println(a));
+            qConnector.createCNFFile(qbf, path);
+            //Collection<Argument> res = qConnector.isCredulouslyAcceptedWithControl(caf, caf.getFixedArguments().stream().findFirst().get().getName());
+            //res.forEach(a -> System.out.println(a));
         }
         catch (Exception e)
         {

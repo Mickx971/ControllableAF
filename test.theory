@@ -1,141 +1,30 @@
 #sharedTheory
+e_arg(SE1).
+e_arg(SE0).
+p_arg(SP0).
 
 #T1
-e_arg(AE4).
-e_arg(AE5).
-e_arg(AE0).
-e_arg(AE1).
-e_arg(AE2).
-e_arg(AE3).
-p_arg(AP0).
+e_arg(SE1).
+e_arg(SE0).
+p_arg(SP0).
 p_arg(AP1).
-p_arg(AP2).
-p_arg(AP3).
-c_arg(AC2).
-c_arg(AC3).
 c_arg(AC0).
-c_arg(AC1).
-att(AC3, AE4).
-att(AE5, AE3).
-att(AC3, AC0).
-att(AE2, AP2).
-att(AE2, AP0).
-att(AC2, AE5).
-att(AC2, AC3).
-att(AP1, AP0).
-att(AE3, AP1).
-att(AE3, AP0).
-att(AC3, AE5).
-att(AP2, AP1).
-att(AP2, AP0).
-att(AE4, AP3).
-att(AC2, AP3).
-att(AE4, AP0).
-att(AP3, AP2).
-att(AE5, AP2).
-att(AC3, AP2).
-att(AE5, AP0).
-att(AE0, AE4).
-att(AE0, AE3).
-att(AE1, AE2).
-att(AC1, AE2).
-att(AE3, AE2).
-att(AC1, AE1).
-att(AE0, AP0).
-att(AC1, AE0).
-att(AC0, AC3).
-att(AC0, AC2).
-att(AE2, AE4).
-att(AC0, AE4).
-att(AC0, AC1).
-att(AC0, AE2).
-att(AC2, AC1).
-att(AE1, AP3).
-att(AE1, AP2).
-att(AE4, AE2).
-att(AC1, AE5).
-att(AC1, AE4).
-att(AE3, AE4).
-att(AE0, AP3).
-support(AP0,O0).
-support(AP2,O1).
-support(AP3,O1).
+att(AC0, AP1).
+att(AC0, SE1).
+att(SE1, SE0).
+att(AC0, SP0).
+support(SP0,O3).
 support(AP1,O3).
 
 #T2
-e_arg(BE4).
-e_arg(BE3).
-e_arg(BE5).
-e_arg(BE0).
-e_arg(BE2).
-e_arg(BE1).
+e_arg(SE1).
+e_arg(SE0).
+p_arg(SP0).
 p_arg(BP1).
-p_arg(BP0).
-p_arg(BP3).
-p_arg(BP2).
-p_arg(BP5).
-p_arg(BP4).
-c_arg(BC2).
-c_arg(BC1).
-c_arg(BC3).
 c_arg(BC0).
-att(BE4, BE5).
-att(BE5, BE0).
-att(BE5, BE1).
-att(BE5, BE2).
-att(BC0, BP2).
-att(BE5, BE3).
-att(BC0, BP3).
-att(BE4, BE1).
-att(BC2, BC1).
-att(BP1, BP2).
-att(BP1, BP4).
-att(BC2, BP3).
-att(BC2, BP5).
-att(BP2, BP1).
-att(BP0, BP3).
-att(BP0, BP4).
-att(BP0, BP5).
-att(BP1, BP0).
-att(BP4, BP1).
-att(BP2, BP3).
-att(BC3, BP5).
-att(BC0, BE3).
-att(BC0, BE4).
-att(BC1, BE1).
-att(BC1, BE2).
-att(BP5, BP0).
-att(BP5, BP1).
-att(BP5, BP4).
-att(BE1, BP4).
-att(BC2, BE4).
-att(BC3, BE0).
-att(BE2, BP2).
-att(BE2, BP4).
-att(BE0, BP5).
-att(BC2, BE0).
-att(BC2, BE2).
-att(BE1, BP2).
-att(BE1, BP3).
-att(BE3, BP0).
-att(BE3, BP2).
-att(BE0, BE1).
-att(BE0, BE4).
-att(BE1, BE0).
-att(BE5, BP3).
-att(BE2, BE3).
-att(BE2, BE5).
-att(BE3, BE0).
-att(BE3, BE1).
-att(BE3, BE2).
-att(BE1, BE2).
-att(BE1, BE3).
-att(BE1, BE4).
-att(BE1, BE5).
-att(BE2, BE1).
-support(BP3,O0).
-support(BP5,O0).
-support(BP0,O1).
-support(BP1,O2).
-support(BP4,O2).
-support(BP2,O3).
+att(BC0, SE1).
+att(SE1, BP1).
+att(SE0, BP1).
+att(BC0, SE0).
+support(BP1,O3).
+support(SP0,O3).

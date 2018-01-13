@@ -120,6 +120,10 @@ public class CafFormulaGenerator {
         PropositionalFormula formula = cafFormula.getFormula();
         Conjunction credulousAcceptance = new Conjunction();
         Collection<Attack> undirectedAttacks = caf.getUndirectedAttacks();
+
+        if(undirectedAttacks.isEmpty())
+            return TseitinTransformation.toCNF(cafFormula);
+
         for(Attack ua: undirectedAttacks)
         {
             Argument[] args = ua.getArguments();
@@ -147,6 +151,7 @@ public class CafFormulaGenerator {
 
             credulousAcceptance.add(d);
         }
+
 
         cafFormula.setFormula(credulousAcceptance);
 

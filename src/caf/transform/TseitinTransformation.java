@@ -21,11 +21,6 @@ public class TseitinTransformation {
         return cafFormula;
     }
 
-    /*
-    * the transformation is more efficient whene a disjunction is not composed
-    * from disjunctions and conjunction is not composed from conjunctions
-    * works but not efficient for a.combineWithOr(b.combineWithOr(c))
-    * */
     public static PropositionalFormula toCNF(PropositionalFormula formula)
     {
         return __toCNF(formula.collapseAssociativeFormulas(), new MutableInt(0), new HashSet<>());

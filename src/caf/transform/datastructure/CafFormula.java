@@ -114,7 +114,7 @@ public class CafFormula {
 
     private void updateIdentifiers() {
         this.identifiers = HashBiMap.create();
-        int i = 0;
+        int i = 1;
         for(Proposition p : onAcPropositions.values())
             identifiers.put(p,++i);
 
