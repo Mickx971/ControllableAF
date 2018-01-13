@@ -1,53 +1,13 @@
 #sharedTheory
-e_arg(SE2).
-e_arg(SE1).
-e_arg(SE0).
-p_arg(SP0).
-p_arg(SP1).
-att(SP0, SP1).
-att(SE1, SP1).
-att(SE2, SP0).
 
 #T1
-e_arg(SE2).
-e_arg(SE1).
-e_arg(SE0).
-p_arg(SP0).
-p_arg(AP2).
-p_arg(SP1).
-c_arg(AC0).
-c_arg(AC1).
-att(AP2, SP1).
-att(SP1, AP2).
-att(SE1, SP1).
-att(AC0, SE0).
-att(SE2, AP2).
-att(AC1, AP2).
-att(AC1, AC0).
-att(AC1, SP0).
-att(AC1, SP1).
-att(SE0, SE2).
-att(SE0, AP2).
-att(SE2, SP1).
+e_arg(AE0).
+e_arg(AE1).
+p_arg(AP0).
+att(AE0, AP0).
 
 #T2
-e_arg(SE2).
-e_arg(SE1).
-e_arg(SE0).
-p_arg(SP0).
-p_arg(SP1).
-p_arg(BP2).
-c_arg(BC1).
-c_arg(BC0).
-att(BC0, SE1).
-att(SP0, BP2).
-att(BC0, BP2).
-att(BC1, SE1).
-att(BP2, SP0).
-att(BC0, SE0).
-att(SE2, SE0).
-att(BC1, SE2).
-att(SE2, SP0).
-att(SE0, SE1).
-att(SE2, SP1).
-att(SE0, BP2).
+e_arg(BE0).
+e_arg(BE1).
+p_arg(BP0).
+att(BE0, BP0).

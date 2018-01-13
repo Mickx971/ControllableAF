@@ -1,13 +1,25 @@
 package caf.transform;
 
+import caf.transform.datastructure.CafFormula;
 import net.sf.tweety.commons.Formula;
 import net.sf.tweety.logics.pl.syntax.*;
 import org.apache.commons.lang.mutable.MutableInt;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 
 
 public class TseitinTransformation {
+
+    public static CafFormula toCNF(CafFormula cafFormula) {
+        Set<Proposition> newVariables = new HashSet<>();
+        cafFormula.setFormula(
+                __toCNF(cafFormula.getFormula().collapseAssociativeFormulas(), new MutableInt(0), newVariables)
+        );
+        cafFormula.addFakeVariables(newVariables);
+        return cafFormula;
+    }
 
     /*
     * the transformation is more efficient whene a disjunction is not composed
@@ -16,10 +28,10 @@ public class TseitinTransformation {
     * */
     public static PropositionalFormula toCNF(PropositionalFormula formula)
     {
-        return __toCNF(formula.collapseAssociativeFormulas(), new MutableInt(0));
+        return __toCNF(formula.collapseAssociativeFormulas(), new MutableInt(0), new HashSet<>());
     }
 
-    private static PropositionalFormula __toCNF(PropositionalFormula formula,MutableInt count)
+    private static PropositionalFormula __toCNF(PropositionalFormula formula,MutableInt count, Set<Proposition> newVariables)
     {
         if(formula.isLiteral())
             return formula;
@@ -29,7 +41,6 @@ public class TseitinTransformation {
         if(formula instanceof Disjunction)
         {
             Disjunction disjunction = (Disjunction) formula;
-            ;
             Disjunction additionalVariables = new Disjunction();
             Proposition z;
             Disjunction condition;
@@ -40,13 +51,16 @@ public class TseitinTransformation {
                     additionalVariables.add(f);
                     continue;
                 }
+
                 z = new Proposition("z" + count.toString());
+                newVariables.add(z);
+
                 count.add(1);
                 additionalVariables.add(z);
 
                 condition = new Disjunction();
                 condition.add(new Negation(z));
-                condition.add(__toCNF(f, count));
+                condition.add(__toCNF(f, count, newVariables));
 
                 tseitinConjunction.addAll(condition.toCnf());
 
@@ -62,7 +76,7 @@ public class TseitinTransformation {
 
             for(PropositionalFormula f : conjunction)
             {
-                tseitinConjunction.add(__toCNF(f, count));
+                tseitinConjunction.add(__toCNF(f, count, newVariables));
             }
 
             return tseitinConjunction;
@@ -73,7 +87,7 @@ public class TseitinTransformation {
         {
             Negation negation = (Negation) formula;
             PropositionalFormula formulaWithNegationOnLiterals = negation.toNnf();
-            return __toCNF(formulaWithNegationOnLiterals, count);
+            return __toCNF(formulaWithNegationOnLiterals, count, newVariables);
         }
 
 

@@ -1,17 +1,23 @@
 package caf.datastructure;
 
+import caf.transform.CafFormulaGenerator;
+import net.sf.tweety.logics.pl.syntax.PropositionalFormula;
+import solver.QuantomConnector;
+
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Caf {
 
-    public Map<String, Argument> args;
-    public Set<Attack> attacks;
-    private Map<String, Queue<Set<Argument>>> potentSets;
+    private final QuantomConnector qConnector;
+    private Map<String, Argument> args;
+    private Set<Attack> attacks;
 
     public Caf() {
         args = new HashMap<>();
         attacks = new HashSet<>();
+        qConnector = new QuantomConnector();
     }
 
     public void addFixedArgument(String argName) {
@@ -24,6 +30,10 @@ public class Caf {
 
     public void addUncertainArgument(String argName) {
         args.put(argName, new Argument(argName, Argument.Type.UNCERTAIN));
+    }
+
+    public boolean hasArgument(String argName) {
+        return args.containsKey(argName);
     }
 
     public void removeArgument(Argument arg) {
@@ -148,7 +158,7 @@ public class Caf {
         }).findFirst();
     }
 
-    public Set<Attack> getFUAttacksFor(Set<Argument> potentSet) {
+    public Set<Attack> getFUAttacksFor(Collection<Argument> potentSet) {
         Set<Attack> attacks = new HashSet<>();
         for(Argument arg : potentSet) {
             attacks.addAll(arg.getOutAttacks().stream().filter(att -> att.getType() == Attack.Type.CERTAIN)
@@ -158,30 +168,54 @@ public class Caf {
         return attacks;
     }
 
-    public void computePSA(String practicalArgument) {
-        Queue<Set<Argument>> sets = new LinkedList<>();
-        potentSets.put(practicalArgument, sets);
-        // Calcul avec quantum
-
-        //sets.addAll(/*result*/);
+    public Collection<Argument> computePSA(String practicalArgument) throws Exception {
+        Caf tempCaf = createTempCaf(true);
+        return qConnector.isCredulouslyAcceptedWithControl(tempCaf, practicalArgument)
+                .stream().map(arg -> getArgument(arg.getName())).collect(Collectors.toSet());
     }
 
-    public Set<Argument> getNextPSA(String practicalArgument) {
-        if(!potentSets.containsKey(practicalArgument))
-            computePSA(practicalArgument);
-
-        if(!potentSets.get(practicalArgument).isEmpty())
-            return potentSets.get(practicalArgument).poll();
-
-        potentSets.remove(practicalArgument);
-        return null;
+    public boolean argumentIsCredulouslyAcceptedWithoutControl(String argName) throws IOException {
+        Caf tempCaf = createTempCaf(false);
+        return qConnector.isCredulouslyAcceptedWithoutControl(tempCaf, argName);
     }
 
-    public boolean argumentIsCredulouslyAccepted(String argName) {
-        if(!potentSets.containsKey(argName)) {
-            computePSA(argName);
+    private Caf createTempCaf(boolean withControl) {
+        Caf tempCaf = new Caf();
+        getFixedArguments().stream().forEach(arg -> tempCaf.addFixedArgument(arg.getName()));
+        getUncertainArguments().stream().forEach(arg -> tempCaf.addUncertainArgument(arg.getName()));
+
+        if(withControl) {
+            getControlArguments().stream().forEach(arg -> tempCaf.addUncertainArgument(arg.getName()));
         }
-        return !potentSets.get(argName).isEmpty();
+
+        for(Attack att: getAttacks()) {
+
+            String arg1, arg2;
+            if(att.getType() == Attack.Type.UNDIRECTED) {
+                Argument[] arguments = att.getArguments();
+                arg1 = arguments[0].getName();
+                arg2 = arguments[1].getName();
+            }
+            else {
+                arg1 = att.getSource().getName();
+                arg2 = att.getTarget().getName();
+            }
+
+            if(tempCaf.hasArgument(arg1) && tempCaf.hasArgument(arg2)) {
+                switch (att.getType()) {
+                    case UNCERTAIN:
+                        tempCaf.addUncertainAttack(arg1, arg2);
+                        break;
+                    case CERTAIN:
+                        tempCaf.addAttack(arg1, arg2);
+                        break;
+                    case UNDIRECTED:
+                        tempCaf.addUndirectedAttack(arg1, arg2);
+                        break;
+                }
+            }
+        }
+        return tempCaf;
     }
 
     public String toString() {

@@ -321,7 +321,7 @@ public class TheoryGenerator {
         r.setSeed(seed);
     }
 
-    private List<HashMap<Offer, String>> getOfferSupports(Collection<Double> offersRate, Collection<Argument> practicalArguments ){
+    /*private List<HashMap<Offer, String>> getOfferSupports(Collection<Double> offersRate, Collection<Argument> practicalArguments ){
         List<HashMap<Offer, String>> offersAttributions = new ArrayList<>();
         List<Integer> offerNumberOfSupporting =
                 offersRate.stream().mapToInt(t->t*practicalArguments.size())
@@ -338,7 +338,7 @@ public class TheoryGenerator {
 
         }
 
-    }
+    }*/
 
 
 

@@ -6,6 +6,7 @@ import math.ComplexeInterval;
 import math.SimpleInterval;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
+import theory.datastructure.Offer;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -271,9 +272,14 @@ public class GenerationConfig {
         String stringOffers = prop.getProperty("offers");
         ObjectMapper objectMapper = new ObjectMapper();
         TypeFactory typeFactory = objectMapper.getTypeFactory();
-        List<Double> offers = objectMapper.readValue(
+        offers = objectMapper.readValue(
                 stringOffers, typeFactory.constructCollectionType(List.class, Double.class)
         );
+        for (Double o : offers) {
+            if(o < 0)
+                throw new Exception("Error, Offers must be positive");
+        }
+
         if(offers.stream().mapToDouble(d->d).sum() != 1)
         {
             throw new Exception("Error, Sum of offers list must be equal to 1");
@@ -287,7 +293,19 @@ public class GenerationConfig {
                 "T1=" + T1 +
                 ",\nT2=" + T2 +
                 ",\nsharedTheory=" + sharedTheory +
+                ",\noffers=" + offers +
                 "\n}";
+    }
+
+    public static void main(String args[])
+    {
+        try {
+            GenerationConfig g = new GenerationConfig();
+            g.loadConfigFromFile(generationConfigFile);
+            System.out.println(g);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
