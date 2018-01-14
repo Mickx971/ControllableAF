@@ -93,7 +93,6 @@ public class CafFormulaGenerator {
         );
 
         cafFormula.setFormula(stableFormula);
-        System.out.println(stableFormula);
 
         return cafFormula;
     }
@@ -123,7 +122,6 @@ public class CafFormulaGenerator {
         Conjunction credulousAcceptance = new Conjunction();
         Collection<Attack> undirectedAttacks = caf.getUndirectedAttacks();
 
-        System.out.println(cafFormula.getFormula());
         if(undirectedAttacks.isEmpty())
             return TseitinTransformation.toCNF(cafFormula);
 

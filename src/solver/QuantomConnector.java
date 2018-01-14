@@ -28,12 +28,19 @@ public class QuantomConnector {
     public QuantomConnector() {
         this.path = Paths.get(System.getProperty("user.dir"));
     }
-    // tester cette fonction quen retoune les arguments a mettre on pour que ca soit credulement
-    //accepté == compute_psa
+
+    public void setAgentName(String agentName) {
+        cnfFileName = agentName + "caf.cnf";
+    }
+
     public Collection<Argument> isCredulouslyAcceptedWithControl(Caf tempCaf, String argName) throws Exception {
         CafFormulaGenerator formulaGen = new CafFormulaGenerator();
         formulaGen.setCaf(tempCaf);
         Argument theta = tempCaf.getArgument(argName);
+
+        if(theta == null)
+            throw new Exception("Unknown argument in caf named: " + argName);
+
         PropositionalQuantifiedFormula qbfFormula = formulaGen.encodeCredulousQBFWithControl(Arrays.asList(new Argument[]{theta}));
 
         PropositionalFormula formula = qbfFormula.getCafFormula().getFormula();
@@ -44,8 +51,33 @@ public class QuantomConnector {
             return new ArrayList<>();
         }
 
+        return computePotentSet(qbfFormula);
+    }
+
+    public boolean isCredulouslyAcceptedWithoutControl(Caf tempCaf, String argName) throws Exception {
+        CafFormulaGenerator formulaGen = new CafFormulaGenerator();
+        formulaGen.setCaf(tempCaf);
+
+        Argument theta = tempCaf.getArgument(argName);
+        if(theta == null)
+            throw new Exception("Unknown argument in caf named: " + argName);
+
+        PropositionalQuantifiedFormula qbfFormula = formulaGen.encodeCredulousQBFWithoutControl(Arrays.asList(new Argument[]{theta}));
+
+        PropositionalFormula formula = qbfFormula.getCafFormula().getFormula();
+        if(formula instanceof Tautology) {
+            return true;
+        }
+        if(formula instanceof Contradiction) {
+            return false;
+        }
+
+        return !computePotentSet(qbfFormula).isEmpty();
+    }
+
+    private Collection<Argument> computePotentSet(PropositionalQuantifiedFormula qbfFormula) throws Exception {
         createCNFFile(qbfFormula, path.resolve(cnfFileName));
-        Process p = Runtime.getRuntime().exec("depqbf --qdo " + cnfFileName);
+        Process p = Runtime.getRuntime().exec("depqbf --qdo --no-dynamic-nenofex " + path.resolve(cnfFileName));
         return readResult(p, qbfFormula);
     }
 
@@ -70,26 +102,6 @@ public class QuantomConnector {
         throw new Exception("Tautology found but not extension found");
     }
 
-    public boolean isCredulouslyAcceptedWithoutControl(Caf tempCaf, String argName) throws Exception {
-        CafFormulaGenerator formulaGen = new CafFormulaGenerator();
-        formulaGen.setCaf(tempCaf);
-        Argument theta = tempCaf.getArgument(argName);
-        PropositionalQuantifiedFormula qbfFormula = formulaGen.encodeCredulousQBFWithoutControl(Arrays.asList(new Argument[]{theta}));
-
-        PropositionalFormula formula = qbfFormula.getCafFormula().getFormula();
-        if(formula instanceof Tautology) {
-            return true;
-        }
-        if(formula instanceof Contradiction) {
-            return false;
-        }
-
-        createCNFFile(qbfFormula, path.resolve(cnfFileName));
-        Process p = Runtime.getRuntime().exec("depqbf --qdo " + path.resolve(cnfFileName));
-        Collection<Argument> potentSet = readResult(p, qbfFormula);
-        return !potentSet.isEmpty();
-    }
-
     private Collection<Argument> readResult(Process p, PropositionalQuantifiedFormula qbfFormula) throws Exception {
 
         List<Integer> solutionIds = new ArrayList<>();
@@ -97,19 +109,21 @@ public class QuantomConnector {
             String line = buffer.readLine();
             if(line == null)
                 throw new Exception("error, Unexpected output from QBF Solver");
-            System.out.println(line);
             if(line.split(" ")[2].equals("0"))
-                return new HashSet<>();
+                return new ArrayList<>();
 
             while ((line = buffer.readLine()) != null) {
+
                 line = line.trim();
-                System.out.println(line);
+                if(line.isEmpty())
+                    continue;
+
                 Integer argId = Integer.parseInt(line.split(" ")[1]);
                 if(argId > 0)
                     solutionIds.add(argId);
             }
         }
-        System.out.println(solutionIds);
+
         return qbfFormula.getArgumentsFor(solutionIds);
     }
 
@@ -158,48 +172,21 @@ public class QuantomConnector {
         }
     }
 
-    public boolean isCredulouslyAccepted(Caf tempCaf, List<String> argNames) {
-        //TODO
-        return false;
-    }
-
     public static void main(String[] args) {
         CafGenerator g = new CafGenerator();
         Caf caf;
         try {
-            caf = g.parseCAF("caf1test.caf");
+            caf = g.parseCAF("caf2test.caf");
 
-            CafFormulaGenerator formulaGenerator = new CafFormulaGenerator();
-            formulaGenerator.setCaf(caf);
-
-            PropositionalQuantifiedFormula qbf = formulaGenerator.encodeCredulousQBFWithControl(
-                    formulaGenerator.getCaf().getFixedArguments()
-                            .stream().filter(a -> a.getName().equals("b"))
-                            .collect(Collectors.toSet()));
-
-            System.out.println(qbf.getCafFormula().getFormula());
-            Path path = Paths.get("caf2017.txt");
             QuantomConnector qConnector = new QuantomConnector();
-            System.out.println(qConnector.isCredulouslyAcceptedWithControl(caf, "b"));
-            //qConnector.createCNFFile(qbf, path);
+            qConnector.setAgentName("Agent1");
 
-//            Process p = Runtime.getRuntime().exec("depqbf --qdo");
-//            BufferedReader buffer = new BufferedReader(new InputStreamReader(p.getInputStream()));
-//            String line;
-//            while ((line = buffer.readLine()) != null) {
-//                line = line.trim();
-//                System.out.println(line);
-//            }
-
-            //res.forEach(a -> System.out.println(a));
+            Collection<Argument> result = qConnector.isCredulouslyAcceptedWithControl(caf, "SE1");
+            System.out.println(result);
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
-    }
-
-    public void setAgentName(String agentName) {
-       cnfFileName = agentName + "caf.cnf";
     }
 }

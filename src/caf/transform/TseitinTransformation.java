@@ -16,8 +16,7 @@ public class TseitinTransformation {
 
         Set<Proposition> newVariables = new HashSet<>();
         cafFormula.setFormula(
-                //__toCNF(cafFormula.getFormula().collapseAssociativeFormulas(), new MutableInt(0), newVariables)
-                cafFormula.getFormula().toCnf()
+                __toCNF(cafFormula.getFormula().collapseAssociativeFormulas(), new MutableInt(0), newVariables)
         );
 
         cafFormula.addFakeVariables(newVariables);

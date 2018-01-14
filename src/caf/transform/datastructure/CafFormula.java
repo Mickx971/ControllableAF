@@ -184,19 +184,17 @@ public class CafFormula {
         return attPropositions.inverse().containsKey(identifiers.inverse().get(id));
     }
 
-    public boolean isArgument(int id)
-    {
+    public boolean isArgument(int id) {
         return accPropositions.inverse().containsKey(identifiers.inverse().get(id));
     }
 
     public Collection<Argument> getArgumentsFor(List<Integer> ids) {
         List<Argument> correspondingArguments = new ArrayList<>();
-        for(Integer id: ids)
-        {
+        for(Integer id: ids) {
             if(isArgument(id))
-            {
-                correspondingArguments.add(accPropositions.inverse().get(id));
-            }
+                correspondingArguments.add(
+                        accPropositions.inverse().get(identifiers.inverse().get(id))
+                );
         }
         return correspondingArguments;
 
