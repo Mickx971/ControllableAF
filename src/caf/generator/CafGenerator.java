@@ -41,6 +41,10 @@ public class CafGenerator {
 
         for(int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
+
+            if(line.trim().isEmpty())
+                continue;
+
             Matcher matcher = afPattern.matcher(line);
 
             if(matcher.find()) {
@@ -71,6 +75,10 @@ public class CafGenerator {
 
         for(int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
+
+            if(line.trim().isEmpty())
+                continue;
+
             Matcher matcher = cafPattern.matcher(line);
 
             if(matcher.find()) {
