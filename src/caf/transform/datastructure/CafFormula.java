@@ -8,10 +8,7 @@ import javafx.util.Pair;
 import net.sf.tweety.logics.pl.syntax.Proposition;
 import net.sf.tweety.logics.pl.syntax.PropositionalFormula;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class CafFormula {
 
@@ -181,4 +178,28 @@ public class CafFormula {
         }
         return null;
     }
+
+    public boolean isAttack(int id)
+    {
+        return attPropositions.inverse().containsKey(identifiers.inverse().get(id));
+    }
+
+    public boolean isArgument(int id)
+    {
+        return accPropositions.inverse().containsKey(identifiers.inverse().get(id));
+    }
+
+    public Collection<Argument> getArgumentsFor(List<Integer> ids) {
+        List<Argument> correspondingArguments = new ArrayList<>();
+        for(Integer id: ids)
+        {
+            if(isArgument(id))
+            {
+                correspondingArguments.add(accPropositions.inverse().get(id));
+            }
+        }
+        return correspondingArguments;
+
+    }
+
 }

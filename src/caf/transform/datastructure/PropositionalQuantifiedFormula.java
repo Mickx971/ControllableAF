@@ -56,4 +56,8 @@ public class PropositionalQuantifiedFormula {
     public Argument getArgumentFor(String s) {
         return cafFormula.getArgumentFor(Integer.parseInt(s,2));
     }
+
+    public Collection<Argument> getArgumentsFor(List<Integer> identifiers) {
+        return cafFormula.getArgumentsFor(identifiers);
+    }
 }

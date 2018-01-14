@@ -45,7 +45,7 @@ public class QuantomConnector {
         }
 
         createCNFFile(qbfFormula, path.resolve(cnfFileName));
-        Process p = Runtime.getRuntime().exec("./quantom --solvemode=0 " + path.resolve(cnfFileName));
+        Process p = Runtime.getRuntime().exec("depqbf --qdo " + cnfFileName);
         return readResult(p, qbfFormula);
     }
 
@@ -70,7 +70,7 @@ public class QuantomConnector {
         throw new Exception("Tautology found but not extension found");
     }
 
-    public boolean isCredulouslyAcceptedWithoutControl(Caf tempCaf, String argName) throws IOException {
+    public boolean isCredulouslyAcceptedWithoutControl(Caf tempCaf, String argName) throws Exception {
         CafFormulaGenerator formulaGen = new CafFormulaGenerator();
         formulaGen.setCaf(tempCaf);
         Argument theta = tempCaf.getArgument(argName);
@@ -85,37 +85,32 @@ public class QuantomConnector {
         }
 
         createCNFFile(qbfFormula, path.resolve(cnfFileName));
-        Process p = Runtime.getRuntime().exec("./quantom --solvemode=0 " + path.resolve(cnfFileName));
+        Process p = Runtime.getRuntime().exec("depqbf --qdo " + path.resolve(cnfFileName));
         Collection<Argument> potentSet = readResult(p, qbfFormula);
         return !potentSet.isEmpty();
     }
 
-    private Collection<Argument> readResult(Process p, PropositionalQuantifiedFormula qbfFormula) throws IOException {
+    private Collection<Argument> readResult(Process p, PropositionalQuantifiedFormula qbfFormula) throws Exception {
 
-        ArrayList<Argument> potentSet = new ArrayList<>();
-
+        List<Integer> solutionIds = new ArrayList<>();
         try (BufferedReader buffer = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
-            String line;
+            String line = buffer.readLine();
+            if(line == null)
+                throw new Exception("error, Unexpected output from QBF Solver");
+            System.out.println(line);
+            if(line.split(" ")[2].equals("0"))
+                return new HashSet<>();
+
             while ((line = buffer.readLine()) != null) {
                 line = line.trim();
-                if (!line.isEmpty()) {
-                    if (line.equals("s UNSATISFIABLE")) {
-                        return potentSet;
-                    }
-
-                    if (line.startsWith("v")) {
-                        String st[] = line.split(" ");
-                        for (int i = 1; i < st.length; i++) {
-                            potentSet.add(qbfFormula.getArgumentFor(st[i]));
-                        }
-
-                        return potentSet;
-                    }
-                }
+                System.out.println(line);
+                Integer argId = Integer.parseInt(line.split(" ")[1]);
+                if(argId > 0)
+                    solutionIds.add(argId);
             }
         }
-
-        return potentSet;
+        System.out.println(solutionIds);
+        return qbfFormula.getArgumentsFor(solutionIds);
     }
 
     public void createCNFFile(PropositionalQuantifiedFormula qbfFormula, Path path) {
@@ -185,9 +180,17 @@ public class QuantomConnector {
             System.out.println(qbf.getCafFormula().getFormula());
             Path path = Paths.get("caf2017.txt");
             QuantomConnector qConnector = new QuantomConnector();
-            qConnector.createCNFFile(qbf, path);
+            System.out.println(qConnector.isCredulouslyAcceptedWithControl(caf, "b"));
+            //qConnector.createCNFFile(qbf, path);
 
-            //Collection<Argument> res = qConnector.isCredulouslyAcceptedWithControl(caf, caf.getFixedArguments().stream().findFirst().get().getName());
+//            Process p = Runtime.getRuntime().exec("depqbf --qdo");
+//            BufferedReader buffer = new BufferedReader(new InputStreamReader(p.getInputStream()));
+//            String line;
+//            while ((line = buffer.readLine()) != null) {
+//                line = line.trim();
+//                System.out.println(line);
+//            }
+
             //res.forEach(a -> System.out.println(a));
         }
         catch (Exception e)
