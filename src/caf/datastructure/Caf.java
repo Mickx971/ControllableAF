@@ -260,4 +260,7 @@ public class Caf {
         return sb.toString();
     }
 
+    public void setAgentName(String agentName) {
+        qConnector.setAgentName(agentName);
+    }
 }

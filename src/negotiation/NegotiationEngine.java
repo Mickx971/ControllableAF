@@ -1,5 +1,6 @@
 package negotiation;
 
+import Agents.NegotiationAgent;
 import Communication.datastructure.Argument;
 import Communication.datastructure.Attack;
 import caf.datastructure.Caf;
@@ -16,11 +17,18 @@ import java.util.stream.Collectors;
 public class NegotiationEngine {
 
     private final NegotiationBehaviour communicator;
+    private final NegotiationAgent agent;
     private Caf caf;
     private Theory theory;
 
-    public NegotiationEngine(NegotiationBehaviour communicator) {
+    public NegotiationEngine(NegotiationBehaviour communicator, NegotiationAgent agent) {
         this.communicator = communicator;
+        this.agent = agent;
+    }
+
+    public void setCaf(Caf caf) {
+        caf.setAgentName(agent.getName());
+        this.caf = caf;
     }
 
     public void chooseBestOffer() throws Exception {

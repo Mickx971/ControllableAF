@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class QuantomConnector {
 
     private final Path path;
-    private String cnfFileName = "caf.cnf";
+    private String cnfFileName;
 
     public QuantomConnector() {
         this.path = Paths.get(System.getProperty("user.dir"));
@@ -194,5 +194,9 @@ public class QuantomConnector {
         {
             e.printStackTrace();
         }
+    }
+
+    public void setAgentName(String agentName) {
+       cnfFileName = agentName + "caf.cnf";
     }
 }

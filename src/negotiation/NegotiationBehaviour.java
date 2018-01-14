@@ -14,7 +14,7 @@ public class NegotiationBehaviour extends OneShotBehaviour{
     public NegotiationBehaviour(NegotiationAgent agent) {
         super(agent);
         this.agent = agent;
-        negotiationEngine = new NegotiationEngine(this);
+        negotiationEngine = new NegotiationEngine(this, agent);
     }
 
     @Override
