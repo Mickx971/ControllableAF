@@ -66,6 +66,7 @@ public class CafGenerator {
             rest.remove(random);
         }
 
+
         List<Argument> fixedArguments = new ArrayList<>();
         fixedArguments.addAll(sharedTheory.getControlArguments());
         fixedArguments.addAll(sharedTheory.getEpistemicArguments());

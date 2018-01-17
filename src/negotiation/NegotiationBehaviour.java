@@ -7,7 +7,7 @@ import theory.datastructure.Offer;
 
 public class NegotiationBehaviour extends OneShotBehaviour{
 
-    private static final long TIMEOUT = 1000000;
+    private static final long TIMEOUT = 60000;
     private NegotiationAgent agent;
     private NegotiationEngine negotiationEngine;
 
@@ -20,16 +20,19 @@ public class NegotiationBehaviour extends OneShotBehaviour{
     @Override
     public void action() {
         try {
+            agent.doWait(5000);
             if(agent.isStartsNegotiation()){
                 negotiationEngine.chooseBestOffer();
+                System.out.println("starts negotiation: " + agent.getName());
             }
             END: while (true) {
+                System.out.println("main loop : " + agent.getName());
                 NegotiationMessage message = getMessage(TIMEOUT);
 
                 if(message == null)
                     throw new Exception("Message received is null");
 
-                message.print();
+                message.print(agent.getName());
 
                 switch (message.getType()) {
                     case REJECT:
@@ -59,16 +62,23 @@ public class NegotiationBehaviour extends OneShotBehaviour{
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        System.out.println("agent " + agent.getName() + " shutdown.");
     }
 
     public NegotiationMessage getMessage(long timeout) throws Exception {
         ACLMessage message = agent.blockingReceive(timeout);
+        while(!message.getSender().equals(agent.getOpponent()))
+            message = agent.blockingReceive(timeout);
+
+        System.out.println(message);
         if(message == null)
             return null;
         return NegotiationMessage.getNegotiationMessage(message);
     }
 
     public void sendMessage(NegotiationMessage message) throws Exception {
+        System.out.println(message);
         ACLMessage aclMessage = message.toACLMessage();
         aclMessage.addReceiver(agent.getOpponent());
         agent.send(aclMessage);

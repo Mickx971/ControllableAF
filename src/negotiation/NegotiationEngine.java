@@ -37,7 +37,6 @@ public class NegotiationEngine {
         CafGenerator cg = new CafGenerator();
         caf = cg.parseCAF(NegotiationAgent.cafFileNamePrefix +
         communicator.getAgent().getId() + ".caf");
-        System.out.println(communicator.getAgent() + "\n" + theory + "\n" + caf);
     }
 
     public void setCaf(Caf caf) {
@@ -47,6 +46,7 @@ public class NegotiationEngine {
 
     public void chooseBestOffer() throws Exception {
         Offer offer = theory.getNextOffer();
+        System.out.println(offer);
         if(offer != null) {
             chooseSupportArg(offer);
         }
@@ -83,6 +83,10 @@ public class NegotiationEngine {
                     caf.getFUAttacksFor(potentSet).stream()
                         .map(a -> new Attack(a)).collect(Collectors.toSet())
                 );
+                System.out.println("proposition:{\n" +
+                        "justificationArguments:"+proposition.getJustificationArguments() +
+                        "\njustificationAttacks"+proposition.getJustificationAttacks() +
+                        "\n}");
                 communicator.sendMessage(proposition);
             }
             else {

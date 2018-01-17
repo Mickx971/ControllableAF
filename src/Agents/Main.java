@@ -29,6 +29,7 @@ public class Main {
         config.setParameter("gui", "true");
         AgentContainer mc = runtime.createMainContainer(config);
         AgentController ac;
+        SatSolver.setDefaultSolver(new Sat4jSolver());
         try {
             Object[] agent1Arguments = {new AID("negotiator2", AID.ISLOCALNAME),
                     true, 1};

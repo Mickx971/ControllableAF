@@ -85,18 +85,18 @@ public class NegotiationMessage {
         this.justificationAttacks = attacks;
     }
     
-    public void print() {
-        System.out.println("Message received");
+    public void print(String agent) {
+        System.out.println("Message received by agent " + agent);
         System.out.println("type      : " + type);
         System.out.println("offer     : " + type);
         System.out.println("arg       : " + practicalArgument);
-        if(!justificationArguments.isEmpty()) {
+        if(justificationArguments != null && !justificationArguments.isEmpty()) {
             System.out.println("reason arg :");
             for (Argument arg : justificationArguments) {
                 System.out.println("\t" + arg);
             }
         }
-        if(!justificationAttacks.isEmpty()) {
+        if(justificationAttacks != null && !justificationAttacks.isEmpty()) {
             System.out.println("reason att :");
             for (Attack att : justificationAttacks) {
                 System.out.println("\t" + att);
