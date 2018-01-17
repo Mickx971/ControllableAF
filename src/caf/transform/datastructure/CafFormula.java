@@ -5,10 +5,13 @@ import caf.datastructure.Attack;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import javafx.util.Pair;
+import net.sf.tweety.logics.pl.syntax.Conjunction;
 import net.sf.tweety.logics.pl.syntax.Proposition;
 import net.sf.tweety.logics.pl.syntax.PropositionalFormula;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CafFormula {
 
@@ -20,7 +23,7 @@ public class CafFormula {
     private BiMap<Argument, Proposition> onUPropositions;
     private BiMap<Pair<Argument, Argument>, Proposition> attPropositions;
     private BiMap<Pair<Argument, Argument>, Proposition> uattPropositions;
-    private BiMap<Argument, Proposition> accPropositions;
+    private Map<Attack, BiMap<Argument, Proposition>> accPropositions;
     private Set<Proposition> fakeVariables;
     private BiMap<Proposition, Integer> identifiers;
 
@@ -31,14 +34,16 @@ public class CafFormula {
         onAcPropositions = HashBiMap.create();
         onUPropositions = HashBiMap.create();
         attPropositions = HashBiMap.create();
-        accPropositions = HashBiMap.create();
+        accPropositions = new HashMap<>();
         uattPropositions = HashBiMap.create();
         fakeVariables = new HashSet<>();
         shouldUpdateIdentifers = false;
     }
 
-    public void addAccFor(Argument a) {
-        accPropositions.put(a, new Proposition(ACC_PROPOSITION + a.getName()));
+    public void addAccFor(Argument a, Attack udAtt) {
+        if(!accPropositions.containsKey(udAtt))
+            accPropositions.put(udAtt, HashBiMap.create());
+        accPropositions.get(a).put(a, new Proposition(ACC_PROPOSITION + a.getName()));
         shouldUpdateIdentifers = true;
     }
 
@@ -74,8 +79,10 @@ public class CafFormula {
         return attPropositions.get(new Pair<>(source, target));
     }
 
-    public Proposition getAccFor(Argument arg) {
-        return accPropositions.get(arg);
+    public Collection<Proposition> getACCsFor(Argument arg) {
+        return accPropositions.values().stream()
+                .filter(m -> m.containsKey(arg))
+                .map(m -> m.get(arg)).collect(Collectors.toList());
     }
 
     public void addFakeVariables(Set<Proposition> fakeVariables) {
@@ -107,7 +114,9 @@ public class CafFormula {
     }
 
     public Collection<Proposition> getAllAcc() {
-        return accPropositions.values();
+        return accPropositions.values().stream()
+                .flatMap(m -> m.values().stream())
+                .collect(Collectors.toList());
     }
 
     public Collection<Proposition> getFakeVariables() {
@@ -133,8 +142,11 @@ public class CafFormula {
         for(Proposition p : attPropositions.values())
             identifiers.put(p,++i);
 
-        for(Proposition p : accPropositions.values())
-            identifiers.put(p,++i);
+        for(BiMap<Argument, Proposition> map : accPropositions.values()) {
+            for(Proposition p: map.values()) {
+                identifiers.put(p, ++i);
+            }
+        }
 
         for(Proposition p : fakeVariables)
             identifiers.put(p,++i);
@@ -162,9 +174,10 @@ public class CafFormula {
             return inv.get(prop);
         }
 
-        inv = accPropositions.inverse();
-        if(inv.containsKey(prop)) {
-            return inv.get(prop);
+        for(BiMap<Argument, Proposition> m : accPropositions.values()) {
+            if(m.inverse().containsKey(prop)) {
+                return m.inverse().get(prop);
+            }
         }
 
         return null;
@@ -185,7 +198,10 @@ public class CafFormula {
     }
 
     public boolean isArgument(int id) {
-        return accPropositions.inverse().containsKey(identifiers.inverse().get(id));
+        return accPropositions.values().stream()
+                .anyMatch(
+                        m -> m.inverse().containsKey(identifiers.inverse().get(id))
+                );
     }
 
     public Collection<Argument> getArgumentsFor(List<Integer> ids) {
@@ -193,7 +209,9 @@ public class CafFormula {
         for(Integer id: ids) {
             if(isArgument(id))
                 correspondingArguments.add(
-                        accPropositions.inverse().get(identifiers.inverse().get(id))
+                        accPropositions.values().stream()
+                                .filter(m -> m.inverse().containsKey(identifiers.inverse().get(id)))
+                                .findFirst().get().inverse().get(identifiers.inverse().get(id))
                 );
         }
         return correspondingArguments;
