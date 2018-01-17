@@ -54,7 +54,9 @@ public class QuantomConnector {
             return new ArrayList<>();
         }
 
-        return computePotentSet(qbfFormula);
+        HashSet<Argument> res = new HashSet<>();
+        computePotentSet(qbfFormula, res);
+        return res;
     }
 
     public boolean isCredulouslyAcceptedWithoutControl(Caf tempCaf, String argName) throws Exception {
@@ -75,14 +77,13 @@ public class QuantomConnector {
             return false;
         }
 
-        return !computePotentSet(qbfFormula).isEmpty();
+        return computePotentSet(qbfFormula, new HashSet<>());
     }
 
-    private Collection<Argument> computePotentSet(PropositionalQuantifiedFormula qbfFormula) throws Exception {
+    private boolean computePotentSet(PropositionalQuantifiedFormula qbfFormula, Set<Argument> res) throws Exception {
         createCNFFile(qbfFormula, path.resolve(cnfFileName));
         Process p = Runtime.getRuntime().exec(solverCommand + cnfFileName);
-        System.out.println(solverCommand + cnfFileName);
-        return readResult(p, qbfFormula);
+        return readResult(p, qbfFormula, res);
     }
 
     private Collection<Argument> computeSimpleExtension(Caf tempCaf, String argName) throws Exception {
@@ -106,7 +107,7 @@ public class QuantomConnector {
         throw new Exception("Tautology found but not extension found");
     }
 
-    private Collection<Argument> readResult(Process p, PropositionalQuantifiedFormula qbfFormula) throws Exception {
+    private boolean readResult(Process p, PropositionalQuantifiedFormula qbfFormula, Collection<Argument> solutions) throws Exception {
 
         List<Integer> solutionIds = new ArrayList<>();
         try (BufferedReader buffer = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
@@ -119,25 +120,30 @@ public class QuantomConnector {
                 if(line.startsWith("s"))
                 {
                     String res[] = line.split(" ");
+
+                    if(res[1].equals("UNSATISFIABLE") || res[1].equals("UNKNOWN")) {
+                        return false;
+                    }
+
                     if(res[1].equals("SATISFIABLE"))
                     {
                         line = buffer.readLine();
-                        res = line.split(" ");
-                        for(int i = 1; i < res.length; i++)
-                            solutionIds.add(Integer.parseInt(res[i]));
+                        if(line != null) {
+                            res = line.split(" ");
+                            for (int i = 1; i < res.length; i++)
+                                solutionIds.add(Integer.parseInt(res[i]));
 
-                        return qbfFormula.getArgumentsFor(solutionIds);
-
+                            solutions.addAll(qbfFormula.getArgumentsFor(solutionIds));
+                        }
+                        return true;
                     }
-                    else
-                        return new ArrayList<>();
 
                 }
 
             }
         }
 
-        return null;
+        return true;
     }
 
     public void createCNFFile(PropositionalQuantifiedFormula qbfFormula, Path path) {
