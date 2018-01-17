@@ -4,10 +4,13 @@ import Agents.NegotiationAgent;
 import Communication.datastructure.Argument;
 import Communication.datastructure.Attack;
 import caf.datastructure.Caf;
+import caf.generator.CafGenerator;
 import javafx.util.Pair;
 import net.sf.tweety.arg.dung.semantics.Extension;
 import theory.datastructure.Theory;
 import theory.datastructure.Offer;
+import theory.datastructure.TheoryGeneration;
+import theory.generator.TheoryGenerator;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -21,9 +24,20 @@ public class NegotiationEngine {
     private Caf caf;
     private Theory theory;
 
-    public NegotiationEngine(NegotiationBehaviour communicator, NegotiationAgent agent) {
+    public NegotiationEngine(NegotiationBehaviour communicator, NegotiationAgent agent) throws Exception{
         this.communicator = communicator;
         this.agent = agent;
+        TheoryGenerator g = new TheoryGenerator();
+        TheoryGeneration generation = g.parseFromFile(NegotiationAgent.theoryFileName);
+        if(communicator.getAgent().getId() == 1)
+            theory = generation.getT1();
+        else
+            theory = generation.getT2();
+
+        CafGenerator cg = new CafGenerator();
+        caf = cg.parseCAF(NegotiationAgent.cafFileNamePrefix +
+        communicator.getAgent().getId() + ".caf");
+        System.out.println(communicator.getAgent() + "\n" + theory + "\n" + caf);
     }
 
     public void setCaf(Caf caf) {

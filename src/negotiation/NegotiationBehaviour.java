@@ -11,7 +11,7 @@ public class NegotiationBehaviour extends OneShotBehaviour{
     private NegotiationAgent agent;
     private NegotiationEngine negotiationEngine;
 
-    public NegotiationBehaviour(NegotiationAgent agent) {
+    public NegotiationBehaviour(NegotiationAgent agent) throws Exception{
         super(agent);
         this.agent = agent;
         negotiationEngine = new NegotiationEngine(this, agent);
@@ -97,5 +97,10 @@ public class NegotiationBehaviour extends OneShotBehaviour{
         answer.setType(NegotiationMessage.MessageType.ACCEPT);
         answer.setOffer(offer);
         sendMessage(answer);
+    }
+
+    @Override
+    public NegotiationAgent getAgent() {
+        return agent;
     }
 }

@@ -3,6 +3,5 @@ f_arg(SE0).
 f_arg(SE1).
 f_arg(SP0).
 u_arg(AC0).
-att(AC0,SP0).
-att(SE1,SE0).
-att(AC0,SE0).
+att(SE1,AP1).
+att(SP0,AP1).
