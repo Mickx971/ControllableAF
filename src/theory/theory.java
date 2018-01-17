@@ -61,7 +61,7 @@ public class theory {
                     generator.setSeed(Long.parseLong(cmd.getOptionValue("s")));
                 }
                 TheoryGeneration g = generator.generate();
-                String outputFile = "output.theory";
+                String outputFile = "theory.theory";
                 if(cmd.hasOption('o'))
                 {
                     outputFile = cmd.getOptionValue("o");
@@ -69,7 +69,7 @@ public class theory {
                 g.writeToFile(outputFile);
 
             }
-            else
+            else if(cmd.hasOption("d"))
             {
                 TheoryGeneration g = generator.parseFromFile(cmd.getOptionValue('d'));
                 System.out.println(g.getStats());

@@ -1,0 +1,8 @@
+f_arg(BP1).
+f_arg(SE0).
+f_arg(SE1).
+f_arg(SP0).
+u_arg(BC0).
+att(BP1,SP0).
+att(SE0,SE1).
+att(SP0,BP1).

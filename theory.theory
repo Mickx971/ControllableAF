@@ -1,0 +1,153 @@
+#sharedTheory
+e_arg(SE1).
+e_arg(SE0).
+p_arg(SP0).
+
+#T1
+e_arg(AE4).
+e_arg(AE5).
+e_arg(AE6).
+e_arg(AE7).
+e_arg(SE1).
+e_arg(AE2).
+e_arg(SE0).
+e_arg(AE3).
+p_arg(SP0).
+p_arg(AP1).
+p_arg(AP2).
+p_arg(AP3).
+p_arg(AP4).
+p_arg(AP5).
+p_arg(AP6).
+p_arg(AP7).
+p_arg(AP8).
+p_arg(AP9).
+c_arg(AC2).
+c_arg(AC3).
+c_arg(AC0).
+c_arg(AC1).
+att(SP0, AP2).
+att(AC0, AP3).
+att(SP0, AP5).
+att(AC0, AP1).
+att(SP0, AP7).
+att(AC1, AP5).
+att(AE2, SE1).
+att(AC1, AP3).
+att(AC0, AP9).
+att(AC0, AP7).
+att(AE3, SE0).
+att(AE6, SE0).
+att(AP1, AP4).
+att(AC1, AP9).
+att(AP1, AP2).
+att(AC1, AP7).
+att(AP2, AP9).
+att(AC3, AP7).
+att(AP2, AP8).
+att(AC3, AP5).
+att(AC3, AP4).
+att(AC2, AP8).
+att(AP1, AP9).
+att(AP4, AP2).
+att(AP4, AP1).
+att(AP3, AP7).
+att(AP3, AP6).
+att(AP3, AP4).
+att(AP5, AP3).
+att(AP5, AP1).
+att(AP4, AP8).
+att(AP4, AP5).
+att(AP5, AP9).
+att(AP6, AP2).
+att(AP5, AP8).
+att(AP5, AP7).
+att(AP5, AP6).
+att(AP7, AP6).
+att(AP7, AP3).
+att(AP6, AP8).
+att(AP8, AP7).
+att(AC2, SE0).
+att(AP8, AP1).
+att(AC2, SE1).
+att(AC0, SE0).
+att(AP9, AP6).
+att(AP9, AP3).
+att(AP9, AP2).
+att(AE3, SP0).
+att(AC3, SE0).
+att(AC3, SE1).
+att(SE1, AE6).
+att(SE1, AE7).
+att(SE0, AE3).
+att(AC1, AC0).
+att(AE2, AE6).
+att(AE2, AE3).
+att(AE4, AE3).
+att(AC2, AC0).
+att(AE3, AE5).
+att(AC3, AC2).
+att(AE5, AE4).
+att(AE5, AE7).
+att(AE7, AE5).
+att(AE7, AE3).
+att(AE6, AE7).
+att(AC3, SP0).
+att(AP1, SP0).
+att(SE0, AP5).
+att(SE0, AP7).
+att(AC0, AE6).
+att(SE0, AP9).
+att(AC0, AE4).
+att(SE1, AP4).
+att(AC2, AE2).
+att(AC1, AE7).
+att(AC1, AE6).
+att(AC1, AE3).
+att(SE0, AP3).
+att(AC3, AE4).
+att(AE2, AP2).
+att(AC2, AE6).
+att(SE1, AP7).
+att(SE1, AP6).
+att(AE3, AP3).
+att(SE1, AP8).
+att(AE3, AP2).
+att(AE2, AP9).
+att(AP9, SP0).
+att(AE4, AP2).
+att(AE3, AP7).
+att(AE3, AP6).
+att(AE5, AP4).
+att(AE4, AP7).
+att(AE7, AP1).
+att(AE6, AP7).
+att(AE6, AP4).
+att(AE6, AP3).
+att(AE6, AP1).
+att(AE7, AP5).
+att(AE7, AP4).
+att(AE7, AP3).
+support(AP1,O0).
+support(AP2,O0).
+support(AP3,O0).
+support(AP5,O1).
+support(AP8,O1).
+support(AP6,O2).
+support(AP7,O2).
+support(SP0,O3).
+support(AP4,O3).
+support(AP9,O3).
+
+#T2
+e_arg(SE1).
+e_arg(SE0).
+p_arg(SP0).
+p_arg(BP1).
+c_arg(BC0).
+att(BP1, SP0).
+att(BC0, SP0).
+att(SE1, SP0).
+att(SE0, SP0).
+support(BP1,O1).
+support(SP0,O3).

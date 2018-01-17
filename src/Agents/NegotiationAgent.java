@@ -7,25 +7,24 @@ public class NegotiationAgent extends jade.core.Agent{
 
     private AID opponent;
     private boolean startsNegotiation;
-
-    public NegotiationAgent() {
-        opponent = new AID();
-        opponent.setName("rma@172.17.0.1:8888/JADE");
-        startsNegotiation = false;
-    }
+    private int id;
+    public static String theoryFileName = "theory.theory";
+    public static String cafFileNamePrefix = "caf";
 
 
-    public NegotiationAgent(AID opponent, boolean startsNegotiation) {
-        this.opponent = opponent;
-        this.startsNegotiation = startsNegotiation;
-    }
 
     @Override
     protected void setup() {
-        Object arguemnts[] = getArguments();
-        this.opponent = (AID)(arguemnts[0]);
-        this.startsNegotiation = (Boolean)(arguemnts[1]);
-        addBehaviour(new NegotiationBehaviour(this));
+        try {
+            Object arguments[] = getArguments();
+            this.opponent = (AID)(arguments[0]);
+            this.startsNegotiation = (Boolean)(arguments[1]);
+            id = (int)arguments[2];
+            addBehaviour(new NegotiationBehaviour(this));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public AID getOpponent() {
@@ -42,5 +41,9 @@ public class NegotiationAgent extends jade.core.Agent{
 
     public void setStartsNegotiation(boolean startsNegotiation) {
         this.startsNegotiation = startsNegotiation;
+    }
+
+    public int getId() {
+        return id;
     }
 }
