@@ -14,6 +14,7 @@ import net.sf.tweety.arg.dung.semantics.Extension;
 import net.sf.tweety.logics.pl.syntax.*;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,9 +29,7 @@ public class QuantomConnector {
 
     public QuantomConnector() {
         this.path = Paths.get(System.getProperty("user.dir"));
-        solverCommand = "depqbf --qdo ";
-        if(System.getProperty("os.name").toLowerCase().contains("mac"))
-            solverCommand += "--no-dynamic-nenofex ";
+        solverCommand = "./bin/quantom --solvemode=0 ";
     }
 
     public void setAgentName(String agentName) {
@@ -81,7 +80,8 @@ public class QuantomConnector {
 
     private Collection<Argument> computePotentSet(PropositionalQuantifiedFormula qbfFormula) throws Exception {
         createCNFFile(qbfFormula, path.resolve(cnfFileName));
-        Process p = Runtime.getRuntime().exec(solverCommand + path.resolve(cnfFileName));
+        Process p = Runtime.getRuntime().exec(solverCommand + cnfFileName);
+        System.out.println(solverCommand + cnfFileName);
         return readResult(p, qbfFormula);
     }
 
@@ -110,38 +110,43 @@ public class QuantomConnector {
 
         List<Integer> solutionIds = new ArrayList<>();
         try (BufferedReader buffer = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
-            String line = buffer.readLine();
-
-            System.out.println(line);
-
-            if(line == null)
-                throw new Exception("error, Unexpected output from QBF Solver");
-            if(line.split(" ")[2].equals("0"))
-                return new ArrayList<>();
+            String line = null;
 
             while ((line = buffer.readLine()) != null) {
 
                 System.out.println(line);
 
-                line = line.trim();
-                if(line.isEmpty())
-                    continue;
+                if(line.startsWith("s"))
+                {
+                    String res[] = line.split(" ");
+                    if(res[1].equals("SATISFIABLE"))
+                    {
+                        line = buffer.readLine();
+                        res = line.split(" ");
+                        for(int i = 1; i < res.length; i++)
+                            solutionIds.add(Integer.parseInt(res[i]));
 
-                Integer argId = Integer.parseInt(line.split(" ")[1]);
-                //if(argId > 0)
-                    solutionIds.add(Math.abs(argId));
+                        return qbfFormula.getArgumentsFor(solutionIds);
+
+                    }
+                    else
+                        return new ArrayList<>();
+
+                }
+
             }
         }
 
-        return qbfFormula.getArgumentsFor(solutionIds);
+        return null;
     }
 
     public void createCNFFile(PropositionalQuantifiedFormula qbfFormula, Path path) {
 
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(path))) {
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(path.toFile()), "us-ascii"))) {
 
             Conjunction formula = (Conjunction) qbfFormula.getPropositionalFormula();
-            writer.println("p cnf " + qbfFormula.getNbVariables() + " " + formula.size());
+            writer.write("p cnf " + qbfFormula.getNbVariables() + " " + formula.size() + "\n");
 
             //Quantificateurs
             for(int i = 0; i < qbfFormula.getDegree(); i++) {
@@ -151,33 +156,32 @@ public class QuantomConnector {
                     continue;
 
                 if(prefix.getType() == QuantifiedPrefix.QuantifiedPrefixType.EXIST) {
-                    writer.print("e");
+                    writer.write("e");
                 }
                 else {
-                    writer.print("a");
+                    writer.write("a");
                 }
                 for(Proposition p : prefix.getQuantifiedProposition()) {
-                    writer.printf(" " + qbfFormula.getIdentifier(p));
+                    writer.write(" " + qbfFormula.getIdentifier(p));
                 }
 
-                writer.println(" 0");
+                writer.write(" 0\n");
             }
 
             //Clauses
             for(int i = 0; i < formula.size(); i++) {
                 for(PropositionalFormula var : formula.get(i).getLiterals()) {
                     if(var instanceof Proposition) {
-                        writer.print(qbfFormula.getIdentifier((Proposition) var) + " ");
+                        writer.write(qbfFormula.getIdentifier((Proposition) var) + " ");
                     }
                     else {
-                        writer.print("-" + qbfFormula.getIdentifier((Negation) var) + " ");
+                        writer.write("-" + qbfFormula.getIdentifier((Negation) var) + " ");
                     }
                 }
-                if(i == formula.size() - 1)
-                    writer.print("0");
-                else
-                    writer.println("0");
+                writer.write("0\n");
             }
+
+            writer.close();
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -193,7 +197,7 @@ public class QuantomConnector {
             QuantomConnector qConnector = new QuantomConnector();
             qConnector.setAgentName("Agent1");
 
-            Collection<Argument> result = qConnector.isCredulouslyAcceptedWithControl(caf, "a");
+            Collection<Argument> result = qConnector.isCredulouslyAcceptedWithControl(caf, "SP0");
             System.out.println(result);
         }
         catch (Exception e)
