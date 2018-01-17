@@ -17,7 +17,9 @@ public class CafFormula {
 
     public final static String ACC_PROPOSITION = "ACC";
     public final static String ATTACK_PROPOSITION = "ATT";
+    public final static String UDATTACK_PROPOSITION = "UDATT";
     public final static String ON_PROPOSITION = "ON";
+    public final static Attack FAKE_ATTACK = new Attack();
 
     private BiMap<Argument, Proposition> onAcPropositions;
     private BiMap<Argument, Proposition> onUPropositions;
@@ -41,9 +43,22 @@ public class CafFormula {
     }
 
     public void addAccFor(Argument a, Attack udAtt) {
-        if(!accPropositions.containsKey(udAtt))
+        Proposition p;
+
+        if(udAtt == null) {
+            udAtt = FAKE_ATTACK;
+            p = new Proposition(ACC_PROPOSITION + a.getName() + "_" + UDATTACK_PROPOSITION + "_FAKE");
+        }
+        else {
+            Argument[] args = udAtt.getArguments();
+            p = new Proposition(ACC_PROPOSITION + a.getName() + "_" + UDATTACK_PROPOSITION + "_" + args[0].getName() + args[1].getName());
+        }
+
+        if(!accPropositions.containsKey(udAtt)) {
             accPropositions.put(udAtt, HashBiMap.create());
-        accPropositions.get(a).put(a, new Proposition(ACC_PROPOSITION + a.getName()));
+        }
+
+        accPropositions.get(udAtt).put(a, p);
         shouldUpdateIdentifers = true;
     }
 
@@ -77,6 +92,14 @@ public class CafFormula {
 
     public Proposition getAttFor(Argument source, Argument target) {
         return attPropositions.get(new Pair<>(source, target));
+    }
+
+    public Proposition getAccFor(Argument arg, Attack ua) {
+        if(ua == null)
+            ua = FAKE_ATTACK;
+        if(accPropositions.containsKey(ua))
+            return accPropositions.get(ua).get(arg);
+        return null;
     }
 
     public Collection<Proposition> getACCsFor(Argument arg) {
@@ -204,15 +227,18 @@ public class CafFormula {
                 );
     }
 
+    public boolean isOnId(Integer i) {
+        return onAcPropositions.inverse().containsKey(identifiers.inverse().get(i));
+    }
+
     public Collection<Argument> getArgumentsFor(List<Integer> ids) {
         List<Argument> correspondingArguments = new ArrayList<>();
         for(Integer id: ids) {
-            if(isArgument(id))
-                correspondingArguments.add(
-                        accPropositions.values().stream()
-                                .filter(m -> m.inverse().containsKey(identifiers.inverse().get(id)))
-                                .findFirst().get().inverse().get(identifiers.inverse().get(id))
-                );
+            System.out.println(identifiers.inverse().get(id));
+            if(isOnId(id)) {
+                System.out.println("coucou");
+                correspondingArguments.add(onAcPropositions.inverse().get(id));
+            }
         }
         return correspondingArguments;
 

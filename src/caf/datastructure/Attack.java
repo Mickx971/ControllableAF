@@ -17,6 +17,10 @@ public class Attack {
         UNDIRECTED
     }
 
+    public Attack() {
+
+    }
+
     public Attack(Argument arg1, Argument arg2, Type type) {
         this.arg1 = arg1;
         this.arg2 = arg2;

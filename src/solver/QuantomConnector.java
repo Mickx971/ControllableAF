@@ -24,9 +24,13 @@ public class QuantomConnector {
 
     private final Path path;
     private String cnfFileName;
+    private String solverCommand;
 
     public QuantomConnector() {
         this.path = Paths.get(System.getProperty("user.dir"));
+        solverCommand = "depqbf --qdo ";
+        if(System.getProperty("os.name").toLowerCase().contains("mac"))
+            solverCommand += "--no-dynamic-nenofex ";
     }
 
     public void setAgentName(String agentName) {
@@ -77,7 +81,7 @@ public class QuantomConnector {
 
     private Collection<Argument> computePotentSet(PropositionalQuantifiedFormula qbfFormula) throws Exception {
         createCNFFile(qbfFormula, path.resolve(cnfFileName));
-        Process p = Runtime.getRuntime().exec("depqbf --qdo --no-dynamic-nenofex " + path.resolve(cnfFileName));
+        Process p = Runtime.getRuntime().exec(solverCommand + path.resolve(cnfFileName));
         return readResult(p, qbfFormula);
     }
 
@@ -107,6 +111,9 @@ public class QuantomConnector {
         List<Integer> solutionIds = new ArrayList<>();
         try (BufferedReader buffer = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
             String line = buffer.readLine();
+
+            System.out.println(line);
+
             if(line == null)
                 throw new Exception("error, Unexpected output from QBF Solver");
             if(line.split(" ")[2].equals("0"))
@@ -114,13 +121,15 @@ public class QuantomConnector {
 
             while ((line = buffer.readLine()) != null) {
 
+                System.out.println(line);
+
                 line = line.trim();
                 if(line.isEmpty())
                     continue;
 
                 Integer argId = Integer.parseInt(line.split(" ")[1]);
-                if(argId > 0)
-                    solutionIds.add(argId);
+                //if(argId > 0)
+                    solutionIds.add(Math.abs(argId));
             }
         }
 
@@ -176,12 +185,12 @@ public class QuantomConnector {
         CafGenerator g = new CafGenerator();
         Caf caf;
         try {
-            caf = g.parseCAF("caf2test.caf");
+            caf = g.parseCAF("caf1test.caf");
 
             QuantomConnector qConnector = new QuantomConnector();
             qConnector.setAgentName("Agent1");
 
-            Collection<Argument> result = qConnector.isCredulouslyAcceptedWithControl(caf, "SE1");
+            Collection<Argument> result = qConnector.isCredulouslyAcceptedWithControl(caf, "b");
             System.out.println(result);
         }
         catch (Exception e)

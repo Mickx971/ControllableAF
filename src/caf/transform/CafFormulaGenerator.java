@@ -21,15 +21,8 @@ public class CafFormulaGenerator {
 
     private Caf caf;
 
-    public CafFormula getStableSemanticFormula()
+    public Conjunction createStableSemanticFormula(CafFormula cafFormula, Attack udAtt)
     {
-        CafFormula cafFormula = new CafFormula();
-        caf.getArguments().forEach(a1 -> caf.getArguments().forEach(a2 -> cafFormula.addAttFor(a1, a2)));
-        caf.getUncertainAttacks().forEach(att -> cafFormula.setUAtt(att));
-        caf.getControlArguments().forEach(a -> cafFormula.addOnAcFor(a));
-        caf.getUncertainArguments().forEach(a -> cafFormula.addOnUFor(a));
-        caf.getArguments().forEach(a -> cafFormula.addAccFor(a));
-
         Conjunction stableFormula = new Conjunction();
         Conjunction conjunction;
 
@@ -52,11 +45,11 @@ public class CafFormulaGenerator {
                 if(!arg.equals(attacker))
                 {
                     conjunction.add((new Negation(cafFormula.getAttFor(attacker, arg)))
-                            .combineWithOr(new Negation(cafFormula.getAccFor(attacker))));
+                            .combineWithOr(new Negation(cafFormula.getAccFor(attacker, udAtt))));
                 }
             }
 
-            Proposition acc = cafFormula.getAccFor(arg);
+            Proposition acc = cafFormula.getAccFor(arg, udAtt);
 
             stableFormula.add((new Negation(acc)).combineWithOr(conjunction));
             stableFormula.add((new Negation(conjunction)).combineWithOr(acc));
@@ -92,72 +85,63 @@ public class CafFormulaGenerator {
             })
         );
 
-        cafFormula.setFormula(stableFormula);
+        return stableFormula;
+    }
+
+    public CafFormula createCafFormula() {
+        CafFormula cafFormula = new CafFormula();
+        caf.getArguments().forEach(a1 -> caf.getArguments().forEach(a2 -> cafFormula.addAttFor(a1, a2)));
+        caf.getUncertainAttacks().forEach(att -> cafFormula.setUAtt(att));
+        caf.getControlArguments().forEach(a -> cafFormula.addOnAcFor(a));
+        caf.getUncertainArguments().forEach(a -> cafFormula.addOnUFor(a));
+
+        if(caf.getUndirectedAttacks().isEmpty()) {
+            caf.getArguments().forEach(arg -> cafFormula.addAccFor(arg, null));
+        }
+        else {
+            caf.getUndirectedAttacks().forEach(
+                    ua -> caf.getArguments().forEach(arg -> cafFormula.addAccFor(arg, ua))
+            );
+        }
 
         return cafFormula;
     }
 
-    public CafFormula getSkepticalAcceptanceFormula(Collection<Argument> arguments)
+    public CafFormula addSkepticalAcceptanceFormula(CafFormula cafFormula, Attack ua, Collection<Argument> arguments)
     {
-        CafFormula cafFormula = getStableSemanticFormula();
-        Conjunction conjunction = new Conjunction();
-        arguments.forEach(t-> conjunction.add(cafFormula.getAccFor(t)));
-        cafFormula.setFormula(new Negation(cafFormula.getFormula()).combineWithOr(conjunction));
+        Conjunction formula = createStableSemanticFormula(cafFormula, ua);
+        arguments.forEach(t-> formula.add(cafFormula.getAccFor(t, ua)));
+        if(cafFormula.getFormula() == null)
+            cafFormula.setFormula(formula);
+        else
+            cafFormula.setFormula(new Negation(cafFormula.getFormula()).combineWithOr(formula));
         return cafFormula;
     }
 
-    public CafFormula getCredulousAcceptanceFormula(Collection<Argument> arguments)
+    public CafFormula addCredulousAcceptanceFormula(CafFormula cafFormula, Attack ua, Collection<Argument> arguments)
     {
-        CafFormula cafFormula = getStableSemanticFormula();
-        Conjunction conjunction = new Conjunction();
-        arguments.forEach(t-> conjunction.add(cafFormula.getAccFor(t)));
-        cafFormula.setFormula(cafFormula.getFormula().combineWithAnd(conjunction));
+        Conjunction formula = createStableSemanticFormula(cafFormula, ua);
+        arguments.forEach(t-> formula.add(cafFormula.getAccFor(t, ua)));
+        if(cafFormula.getFormula() == null)
+            cafFormula.setFormula(formula);
+        else
+            cafFormula.setFormula(cafFormula.getFormula().combineWithAnd(formula));
         return cafFormula;
     }
 
     public CafFormula encodeCredulousFormulaForQBF(Collection<Argument> arguments)
     {
-        CafFormula cafFormula = getCredulousAcceptanceFormula(arguments);
-        PropositionalFormula formula = cafFormula.getFormula();
-        Conjunction credulousAcceptance = new Conjunction();
-        Collection<Attack> undirectedAttacks = caf.getUndirectedAttacks();
-
-        if(undirectedAttacks.isEmpty())
-            return TseitinTransformation.toCNF(cafFormula);
-
-        for(Attack ua: undirectedAttacks)
-        {
-            Argument[] args = ua.getArguments();
-            Proposition att1 = cafFormula.getAttFor(args[0], args[1]);
-            Proposition att2 = cafFormula.getAttFor(args[1], args[0]);
-            Disjunction d = new Disjunction();
-
-            Conjunction temp = new Conjunction();
-            temp.add(new Negation(att1));
-            temp.add(att2);
-            temp.add(formula);
-            d.add(temp);
-
-            temp = new Conjunction();
-            temp.add(att1);
-            temp.add(new Negation(att2));
-            temp.add(formula);
-            d.add(temp);
-
-            temp = new Conjunction();
-            temp.add(att1);
-            temp.add(att2);
-            temp.add(formula);
-            d.add(temp);
-
-            credulousAcceptance.add(d);
+        CafFormula cafFormula = createCafFormula();
+        if(caf.getUndirectedAttacks().isEmpty()) {
+            addCredulousAcceptanceFormula(cafFormula, null, arguments);
         }
-
-
-        cafFormula.setFormula(credulousAcceptance);
-
+        else {
+            for (Attack ua : caf.getUndirectedAttacks()) {
+                addCredulousAcceptanceFormula(cafFormula, ua, arguments);
+            }
+        }
+        System.out.println(cafFormula.getFormula());
         return TseitinTransformation.toCNF(cafFormula);
-
     }
 
     public PropositionalQuantifiedFormula encodeCredulousQBFWithControl(Collection<Argument> arguments)
@@ -209,14 +193,13 @@ public class CafFormulaGenerator {
         CafGenerator g = new CafGenerator();
         Caf caf;
         try {
-            caf = g.parseCAF("/media/ider/disque local/workSpace" +
-                    "/java/ControllableAF/caf1test.caf");
+            caf = g.parseCAF("caf2test.caf");
 
             CafFormulaGenerator formulaGenerator = new CafFormulaGenerator();
             formulaGenerator.setCaf(caf);
 
             try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream("/media/ider/disque local/workSpace/java/ControllableAF/caf2017.txt"), "utf-8"))) {
+                    new FileOutputStream("caf2017.txt"), "utf-8"))) {
                 writer.write(formulaGenerator.encodeCredulousFormulaForQBF(
                         formulaGenerator.getCaf().getFixedArguments()
                 ).getFormula().toString());
