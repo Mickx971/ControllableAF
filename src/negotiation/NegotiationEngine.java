@@ -73,7 +73,7 @@ public class NegotiationEngine {
         }
         else {
             Collection<caf.datastructure.Argument> potentSet = caf.computePSA(practicalArgument);
-            if(potentSet != null) {
+            if(potentSet != null && !potentSet.isEmpty()) {
                 proposition.setJustificationArguments(
                     potentSet.stream().map(
                             arg -> new Argument(arg.getName())

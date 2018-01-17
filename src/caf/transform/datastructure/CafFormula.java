@@ -245,7 +245,7 @@ public class CafFormula {
         List<Argument> correspondingArguments = new ArrayList<>();
         for(Integer id: ids) {
             if(isOnId(id)) {
-                correspondingArguments.add(onAcPropositions.inverse().get(id));
+                correspondingArguments.add(onAcPropositions.inverse().get(identifiers.inverse().get(id)));
             }
         }
         return correspondingArguments;
