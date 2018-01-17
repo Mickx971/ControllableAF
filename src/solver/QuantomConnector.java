@@ -164,8 +164,8 @@ public class QuantomConnector {
             }
 
             //Clauses
-            for(PropositionalFormula clause : formula) {
-                for(PropositionalFormula var : clause.getLiterals()) {
+            for(int i = 0; i < formula.size(); i++) {
+                for(PropositionalFormula var : formula.get(i).getLiterals()) {
                     if(var instanceof Proposition) {
                         writer.print(qbfFormula.getIdentifier((Proposition) var) + " ");
                     }
@@ -173,7 +173,10 @@ public class QuantomConnector {
                         writer.print("-" + qbfFormula.getIdentifier((Negation) var) + " ");
                     }
                 }
-                writer.println("0");
+                if(i == formula.size() - 1)
+                    writer.print("0");
+                else
+                    writer.println("0");
             }
         }
         catch (IOException e) {
@@ -185,12 +188,12 @@ public class QuantomConnector {
         CafGenerator g = new CafGenerator();
         Caf caf;
         try {
-            caf = g.parseCAF("caf1test.caf");
+            caf = g.parseCAF("caf1.caf");
 
             QuantomConnector qConnector = new QuantomConnector();
             qConnector.setAgentName("Agent1");
 
-            Collection<Argument> result = qConnector.isCredulouslyAcceptedWithControl(caf, "b");
+            Collection<Argument> result = qConnector.isCredulouslyAcceptedWithControl(caf, "a");
             System.out.println(result);
         }
         catch (Exception e)

@@ -146,6 +146,16 @@ public class CafFormula {
         return fakeVariables;
     }
 
+    public Set<Proposition> getAllVariables() {
+        Set<Proposition> all = new HashSet<>();
+        all.addAll(getFakeVariables());
+        all.addAll(getAllAcc());
+        all.addAll(getAllAtt());
+        all.addAll(getAllOnAc());
+        all.addAll(getAllOnU());
+        return all;
+    }
+
     public int getIdentifier(Proposition var) {
         if(shouldUpdateIdentifers) {
             updateIdentifiers();
@@ -243,5 +253,4 @@ public class CafFormula {
         return correspondingArguments;
 
     }
-
 }

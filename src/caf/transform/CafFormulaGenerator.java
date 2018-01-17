@@ -168,7 +168,11 @@ public class CafFormulaGenerator {
         onUAndAttPrefix.addAll(cafFormula.getAllUAtt());
 
         QuantifiedPrefix accPrefix = new ExistQuantifiedPrefix();
-        accPrefix.addAll(cafFormula.getAllAcc());
+        Collection<Proposition> all = cafFormula.getAllVariables();
+        all.removeAll(cafFormula.getAllOnAc());
+        all.removeAll(cafFormula.getAllOnU());
+        all.removeAll(cafFormula.getAllUAtt());
+        accPrefix.addAll(all);
 
         if(withControl) {
             credulousQbf.addQuantifiedPrefix(onAcPrefix);
