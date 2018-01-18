@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class QuantomConnector {
 
     private final Path path;
-    private String cnfFileName;
+    private String cnfFileName = "tempcaf.cnf";
     private String solverCommand;
 
     public QuantomConnector() {
@@ -198,13 +198,15 @@ public class QuantomConnector {
         CafGenerator g = new CafGenerator();
         Caf caf;
         try {
-            caf = g.parseCAF("caf1.caf");
+            caf = g.parseCAF("tempcaf.caf");
 
-            QuantomConnector qConnector = new QuantomConnector();
-            qConnector.setAgentName("Agent1");
-
-            Collection<Argument> result = qConnector.isCredulouslyAcceptedWithControl(caf, "SP0");
-            System.out.println(result);
+            System.out.println(caf.argumentIsCredulouslyAcceptedWithoutControl("SP0"));
+//            QuantomConnector qConnector = new QuantomConnector();
+//            qConnector.setAgentName("negotiator1");
+//
+//
+//            Collection<Argument> result = qConnector.isCredulouslyAcceptedWithControl(caf, "SP0");
+//            System.out.println(result);
         }
         catch (Exception e)
         {

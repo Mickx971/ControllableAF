@@ -155,6 +155,7 @@ public class CafGenerator {
         List<caf.datastructure.Argument> otherArgumentsThanControl =
                 new ArrayList<>(caf.getFixedArguments());
         otherArgumentsThanControl.addAll(caf.getUncertainArguments());
+
         //random generation of attacks from c to u and f
         for(Pair<String, String> attack: generateRandomAttacks(caf.getControlArguments(),
                 otherArgumentsThanControl, cafConfig.getDensityOfControlAttacks()))

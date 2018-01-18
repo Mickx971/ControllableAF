@@ -137,6 +137,7 @@ public class NegotiationEngine {
     }
 
     public void update(Collection<Argument> justificationArguments, Collection<Attack> justificationAttacks) throws Exception {
+        System.out.println("before update: "+ caf);
         for(Argument arg : justificationArguments) {
             if(caf.hasArgument(arg.getName()))
                 caf.setArgumentCertain(arg.getName());

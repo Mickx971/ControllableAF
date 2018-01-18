@@ -180,6 +180,7 @@ public class Caf {
     public boolean argumentIsCredulouslyAcceptedWithoutControl(String argName) throws Exception {
         System.out.println("argumentIsCredulouslyAcceptedWithoutControl");
         Caf tempCaf = createTempCaf(false);
+        System.out.println("temp caf\n" + tempCaf);
         if(tempCaf.hasArgument(argName))
             return qConnector.isCredulouslyAcceptedWithoutControl(tempCaf, argName);
         else
@@ -192,7 +193,7 @@ public class Caf {
         getUncertainArguments().stream().forEach(arg -> tempCaf.addUncertainArgument(arg.getName()));
 
         if(withControl) {
-            getControlArguments().stream().forEach(arg -> tempCaf.addUncertainArgument(arg.getName()));
+            getControlArguments().stream().forEach(arg -> tempCaf.addControlArgument(arg.getName()));
         }
 
         for(Attack att: getAttacks()) {
