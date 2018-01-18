@@ -16,6 +16,8 @@ public class NegotiationMessage {
     private Argument practicalArgument;
     private Collection<Argument> justificationArguments;
     private Collection<Attack> justificationAttacks;
+    private String sender;
+
 
     public enum MessageType {
         ACCEPT, REJECT, NOTHING, NOTHING_TOO, GIVE_TOKEN, OFFER
@@ -35,7 +37,9 @@ public class NegotiationMessage {
 
     public static NegotiationMessage getNegotiationMessage(ACLMessage message) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(message.getContent(), NegotiationMessage.class);
+        NegotiationMessage negMess = objectMapper.readValue(message.getContent(), NegotiationMessage.class);
+        negMess.setSender(message.getSender().getName());
+        return negMess;
     }
 
     public ACLMessage toACLMessage() throws Exception{
@@ -84,25 +88,35 @@ public class NegotiationMessage {
     public void setJustificationAttacks(Collection<Attack> attacks) {
         this.justificationAttacks = attacks;
     }
-    
-    public void print(String agent) {
-        System.out.println("Message received by agent " + agent);
-        System.out.println("type      : " + type);
-        System.out.println("offer     : " + type);
-        System.out.println("arg       : " + practicalArgument);
+
+    public void setSender(String sender) {
+        this.sender = sender;
+    }
+
+    public void print() throws Exception {
+        System.out.println(toString());
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Message: \n");
+        sb.append("Sender: " + sender + "\n");
+        sb.append("Type: " + type + "\n");
+        sb.append("Offer: " + offer + "\n");
+        sb.append("arg: " + practicalArgument + "\n");
         if(justificationArguments != null && !justificationArguments.isEmpty()) {
-            System.out.println("reason arg :");
+            sb.append("reason arg :\n");
             for (Argument arg : justificationArguments) {
-                System.out.println("\t" + arg);
+                sb.append("\t" + arg + "\n");
             }
         }
         if(justificationAttacks != null && !justificationAttacks.isEmpty()) {
-            System.out.println("reason att :");
+            sb.append("reason att :\n");
             for (Attack att : justificationAttacks) {
-                System.out.println("\t" + att);
+                sb.append("\t" + att + "\n");
             }
         }
-        System.out.println("\n");
+        return sb.toString();
     }
 
     public static void main(String args[])

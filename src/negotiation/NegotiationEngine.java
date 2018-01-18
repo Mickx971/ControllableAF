@@ -35,13 +35,8 @@ public class NegotiationEngine {
             theory = generation.getT2();
 
         CafGenerator cg = new CafGenerator();
-        caf = cg.parseCAF(NegotiationAgent.cafFileNamePrefix +
-        communicator.getAgent().getId() + ".caf");
-    }
-
-    public void setCaf(Caf caf) {
+        caf = cg.parseCAF(NegotiationAgent.cafFileNamePrefix + communicator.getAgent().getId() + ".caf");
         caf.setAgentName(agent.getName());
-        this.caf = caf;
     }
 
     public void chooseBestOffer() throws Exception {

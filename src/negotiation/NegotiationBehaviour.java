@@ -1,6 +1,7 @@
 package negotiation;
 
 import Agents.NegotiationAgent;
+import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import theory.datastructure.Offer;
@@ -20,19 +21,23 @@ public class NegotiationBehaviour extends OneShotBehaviour{
     @Override
     public void action() {
         try {
-            agent.doWait(5000);
             if(agent.isStartsNegotiation()){
+                System.out.println(agent.getName() + " starts negotiation");
+                agent.doWait(1000);
                 negotiationEngine.chooseBestOffer();
-                System.out.println("starts negotiation: " + agent.getName());
+            }
+            else {
+                System.out.println(agent.getName() + " waits for offer");
             }
             END: while (true) {
-                System.out.println("main loop : " + agent.getName());
-                NegotiationMessage message = getMessage(TIMEOUT);
+                NegotiationMessage message = getMessage();
 
-                if(message == null)
-                    throw new Exception("Message received is null");
+                if(message == null) {
+                    agent.doWait(100);
+                    continue;
+                }
 
-                message.print(agent.getName());
+                message.print();
 
                 switch (message.getType()) {
                     case REJECT:
@@ -66,19 +71,17 @@ public class NegotiationBehaviour extends OneShotBehaviour{
         System.out.println("agent " + agent.getName() + " shutdown.");
     }
 
-    public NegotiationMessage getMessage(long timeout) throws Exception {
-        ACLMessage message = agent.blockingReceive(timeout);
-        while(!message.getSender().equals(agent.getOpponent()))
-            message = agent.blockingReceive(timeout);
-
-        System.out.println(message);
-        if(message == null)
-            return null;
+    public NegotiationMessage getMessage() throws Exception {
+        ACLMessage message;
+        do {
+            message = agent.receive();
+            if (message == null)
+                return null;
+        } while (!message.getSender().getName().equals(agent.getOpponent().getName()));
         return NegotiationMessage.getNegotiationMessage(message);
     }
 
     public void sendMessage(NegotiationMessage message) throws Exception {
-        System.out.println(message);
         ACLMessage aclMessage = message.toACLMessage();
         aclMessage.addReceiver(agent.getOpponent());
         agent.send(aclMessage);

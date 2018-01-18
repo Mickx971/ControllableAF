@@ -36,7 +36,7 @@ public class Main {
             Object[] agent2Arguments = {new AID("negotiator1", AID.ISLOCALNAME), false,
                     2};
 
-            ac = mc.createNewAgent("negociator1",
+            ac = mc.createNewAgent("negotiator1",
                     NegotiationAgent.class.getName(), agent1Arguments);
             ac.start();
 
