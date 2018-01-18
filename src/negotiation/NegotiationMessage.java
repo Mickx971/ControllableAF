@@ -103,17 +103,17 @@ public class NegotiationMessage {
         sb.append("Sender: " + sender + "\n");
         sb.append("Type: " + type + "\n");
         sb.append("Offer: " + offer + "\n");
-        sb.append("arg: " + practicalArgument + "\n");
+        sb.append("arg: " + (practicalArgument==null ? null:practicalArgument.getName()) + "\n");
         if(justificationArguments != null && !justificationArguments.isEmpty()) {
             sb.append("reason arg :\n");
             for (Argument arg : justificationArguments) {
-                sb.append("\t" + arg + "\n");
+                sb.append("\t" + arg.getName() + "\n");
             }
         }
         if(justificationAttacks != null && !justificationAttacks.isEmpty()) {
             sb.append("reason att :\n");
             for (Attack att : justificationAttacks) {
-                sb.append("\t" + att + "\n");
+                sb.append("\t(" + att.getSource().getName() + att.getTarget().getName() + ")\n");
             }
         }
         return sb.toString();

@@ -106,7 +106,9 @@ public class TheoryGenerator {
             lineNumber++;
         }
 
-        generation.setT1(parseToTheory(theory, beginningLine));
+        Theory t = parseToTheory(theory, beginningLine);
+        t.addTheory(generation.getSharedTheory());
+        generation.setT1(t);
 
         beginningLine = lineNumber;
         theory = new ArrayList<>();
@@ -115,8 +117,9 @@ public class TheoryGenerator {
             theory.add(lines.get(lineNumber));
             lineNumber++;
         }
-
-        generation.setT2(parseToTheory(theory, beginningLine));
+        t = parseToTheory(theory, beginningLine);
+        t.addTheory(generation.getSharedTheory());
+        generation.setT2(t);
 
         return generation;
     }

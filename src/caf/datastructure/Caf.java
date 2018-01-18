@@ -153,8 +153,8 @@ public class Caf {
     public Optional<Attack> getUndirectedAttack(String arg1, String arg2) {
         return getUndirectedAttacks().stream().filter(att -> {
             Argument[] arguments = att.getArguments();
-            return arguments[0].equals(arg1) && arguments[1].equals(arg2) ||
-                    arguments[1].equals(arg1) && arguments[0].equals(arg2);
+            return arguments[0].getName().equals(arg1) && arguments[1].getName().equals(arg2) ||
+                    arguments[1].getName().equals(arg1) && arguments[0].getName().equals(arg2);
         }).findFirst();
     }
 
@@ -170,13 +170,20 @@ public class Caf {
 
     public Collection<Argument> computePSA(String practicalArgument) throws Exception {
         Caf tempCaf = createTempCaf(true);
-        return qConnector.isCredulouslyAcceptedWithControl(tempCaf, practicalArgument)
+        if(tempCaf.hasArgument(practicalArgument))
+            return qConnector.isCredulouslyAcceptedWithControl(tempCaf, practicalArgument)
                 .stream().map(arg -> getArgument(arg.getName())).collect(Collectors.toSet());
+        else
+            return new HashSet<>();
     }
 
     public boolean argumentIsCredulouslyAcceptedWithoutControl(String argName) throws Exception {
+        System.out.println("argumentIsCredulouslyAcceptedWithoutControl");
         Caf tempCaf = createTempCaf(false);
-        return qConnector.isCredulouslyAcceptedWithoutControl(tempCaf, argName);
+        if(tempCaf.hasArgument(argName))
+            return qConnector.isCredulouslyAcceptedWithoutControl(tempCaf, argName);
+        else
+            return false;
     }
 
     private Caf createTempCaf(boolean withControl) {

@@ -133,12 +133,12 @@ public class Theory{
             return !ext.isEmpty();
         }).findFirst();
 
+
         if(optExt.isPresent()) {
             Extension ext = optExt.get();
-            ext.retainAll(practicalArguments);
             Optional<Argument> optArg = ext.stream().findFirst();
             for(Map.Entry<Offer, Set<String>> entry: offers.entrySet()) {
-                if(entry.getValue().contains(optArg.get())) {
+                if(entry.getValue().contains(optArg.get().getName())) {
                     return entry.getKey();
                 }
             }
@@ -150,6 +150,8 @@ public class Theory{
     public boolean argumentIsCredulouslyAccepted(Communication.datastructure.Argument practicalArgument) {
         StableReasoner stableReasoner = new StableReasoner(dungTheory);
         Argument dungArg = new Argument(practicalArgument.getName());
+        System.out.println("ageument is credulousely accepted extensions" + stableReasoner.getExtensions());
+
         return stableReasoner.getExtensions().stream().anyMatch(ext -> ext.contains(dungArg));
     }
 
@@ -280,5 +282,20 @@ public class Theory{
     public boolean contains(String arg)
     {
         return dungTheory.contains(new Argument(arg));
+    }
+
+    public void addTheory(Theory t)
+    {
+        for(Argument ea: t.getEpistemicArguments())
+            addEpistemicArgument(ea.getName());
+
+        for(Argument ca: t.getControlArguments())
+            addControlArgument(ca.getName());
+
+        for(Argument pa: t.getPracticalArguments())
+            addPracticalArgument(pa.getName());
+        for(Attack att: t.getDungTheory().getAttacks())
+            addAttack(att.getAttacker().getName(), att.getAttacked().getName());
+
     }
 }

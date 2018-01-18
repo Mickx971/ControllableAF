@@ -7,18 +7,8 @@ import jade.core.Runtime;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
-import net.sf.tweety.arg.dung.DungTheory;
-import net.sf.tweety.arg.dung.StableReasoner;
-import net.sf.tweety.arg.dung.syntax.Argument;
-import net.sf.tweety.arg.dung.syntax.Attack;
-import net.sf.tweety.commons.Interpretation;
-import net.sf.tweety.logics.pl.sat.LingelingSolver;
 import net.sf.tweety.logics.pl.sat.Sat4jSolver;
 import net.sf.tweety.logics.pl.sat.SatSolver;
-import net.sf.tweety.logics.pl.syntax.PropositionalFormula;
-import theory.generator.TheoryGenerator;
-
-import java.util.Collection;
 
 public class Main {
 

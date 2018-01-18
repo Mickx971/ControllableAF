@@ -36,12 +36,12 @@ public class NegotiationEngine {
 
         CafGenerator cg = new CafGenerator();
         caf = cg.parseCAF(NegotiationAgent.cafFileNamePrefix + communicator.getAgent().getId() + ".caf");
-        caf.setAgentName(agent.getName());
+        caf.setAgentName(agent.getLocalName());
     }
 
     public void chooseBestOffer() throws Exception {
         Offer offer = theory.getNextOffer();
-        System.out.println(offer);
+        System.out.println("nextOffer: " + offer);
         if(offer != null) {
             chooseSupportArg(offer);
         }
@@ -93,6 +93,7 @@ public class NegotiationEngine {
 
     private void chooseSupportArg(Offer offer) throws Exception {
         String support = theory.getSupportForOffer(offer);
+        System.out.println(support);
         if(support != null) {
             defendOffer(offer, support);
         }
@@ -103,7 +104,8 @@ public class NegotiationEngine {
     }
 
     public void decideUponOffer(NegotiationMessage message) throws Exception {
-        if(!message.getJustificationArguments().isEmpty()) {
+        if(message.getJustificationArguments()!= null &&
+                !message.getJustificationArguments().isEmpty()) {
             theory.update(message.getJustificationArguments(), message.getJustificationAttacks());
             update(message.getJustificationArguments(), message.getJustificationAttacks());
         }
@@ -140,16 +142,18 @@ public class NegotiationEngine {
         }
         for(Attack att : justificationAttacks) {
             Optional<caf.datastructure.Attack> uAtt = caf.getUncertainAttack(att.getSource().getName(), att.getTarget().getName());
-
             if(uAtt.isPresent())
                 uAtt.get().setCertain();
 
             Optional<caf.datastructure.Attack> udAtt = caf.getUndirectedAttack(att.getSource().getName(), att.getTarget().getName());
+            System.out.println("udatt is present " + udAtt.isPresent());
             if(udAtt.isPresent()) {
                 caf.removeAttack(udAtt.get());
                 caf.addAttack(att.getSource().getName(), att.getTarget().getName());
             }
         }
+
+        System.out.println("after update: \n" +caf );
     }
 
     public boolean hasOffer() {

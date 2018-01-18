@@ -1,36 +1,71 @@
 #sharedTheory
-e_arg(se0).
-p_arg(sp0).
+e_arg(SE0).
+p_arg(SP0).
 
 #T1
-e_arg(ae0).
-e_arg(ae1).
-c_arg(ac0).
-c_arg(ac1).
-p_arg(ap0).
-p_arg(ap1).
-
-att(ae0,ap0).
-att(ae1,ap1).
-att(ac0,se0).
-att(ac1,ae1).
-support(ap0,o0).
-support(sp0,o0).
-support(ap1,o1).
+e_arg(AE4).
+e_arg(AE1).
+e_arg(AE2).
+e_arg(SE0).
+e_arg(AE3).
+p_arg(SP0).
+p_arg(AP1).
+p_arg(AP2).
+p_arg(AP3).
+p_arg(AP4).
+c_arg(AC2).
+c_arg(AC3).
+c_arg(AC0).
+c_arg(AC1).
+att(AE2, AP2).
+att(AP4, AP1).
+att(AC3, SP0).
+att(AC3, AE1).
+att(AC1, AP1).
+att(AP2, AP1).
+att(AE3, AE2).
+att(AE4, AP4).
+att(AE4, AP3).
+att(AC2, AP3).
+att(AC2, AP1).
+att(AC3, AP2).
+att(AC1, AE3).
+support(SP0,O0).
+support(AP4,O1).
+support(AP3,O2).
+support(AP1,O3).
+support(AP2,O3).
 
 #T2
-e_arg(be0).
-e_arg(be1).
-c_arg(bc0).
-c_arg(bc1).
-p_arg(bp0).
-p_arg(bp1).
-
-att(be0,bp0).
-att(be1,bp1).
-att(bc0,se0).
-att(bc1,be1).
-support(bp0,o0).
-support(bp0,o0).
-support(bp1,o1).
-
+e_arg(BE4).
+e_arg(BE3).
+e_arg(BE2).
+e_arg(SE0).
+e_arg(BE1).
+p_arg(SP0).
+p_arg(BP1).
+p_arg(BP3).
+p_arg(BP2).
+p_arg(BP4).
+c_arg(BC2).
+c_arg(BC1).
+c_arg(BC3).
+c_arg(BC0).
+att(SP0, BP2).
+att(SP0, BP3).
+att(BE2, BP1).
+att(BC1, BE3).
+att(BE3, BE4).
+att(BP3, BP1).
+att(BC0, BE2).
+att(BC0, BE3).
+att(BE2, BE4).
+att(BC0, SP0).
+att(BC3, SE0).
+att(BC1, BC0).
+att(BC1, BP4).
+support(SP0,O0).
+support(BP2,O0).
+support(BP4,O1).
+support(BP3,O2).
+support(BP1,O3).
