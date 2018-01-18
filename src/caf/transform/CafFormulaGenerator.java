@@ -178,6 +178,8 @@ public class CafFormulaGenerator {
             credulousQbf.addQuantifiedPrefix(onAcPrefix);
         }
 
+        System.out.println(onUAndAttPrefix.getQuantifiedProposition());
+        System.out.println(accPrefix.getQuantifiedProposition());
         credulousQbf.addQuantifiedPrefix(onUAndAttPrefix);
         credulousQbf.addQuantifiedPrefix(accPrefix);
         credulousQbf.setCafFormula(cafFormula);

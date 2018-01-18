@@ -68,7 +68,6 @@ public class QuantomConnector {
             throw new Exception("Unknown argument in caf named: " + argName);
 
         PropositionalQuantifiedFormula qbfFormula = formulaGen.encodeCredulousQBFWithoutControl(Arrays.asList(new Argument[]{theta}));
-
         PropositionalFormula formula = qbfFormula.getCafFormula().getFormula();
         if(formula instanceof Tautology) {
             return true;
@@ -201,12 +200,12 @@ public class QuantomConnector {
             caf = g.parseCAF("tempcaf.caf");
 
             System.out.println(caf.argumentIsCredulouslyAcceptedWithoutControl("SP0"));
-//            QuantomConnector qConnector = new QuantomConnector();
-//            qConnector.setAgentName("negotiator1");
-//
-//
-//            Collection<Argument> result = qConnector.isCredulouslyAcceptedWithControl(caf, "SP0");
-//            System.out.println(result);
+            QuantomConnector qConnector = new QuantomConnector();
+            qConnector.setAgentName("temp");
+
+
+            Collection<Argument> result = qConnector.isCredulouslyAcceptedWithControl(caf, "SP0");
+            System.out.println(result);
         }
         catch (Exception e)
         {

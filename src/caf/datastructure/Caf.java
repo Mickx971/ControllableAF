@@ -165,6 +165,7 @@ public class Caf {
                 .filter(att -> !isControlArgument(att.getTarget().getName())
             ).collect(Collectors.toSet()));
         }
+
         return attacks;
     }
 
@@ -178,9 +179,7 @@ public class Caf {
     }
 
     public boolean argumentIsCredulouslyAcceptedWithoutControl(String argName) throws Exception {
-        System.out.println("argumentIsCredulouslyAcceptedWithoutControl");
         Caf tempCaf = createTempCaf(false);
-        System.out.println("temp caf\n" + tempCaf);
         if(tempCaf.hasArgument(argName))
             return qConnector.isCredulouslyAcceptedWithoutControl(tempCaf, argName);
         else

@@ -113,7 +113,7 @@ public class NegotiationMessage {
         if(justificationAttacks != null && !justificationAttacks.isEmpty()) {
             sb.append("reason att :\n");
             for (Attack att : justificationAttacks) {
-                sb.append("\t(" + att.getSource().getName() + att.getTarget().getName() + ")\n");
+                sb.append("\t(" + att.getSource().getName() +", "+ att.getTarget().getName() + ")\n");
             }
         }
         return sb.toString();

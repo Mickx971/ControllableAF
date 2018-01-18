@@ -15,7 +15,7 @@ public class Attack {
 
     public Attack(caf.datastructure.Attack attack) {
         this.source = new Argument(attack.getSource());
-        this.target = new Argument(attack.getSource());
+        this.target = new Argument(attack.getTarget());
     }
 
     public Attack(net.sf.tweety.arg.dung.syntax.Attack att) {

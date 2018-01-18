@@ -1,10 +1,13 @@
 package caf.transform;
 
 import caf.transform.datastructure.CafFormula;
-import net.sf.tweety.commons.Formula;
+import net.sf.tweety.logics.pl.parser.PlParser;
 import net.sf.tweety.logics.pl.syntax.*;
 import org.apache.commons.lang.mutable.MutableInt;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -15,8 +18,11 @@ public class TseitinTransformation {
     public static CafFormula toCNF(CafFormula cafFormula) {
 
         Set<Proposition> newVariables = new HashSet<>();
+        System.out.println(__toCNF(cafFormula.getFormula().collapseAssociativeFormulas(), new MutableInt(0), newVariables));
         cafFormula.setFormula(
-                __toCNF(cafFormula.getFormula().collapseAssociativeFormulas(), new MutableInt(0), newVariables)
+               __toCNF(cafFormula.getFormula().collapseAssociativeFormulas(), new MutableInt(0), newVariables)
+                       .collapseAssociativeFormulas()
+                //cafFormula.getFormula().toCnf()
         );
 
         cafFormula.addFakeVariables(newVariables);
@@ -25,7 +31,7 @@ public class TseitinTransformation {
 
     public static PropositionalFormula toCNF(PropositionalFormula formula)
     {
-        return __toCNF(formula.collapseAssociativeFormulas(), new MutableInt(0), new HashSet<>());
+        return __toCNF(formula.collapseAssociativeFormulas(), new MutableInt(0), new HashSet<>()).collapseAssociativeFormulas();
     }
 
     private static PropositionalFormula __toCNF(PropositionalFormula formula,MutableInt count, Set<Proposition> newVariables)
@@ -60,6 +66,7 @@ public class TseitinTransformation {
                 condition.add(__toCNF(f, count, newVariables));
 
                 tseitinConjunction.addAll(condition.toCnf());
+
 
             }
             tseitinConjunction.add(additionalVariables);
@@ -97,11 +104,14 @@ public class TseitinTransformation {
         Proposition c = new Proposition("c");
         Proposition d = new Proposition("d");
         Proposition e = new Proposition("e");
-        Disjunction f = new Proposition("a").combineWithOr(new Proposition("a"));
-
-
-
-        System.out.println(f.getModels());
+        PropositionalFormula f = a.combineWithOr(b.combineWithAnd(c));
+        try {
+            PlParser pl = new PlParser();
+            f = pl.parseFormula(new BufferedReader(new FileReader("temp.formula")));
+            System.out.println(TseitinTransformation.toCNF(f));
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
 
         //System.out.println(g.get);
         //convertToCNF(e);

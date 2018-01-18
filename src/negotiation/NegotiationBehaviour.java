@@ -31,10 +31,15 @@ public class NegotiationBehaviour extends OneShotBehaviour{
             END: while (true) {
                 NegotiationMessage message = getMessage();
 
+
                 if(message == null) {
                     agent.doWait(100);
                     continue;
                 }
+                System.out.println("************************************************\n"
+                        +"************************************************\n"
+                        +"************************************************\n");
+                System.out.println(agent.getLocalName() + "is now reasoning");
 
                 //message.print();
 
@@ -46,9 +51,11 @@ public class NegotiationBehaviour extends OneShotBehaviour{
                     case GIVE_TOKEN:
                         negotiationEngine.chooseBestOffer();
                         break;
-                    case OFFER:
-                        negotiationEngine.decideUponOffer(message);
+                    case OFFER: {
+                        if(negotiationEngine.decideUponOffer(message))
+                            break END;
                         break;
+                    }
                     case NOTHING: {
                         if (negotiationEngine.hasOffer()) {
                             negotiationEngine.chooseBestOffer();
