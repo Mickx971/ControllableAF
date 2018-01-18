@@ -138,22 +138,33 @@ public class NegotiationEngine {
 
     public void update(Collection<Argument> justificationArguments, Collection<Attack> justificationAttacks) throws Exception {
         for(Argument arg : justificationArguments) {
-            caf.setArgumentCertain(arg.getName());
+            if(caf.hasArgument(arg.getName()))
+                caf.setArgumentCertain(arg.getName());
+            else
+                caf.addFixedArgument(arg.getName());
         }
+
         for(Attack att : justificationAttacks) {
             Optional<caf.datastructure.Attack> uAtt = caf.getUncertainAttack(att.getSource().getName(), att.getTarget().getName());
-            if(uAtt.isPresent())
+            if(uAtt.isPresent()) {
                 uAtt.get().setCertain();
+                continue;
+            }
 
             Optional<caf.datastructure.Attack> udAtt = caf.getUndirectedAttack(att.getSource().getName(), att.getTarget().getName());
-            System.out.println("udatt is present " + udAtt.isPresent());
             if(udAtt.isPresent()) {
                 caf.removeAttack(udAtt.get());
+                caf.addAttack(att.getSource().getName(), att.getTarget().getName());
+                continue;
+            }
+
+            Optional<caf.datastructure.Attack> a = caf.getAttack(att.getSource().getName(), att.getTarget().getName());
+            if(!a.isPresent()) {
                 caf.addAttack(att.getSource().getName(), att.getTarget().getName());
             }
         }
 
-        System.out.println("after update: \n" +caf );
+        System.out.println("after update: \n" + caf);
     }
 
     public boolean hasOffer() {
