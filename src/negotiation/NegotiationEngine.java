@@ -80,10 +80,7 @@ public class NegotiationEngine {
                         .map(a -> new Attack(a)).collect(Collectors.toSet())
                 );
 
-                System.out.println("proposition:{\n" +
-                        "justificationArguments:"+proposition.getJustificationArguments() +
-                        "\njustificationAttacks"+proposition.getJustificationAttacks() +
-                        "\n}");
+
                 communicator.sendMessage(proposition);
             }
             else {

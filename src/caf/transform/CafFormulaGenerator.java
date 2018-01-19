@@ -140,7 +140,6 @@ public class CafFormulaGenerator {
                 addCredulousAcceptanceFormula(cafFormula, ua, arguments);
             }
         }
-        System.out.println(cafFormula.getFormula());
         return TseitinTransformation.toCNF(cafFormula);
     }
 
@@ -178,8 +177,6 @@ public class CafFormulaGenerator {
             credulousQbf.addQuantifiedPrefix(onAcPrefix);
         }
 
-        System.out.println(onUAndAttPrefix.getQuantifiedProposition());
-        System.out.println(accPrefix.getQuantifiedProposition());
         credulousQbf.addQuantifiedPrefix(onUAndAttPrefix);
         credulousQbf.addQuantifiedPrefix(accPrefix);
         credulousQbf.setCafFormula(cafFormula);
@@ -210,7 +207,6 @@ public class CafFormulaGenerator {
                         formulaGenerator.getCaf().getFixedArguments()
                 ).getFormula().toString());
             }
-            System.out.println();
         }
         catch (Exception e)
         {

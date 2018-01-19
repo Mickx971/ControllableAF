@@ -18,7 +18,6 @@ public class TseitinTransformation {
     public static CafFormula toCNF(CafFormula cafFormula) {
 
         Set<Proposition> newVariables = new HashSet<>();
-        System.out.println(__toCNF(cafFormula.getFormula().collapseAssociativeFormulas(), new MutableInt(0), newVariables));
         cafFormula.setFormula(
                __toCNF(cafFormula.getFormula().collapseAssociativeFormulas(), new MutableInt(0), newVariables)
                        .collapseAssociativeFormulas()

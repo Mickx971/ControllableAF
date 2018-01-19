@@ -100,11 +100,9 @@ public class Theory{
     }
 
     public void removeOfferSupport(Offer offer, String argumentName) throws Exception {
-        System.out.println("offer " + offer.getName() + " " +offers.containsKey(offer) + " " + offers);
         if(offers.containsKey(offer)) {
             offers.get(offer).remove(argumentName);
-//            if(offers.get(offer).isEmpty())
-//                offers.remove(offer);
+
         }
         else throw new Exception("Unknown offer: " + offer.getName());
     }
@@ -122,7 +120,6 @@ public class Theory{
 
     public void removeOffer(Offer offer) {
         for(String support : offers.get(offer)) {
-            System.out.println("on est dans la boucle "   + support);
             Argument practicalArgument = new Argument(support);
             dungTheory.remove(practicalArgument);
             practicalArguments.remove(practicalArgument);
@@ -154,7 +151,6 @@ public class Theory{
     public boolean argumentIsCredulouslyAccepted(Communication.datastructure.Argument practicalArgument) {
         StableReasoner stableReasoner = new StableReasoner(dungTheory);
         Argument dungArg = new Argument(practicalArgument.getName());
-        System.out.println("ageument is credulousely accepted extensions" + stableReasoner.getExtensions());
 
         return stableReasoner.getExtensions().stream().anyMatch(ext -> ext.contains(dungArg));
     }

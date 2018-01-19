@@ -38,8 +38,8 @@ public class NegotiationBehaviour extends OneShotBehaviour{
                 }
                 System.out.println("************************************************\n"
                         +"************************************************\n"
-                        +"************************************************\n");
-                System.out.println(agent.getLocalName() + "is now reasoning");
+                        +"************************************************");
+                System.out.println(agent.getLocalName() + "  is now reasoning.");
 
                 //message.print();
 
