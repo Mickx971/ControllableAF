@@ -21,12 +21,12 @@ public class NegotiationBehaviour extends OneShotBehaviour{
     public void action() {
         try {
             if(agent.isStartsNegotiation()){
-                System.out.println(agent.getName() + " starts negotiation");
+                System.out.println("Negotiation starter: " + agent.getLocalName());
                 agent.doWait(1000);
                 negotiationEngine.chooseBestOffer();
             }
             else {
-                System.out.println(agent.getName() + " waits for offer");
+                System.out.println("# " + agent.getLocalName() + " waits for offer.");
             }
             END: while (true) {
                 NegotiationMessage message = getMessage();
@@ -36,12 +36,9 @@ public class NegotiationBehaviour extends OneShotBehaviour{
                     agent.doWait(100);
                     continue;
                 }
-                System.out.println("************************************************\n"
-                        +"************************************************\n"
-                        +"************************************************");
-                System.out.println(agent.getLocalName() + "  is now reasoning.");
 
-                //message.print();
+                message.print();
+                System.out.println("# " + agent.getLocalName() + " is now reasoning.\n");
 
                 switch (message.getType()) {
                     case REJECT:
@@ -74,7 +71,7 @@ public class NegotiationBehaviour extends OneShotBehaviour{
             e.printStackTrace();
         }
 
-        System.out.println("agent " + agent.getName() + " shutdown.");
+        System.out.println("# Agent " + agent.getLocalName() + " shutdown.");
     }
 
     public NegotiationMessage getMessage() throws Exception {
@@ -88,28 +85,24 @@ public class NegotiationBehaviour extends OneShotBehaviour{
     }
 
     public void sendMessage(NegotiationMessage message) throws Exception {
-        System.out.println(agent.getLocalName() + " sent message " + message);
         ACLMessage aclMessage = message.toACLMessage();
         aclMessage.addReceiver(agent.getOpponent());
         agent.send(aclMessage);
     }
 
     public void sendNothingToo() throws Exception {
-        System.out.println(agent.getLocalName() + " sent message nothing too");
         NegotiationMessage answer = new NegotiationMessage();
         answer.setType(NegotiationMessage.MessageType.NOTHING_TOO);
         sendMessage(answer);
     }
 
     public void sendGiveToken() throws Exception {
-        System.out.println(agent.getLocalName() + " sent message give_token");
         NegotiationMessage answer = new NegotiationMessage();
         answer.setType(NegotiationMessage.MessageType.GIVE_TOKEN);
         sendMessage(answer);
     }
 
     public void sendNothing() throws Exception {
-        System.out.println(agent.getLocalName() + " sent message nothing");
         NegotiationMessage answer = new NegotiationMessage();
         answer.setType(NegotiationMessage.MessageType.NOTHING);
         sendMessage(answer);

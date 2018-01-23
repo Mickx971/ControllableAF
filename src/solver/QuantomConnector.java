@@ -118,6 +118,7 @@ public class QuantomConnector {
 
                 if(line.startsWith("s"))
                 {
+                    System.out.println();
                     String res[] = line.split(" ");
 
                     if(res[1].equals("UNSATISFIABLE") || res[1].equals("UNKNOWN")) {

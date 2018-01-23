@@ -42,7 +42,6 @@ public class NegotiationEngine {
 
     public void chooseBestOffer() throws Exception {
         Offer offer = theory.getNextOffer();
-        System.out.println("nextOffer: " + offer);
         if(offer != null) {
             chooseSupportArg(offer);
         }
@@ -92,7 +91,6 @@ public class NegotiationEngine {
 
     private void chooseSupportArg(Offer offer) throws Exception {
         String support = theory.getSupportForOffer(offer);
-        System.out.println(support);
         if(support != null) {
             defendOffer(offer, support);
         }
