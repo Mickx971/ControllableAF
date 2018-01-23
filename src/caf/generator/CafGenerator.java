@@ -115,7 +115,7 @@ public class CafGenerator {
         return caf;
     }
 
-    private void configureCaf(Caf outputCaf, CafConfiguration conf, Caf inputAf, LinkedList<Argument> allArg) {
+    private void configureCaf(Caf caf, CafConfiguration conf, Caf inputAf, LinkedList<Argument> allArg) {
 
         int fixedArgPart = (int)((conf.FixedPartRate/100) * allArg.size());
         int uncertainArgPart = (int)((conf.UncertainPartRate/100) * inputAf.getArguments().size());
@@ -129,20 +129,20 @@ public class CafGenerator {
 
         Collections.shuffle(allArg);
         for(int i = 0; i < fixedArgPart; i++) {
-            outputCaf.addFixedArgument(allArg.removeFirst().getName());
+            caf.addFixedArgument(allArg.removeFirst().getName());
         }
 
         Collections.shuffle(allArg);
         for(int i = 0; i < uncertainArgPart; i++) {
-            outputCaf.addUncertainArgument(allArg.removeFirst().getName());
+            caf.addUncertainArgument(allArg.removeFirst().getName());
         }
 
         for(Argument a : allArg) {
-            outputCaf.addControlArgument(a.getName());
+            caf.addControlArgument(a.getName());
         }
 
         HashSet<Attack> allUAttackSet =  new HashSet<>();
-        for(Argument arg : outputCaf.getUncertainArguments()) {
+        for(Argument arg : caf.getUncertainArguments()) {
             allUAttackSet.addAll(inputAf.getAllArgAttack(arg.getName()).stream().filter(
                     att -> {
                         Argument[] arguments = att.getArguments();
@@ -154,7 +154,7 @@ public class CafGenerator {
         LinkedList<Attack> allUAttack =  new LinkedList<>(allUAttackSet);
         HashSet<Attack> otherAttacks = new HashSet<>(inputAf.getAttacks());
 
-        Collection<Argument> uncertainArguments = outputCaf.getUncertainArguments();
+        Collection<Argument> uncertainArguments = caf.getUncertainArguments();
         otherAttacks.removeIf( att -> {
             Argument[] arguments = att.getArguments();
             boolean unknown = unknownArgs.contains(arguments[0]) || unknownArgs.contains(arguments[1]);
@@ -168,23 +168,23 @@ public class CafGenerator {
         Collections.shuffle(allUAttack);
         for(int i = 0; i < undirectedAttackPart; i++) {
             Argument[] arguments = allUAttack.removeFirst().getArguments();
-            outputCaf.addUndirectedAttack(arguments[0].getName(), arguments[1].getName());
+            caf.addUndirectedAttack(arguments[0].getName(), arguments[1].getName());
         }
 
         Collections.shuffle(allUAttack);
         for(int i = 0; i < uncertainAttackPart; i++) {
             Argument[] arguments = allUAttack.removeFirst().getArguments();
-            outputCaf.addUncertainAttack(arguments[0].getName(), arguments[1].getName());
+            caf.addUncertainAttack(arguments[0].getName(), arguments[1].getName());
         }
 
         for(Attack att : allUAttack) {
             Argument[] arguments = att.getArguments();
-            outputCaf.addAttack(arguments[0].getName(), arguments[1].getName());
+            caf.addAttack(arguments[0].getName(), arguments[1].getName());
         }
 
         for(Attack att : otherAttacks) {
             Argument[] arguments = att.getArguments();
-            outputCaf.addAttack(arguments[0].getName(), arguments[1].getName());
+            caf.addAttack(arguments[0].getName(), arguments[1].getName());
         }
     }
 

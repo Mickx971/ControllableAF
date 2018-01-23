@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="cafGen:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/cafGen_jar</output-path>
+    <root id="archive" name="cafGen.jar">
+      <element id="module-output" name="cafGen" />
+    </root>
+  </artifact>
+</component>

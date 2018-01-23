@@ -29,11 +29,11 @@ public class QuantomConnector {
 
     public QuantomConnector() {
         this.path = Paths.get(System.getProperty("user.dir"));
-        solverCommand = "./bin/quantom --solvemode=0 ";
+        solverCommand = "./quantom --solvemode=0 ";
     }
 
     public void setAgentName(String agentName) {
-        cnfFileName = agentName + "caf.cnf";
+        cnfFileName = agentName + "Caf.cnf";
     }
 
     public Collection<Argument> isCredulouslyAcceptedWithControl(Caf tempCaf, String argName) throws Exception {
@@ -42,7 +42,7 @@ public class QuantomConnector {
         Argument theta = tempCaf.getArgument(argName);
 
         if(theta == null)
-            throw new Exception("Unknown argument in caf named: " + argName);
+            throw new Exception("Unknown argument in Caf named: " + argName);
 
         PropositionalQuantifiedFormula qbfFormula = formulaGen.encodeCredulousQBFWithControl(Arrays.asList(new Argument[]{theta}));
 
@@ -65,7 +65,7 @@ public class QuantomConnector {
 
         Argument theta = tempCaf.getArgument(argName);
         if(theta == null)
-            throw new Exception("Unknown argument in caf named: " + argName);
+            throw new Exception("Unknown argument in Caf named: " + argName);
 
         PropositionalQuantifiedFormula qbfFormula = formulaGen.encodeCredulousQBFWithoutControl(Arrays.asList(new Argument[]{theta}));
         PropositionalFormula formula = qbfFormula.getCafFormula().getFormula();
