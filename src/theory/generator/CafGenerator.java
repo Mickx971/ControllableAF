@@ -1,11 +1,9 @@
 package theory.generator;
 
 import caf.datastructure.Caf;
-import javafx.util.Pair;
-import net.sf.tweety.arg.dung.semantics.ArgumentStatus;
 import net.sf.tweety.arg.dung.syntax.Argument;
 import net.sf.tweety.arg.dung.syntax.Attack;
-import scala.collection.parallel.ParIterableLike;
+import net.sf.tweety.commons.util.Pair;
 import theory.datastructure.CafGeneration;
 import theory.datastructure.Theory;
 import theory.generator.config.CafConfig;
@@ -160,7 +158,7 @@ public class CafGenerator {
         for(Pair<String, String> attack: generateRandomAttacks(caf.getControlArguments(),
                 otherArgumentsThanControl, cafConfig.getDensityOfControlAttacks()))
         {
-            caf.addAttack(attack.getKey(), attack.getValue());
+            caf.addAttack(attack.getFirst(), attack.getSecond());
         }
 
         //adding existing attacks from c to f from my theory

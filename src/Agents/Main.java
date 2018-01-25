@@ -16,7 +16,7 @@ public class Main {
     {
         Runtime runtime = Runtime.instance();
         Profile config = new ProfileImpl("localhost", 8888, null);
-        config.setParameter("gui", "true");
+        config.setParameter("gui", "false");
         AgentContainer mc = runtime.createMainContainer(config);
         AgentController ac;
         SatSolver.setDefaultSolver(new Sat4jSolver());
