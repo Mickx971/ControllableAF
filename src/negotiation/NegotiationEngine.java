@@ -135,6 +135,10 @@ public class NegotiationEngine {
         update(message.getJustificationArguments(), message.getJustificationAttacks());
     }
 
+    public Theory getTheory() {
+        return theory;
+    }
+
     public void update(Collection<Argument> justificationArguments, Collection<Attack> justificationAttacks) throws Exception {
         Set<Argument> arguments = Streams.concat(
                 justificationArguments.stream(),
@@ -170,6 +174,8 @@ public class NegotiationEngine {
                 caf.addAttack(att.getSource().getName(), att.getTarget().getName());
             }
         }
+
+
 
     }
 

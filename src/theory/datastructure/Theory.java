@@ -137,12 +137,15 @@ public class Theory{
 
         if(optExt.isPresent()) {
             Extension ext = optExt.get();
-            Optional<Argument> optArg = ext.stream().findFirst();
-            for(Map.Entry<Offer, Set<String>> entry: offers.entrySet()) {
-                if(entry.getValue().contains(optArg.get().getName())) {
-                    return entry.getKey();
+            for(Argument PArg: ext)
+            {
+                for(Map.Entry<Offer, Set<String>> entry: offers.entrySet()) {
+                    if(entry.getValue().contains(PArg.getName())) {
+                        return entry.getKey();
+                    }
                 }
             }
+            
         }
 
         return null;
