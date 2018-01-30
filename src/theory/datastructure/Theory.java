@@ -129,14 +129,12 @@ public class Theory{
 
     public Offer getNextOffer() {
         StableReasoner stableReasoner = new StableReasoner(dungTheory);
-        Optional<Extension> optExt = stableReasoner.getExtensions().stream().filter(ext -> {
+        Collection<Extension> exts = stableReasoner.getExtensions().stream().filter(ext -> {
             ext.retainAll(practicalArguments);
             return !ext.isEmpty();
-        }).findFirst();
+        }).collect(Collectors.toSet());
 
-
-        if(optExt.isPresent()) {
-            Extension ext = optExt.get();
+        for(Extension ext : exts) {
             for(Argument PArg: ext)
             {
                 for(Map.Entry<Offer, Set<String>> entry: offers.entrySet()) {
@@ -145,7 +143,6 @@ public class Theory{
                     }
                 }
             }
-            
         }
 
         return null;
