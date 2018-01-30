@@ -4,14 +4,12 @@ import caf.datastructure.Argument;
 import caf.datastructure.Attack;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import javafx.util.Pair;
-import net.sf.tweety.logics.pl.syntax.Conjunction;
+import net.sf.tweety.commons.util.Pair;
 import net.sf.tweety.logics.pl.syntax.Proposition;
 import net.sf.tweety.logics.pl.syntax.PropositionalFormula;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class CafFormula {
 

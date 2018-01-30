@@ -5,8 +5,8 @@ import caf.datastructure.Attack;
 import caf.datastructure.Caf;
 import caf.generator.CafGenerator;
 import caf.transform.datastructure.*;
-import javafx.util.Pair;
 
+import net.sf.tweety.commons.util.Pair;
 import net.sf.tweety.logics.pl.syntax.*;
 
 import java.io.BufferedWriter;

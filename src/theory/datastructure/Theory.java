@@ -1,11 +1,11 @@
 package theory.datastructure;
 
-import javafx.util.Pair;
 import net.sf.tweety.arg.dung.StableReasoner;
 import net.sf.tweety.arg.dung.semantics.Extension;
 import net.sf.tweety.arg.dung.syntax.Argument;
 import net.sf.tweety.arg.dung.DungTheory;
 import net.sf.tweety.arg.dung.syntax.Attack;
+import net.sf.tweety.commons.util.Pair;
 import theory.generator.TheoryGenerator;
 
 import java.util.*;

@@ -6,8 +6,8 @@ import Communication.datastructure.Attack;
 import caf.datastructure.Caf;
 import caf.generator.CafGenerator;
 import com.google.common.collect.Streams;
-import javafx.util.Pair;
 import net.sf.tweety.arg.dung.semantics.Extension;
+import net.sf.tweety.commons.util.Pair;
 import theory.datastructure.Theory;
 import theory.datastructure.Offer;
 import theory.datastructure.TheoryGeneration;
@@ -114,9 +114,9 @@ public class NegotiationEngine {
         }
         else {
             Pair<Extension, Set<net.sf.tweety.arg.dung.syntax.Attack>> reason = theory.getNextExtensionAttackingArgument(argName);
-            Collection<Argument> arguments = reason.getKey().stream().map(arg -> new Argument(arg))
+            Collection<Argument> arguments = reason.getFirst().stream().map(arg -> new Argument(arg))
                     .collect(Collectors.toSet());
-            Collection<Attack> attacks = reason.getValue().stream().map(att -> new Attack(att))
+            Collection<Attack> attacks = reason.getSecond().stream().map(att -> new Attack(att))
                     .collect(Collectors.toSet());
 
             NegotiationMessage reject = new NegotiationMessage();
