@@ -124,10 +124,30 @@ public class CafFormulaGenerator {
     {
         Conjunction formula = createStableSemanticFormula(cafFormula, ua);
         arguments.forEach(t-> formula.add(cafFormula.getAccFor(t, ua)));
-        if(cafFormula.getFormula() == null)
+
+        if(ua != null) {
+
+            Argument[] args = ua.getArguments();
+            Proposition att01 = cafFormula.getAttFor(args[0], args[1]);
+            Proposition att10 = cafFormula.getAttFor(args[1], args[0]);
+
+            Disjunction d = new Disjunction();
+            d.add(new Conjunction(new Negation(att01), att10              ).combineWithAnd(formula));
+            d.add(new Conjunction(att01,               new Negation(att10)).combineWithAnd(formula));
+            d.add(new Conjunction(att01,               att10              ).combineWithAnd(formula));
+
+            if(cafFormula.getFormula() == null) {
+                 cafFormula.setFormula(new Conjunction(d));
+            }
+            else {
+                cafFormula.setFormula(cafFormula.getFormula().combineWithAnd(d).collapseAssociativeFormulas());
+            }
+
+        }
+        else {
             cafFormula.setFormula(formula);
-        else
-            cafFormula.setFormula(cafFormula.getFormula().combineWithAnd(formula));
+        }
+
         return cafFormula;
     }
 
