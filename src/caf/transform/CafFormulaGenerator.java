@@ -166,9 +166,7 @@ public class CafFormulaGenerator {
                 addCredulousAcceptanceFormula(cafFormula, ua, arguments);
             }
         }
-        System.out.println(cafFormula.getFormula());
-        Sat4jSolver s = new Sat4jSolver();
-        System.out.println(cafFormula.getFormula().getModels());
+
         return TseitinTransformation.toCNF(cafFormula);
     }
 
@@ -185,6 +183,7 @@ public class CafFormulaGenerator {
     public PropositionalQuantifiedFormula encodeCredulousQBF(Collection<Argument> arguments, boolean withControl)
     {
         CafFormula cafFormula = encodeCredulousFormulaForQBF(arguments, withControl);
+        System.out.println(cafFormula.getFormula());
 
         PropositionalQuantifiedFormula credulousQbf = new PropositionalQuantifiedFormula();
 

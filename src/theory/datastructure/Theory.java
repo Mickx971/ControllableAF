@@ -151,7 +151,7 @@ public class Theory{
     public boolean argumentIsCredulouslyAccepted(Communication.datastructure.Argument practicalArgument) {
         StableReasoner stableReasoner = new StableReasoner(dungTheory);
         Argument dungArg = new Argument(practicalArgument.getName());
-
+        System.out.println(stableReasoner.getExtensions().stream().findFirst().get());
         return stableReasoner.getExtensions().stream().anyMatch(ext -> ext.contains(dungArg));
     }
 

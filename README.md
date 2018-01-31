@@ -1,28 +1,63 @@
-(((!ATTdc
-&&ATTcd)
-&&((!ACCc_UDATT_dc||(!ATTdc||!ACCd_UDATT_dc))
-&&(!((!ATTdc||!ACCd_UDATT_dc))||ACCc_UDATT_dc)
-&&(!ACCd_UDATT_dc||(!ATTcd||!ACCc_UDATT_dc))
-&&(!((!ATTcd||!ACCc_UDATT_dc))||ACCd_UDATT_dc)
-&&(ATTdc||ATTcd)
-&&!ATTcc
-&&!ATTdd
-&&ACCc_UDATT_dc))||((ATTdc
-&&!ATTcd)
-&&((!ACCc_UDATT_dc||(!ATTdc||!ACCd_UDATT_dc))
-&&(!((!ATTdc||!ACCd_UDATT_dc))||ACCc_UDATT_dc)
-&&(!ACCd_UDATT_dc||(!ATTcd||!ACCc_UDATT_dc))
-&&(!((!ATTcd||!ACCc_UDATT_dc))||ACCd_UDATT_dc)
-&&(ATTdc||ATTcd)
-&&!ATTcc
-&&!ATTdd
-&&ACCc_UDATT_dc))||((ATTdc
-&&ATTcd)
-&&((!ACCc_UDATT_dc||(!ATTdc||!ACCd_UDATT_dc))
-&&(!((!ATTdc||!ACCd_UDATT_dc))||ACCc_UDATT_dc)
-&&(!ACCd_UDATT_dc||(!ATTcd||!ACCc_UDATT_dc))
-&&(!((!ATTcd||!ACCc_UDATT_dc))||ACCd_UDATT_dc)
-&&(ATTdc||ATTcd)
-&&!ATTcc
-&&!ATTdd
-&&ACCc_UDATT_dc)))
+"BC2" -> "BC3"
+"SE3" -> "SE9"
+"BC0" -> "SE6"
+"BC1" -> "BC2"
+"SE8" -> "SP3"
+"SE2" -> "SE8"
+"BC2" -> "BC0"
+"BC0" -> "SE0"
+"SE6" -> "SE0"
+"SE6" -> "SE1"
+"SP0" -> "SP3"
+"BC3" -> "SE0"
+"BC2" -> "SE9"
+"BC1" -> "SE4"
+"BC1" -> "SE5"
+"BC1" -> "SE7"
+"SE7" -> "SE9"
+"SE8" -> "SE2"
+"SE10" -> "SE1"
+"BC3" -> "SE4"
+"SE7" -> "SE1"
+"SE7" -> "SE2"
+"BC3" -> "SE6"
+"SE7" -> "SE0"
+"SE10" -> "SE6"
+"BC3" -> "SE8"
+"SE10" -> "SE7"
+"SP2" -> "SP1"
+"SE7" -> "SE6"
+"BC3" -> "SE9"
+"SE11" -> "SE3"
+"SE9" -> "SE1"
+"SE1" -> "SP0"
+"SE1" -> "SP1"
+"BC1" -> "SE10"
+"SE0" -> "SP0"
+"BC1" -> "SE11"
+"SE3" -> "SP1"
+"SE11" -> "SE5"
+"SE8" -> "SE10"
+"SE3" -> "SP2"
+"SE3" -> "SP3"
+"SE5" -> "SP3"
+"SE5" -> "SP0"
+"BC2" -> "SP1"
+"BC2" -> "SP2"
+"SE1" -> "SE11"
+"SE0" -> "SE11"
+"BC1" -> "SP1"
+"SE4" -> "SP3"
+"SE0" -> "SE9"
+"SE1" -> "SE2"
+"SE1" -> "SE7"
+"SE8" -> "SP1"
+"SE2" -> "SE0"
+"BC0" -> "SE11"
+"SE1" -> "SE5"
+"SE3" -> "SE10"
+"SE0" -> "SE2"
+"SE6" -> "SP3"
+"SE0" -> "SE1"
+"BC3" -> "SP2"
+"SE0" -> "SE7"
