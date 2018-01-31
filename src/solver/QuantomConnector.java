@@ -62,7 +62,6 @@ public class QuantomConnector {
     public boolean isCredulouslyAcceptedWithoutControl(Caf tempCaf, String argName) throws Exception {
         CafFormulaGenerator formulaGen = new CafFormulaGenerator();
         formulaGen.setCaf(tempCaf);
-
         Argument theta = tempCaf.getArgument(argName);
         if(theta == null)
             throw new Exception("Unknown argument in Caf named: " + argName);

@@ -6,7 +6,9 @@ import caf.datastructure.Caf;
 import caf.generator.CafGenerator;
 import caf.transform.datastructure.*;
 
+import net.sf.tweety.arg.social.test.SafTest;
 import net.sf.tweety.commons.util.Pair;
+import net.sf.tweety.logics.pl.sat.Sat4jSolver;
 import net.sf.tweety.logics.pl.syntax.*;
 
 import java.io.BufferedWriter;
@@ -137,7 +139,9 @@ public class CafFormulaGenerator {
             d.add(new Conjunction(att01,               att10              ).combineWithAnd(formula));
 
             if(cafFormula.getFormula() == null) {
-                 cafFormula.setFormula(new Conjunction(d));
+                Conjunction temp = new Conjunction();
+                temp.add(d);
+                cafFormula.setFormula(temp);
             }
             else {
                 cafFormula.setFormula(cafFormula.getFormula().combineWithAnd(d).collapseAssociativeFormulas());
@@ -162,6 +166,9 @@ public class CafFormulaGenerator {
                 addCredulousAcceptanceFormula(cafFormula, ua, arguments);
             }
         }
+        System.out.println(cafFormula.getFormula());
+        Sat4jSolver s = new Sat4jSolver();
+        System.out.println(cafFormula.getFormula().getModels());
         return TseitinTransformation.toCNF(cafFormula);
     }
 
