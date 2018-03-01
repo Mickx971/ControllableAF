@@ -5,6 +5,7 @@ import net.sf.tweety.arg.dung.syntax.Argument;
 import net.sf.tweety.arg.dung.syntax.Attack;
 import net.sf.tweety.commons.util.Pair;
 import theory.datastructure.CafGeneration;
+import theory.datastructure.Offer;
 import theory.datastructure.Theory;
 import theory.generator.config.CafConfig;
 import theory.generator.config.GenerationConfig;
@@ -47,52 +48,57 @@ public class CafGenerator {
     {
         Theory sharedTheory = theoryGeneration.getSharedTheory();
         Caf caf = new Caf();
+
         List<Argument> controlArguments = new ArrayList<>();
         controlArguments.addAll(myTheory.getControlArguments());
         controlArguments.removeAll(sharedTheory.getControlArguments());
+
         int nbControlArguments =
                 new Double(
                         cafConfig.getRateOfControlArguments()*controlArguments.size()
                 ).intValue();
-        List<Argument> rest = controlArguments;
+
+
+        List<Argument> temp = controlArguments;
         controlArguments = new ArrayList<>();
+
         int random;
         for(int i = 0; i<nbControlArguments; i++)
         {
-            random = r.nextInt(rest.size());
-            controlArguments.add(rest.get(random));
-            rest.remove(random);
+            random = r.nextInt(temp.size());
+            controlArguments.add(temp.get(random));
+            temp.remove(random);
         }
 
-
+        //adding all the shared theory to the fixed part
         List<Argument> fixedArguments = new ArrayList<>();
         fixedArguments.addAll(sharedTheory.getControlArguments());
         fixedArguments.addAll(sharedTheory.getEpistemicArguments());
         fixedArguments.addAll(sharedTheory.getPracticalArguments());
 
-        rest = new ArrayList<>();
-        rest.addAll(otherTheory.getEpistemicArguments());
-        rest.addAll(otherTheory.getPracticalArguments());
-        rest.addAll(otherTheory.getControlArguments());
-        rest.removeAll(controlArguments);
-        rest.removeAll(fixedArguments);
+        temp = new ArrayList<>();
+        temp.addAll(otherTheory.getEpistemicArguments());
+        temp.addAll(otherTheory.getPracticalArguments());
+        temp.addAll(otherTheory.getControlArguments());
+        temp.removeAll(controlArguments);
+        temp.removeAll(fixedArguments);
         
 
         int nbFixedArguments = new Double(
-                rest.size()*cafConfig.getRateOfFixedArguments()
+                temp.size()*cafConfig.getRateOfFixedArguments()
 
         ).intValue();
 
         for(int i = 0; i<nbFixedArguments; i++)
         {
-            random = r.nextInt(rest.size());
-            fixedArguments.add(rest.get(random));
-            rest.remove(random);
+            random = r.nextInt(temp.size());
+            fixedArguments.add(temp.get(random));
+            temp.remove(random);
         }
         
         fixedArguments.forEach(t-> caf.addFixedArgument(t.getName()));
         controlArguments.forEach(t-> caf.addControlArgument(t.getName()));
-        rest.forEach(t->caf.addUncertainArgument(t.getName()));
+        temp.forEach(t->caf.addUncertainArgument(t.getName()));
 
         List<Attack> certainAttacks ;
         List<Attack> uncertainAttacks = new ArrayList<>();
@@ -175,7 +181,10 @@ public class CafGenerator {
         }
 
 
-
+        //adding offers
+        for(Map.Entry<Offer, Set<String>> offerSupporters: otherTheory.getOffers().entrySet()){
+            caf.addOfferSupporters(offerSupporters.getKey().getName(), offerSupporters.getValue());
+        }
 
 
         return caf;

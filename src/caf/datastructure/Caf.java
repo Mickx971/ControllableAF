@@ -1,10 +1,9 @@
 package caf.datastructure;
 
-import caf.transform.CafFormulaGenerator;
-import net.sf.tweety.logics.pl.syntax.PropositionalFormula;
+import caf.generator.CafGenerator;
 import solver.QuantomConnector;
+import theory.datastructure.Offer;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,7 +12,7 @@ public class Caf {
     private final QuantomConnector qConnector;
     private Map<String, Argument> args;
     private Set<Attack> attacks;
-
+    private Map<Offer, Set<Argument>> offers = new HashMap<>();
     public Caf() {
         args = new HashMap<>();
         attacks = new HashSet<>();
@@ -265,10 +264,50 @@ public class Caf {
             sb.append(att.toString()).append("\n");
         }
 
+        for(Offer key: offers.keySet())
+        {
+            for(Argument supportingArgument: offers.get(key))
+            {
+                sb.append(CafGenerator.CafTag.support.name())
+                        .append("(")
+                        .append(supportingArgument.getName())
+                        .append(",")
+                        .append(key.getName())
+                        .append(").\n");
+            }
+        }
+
         return sb.toString();
     }
 
     public void setAgentName(String agentName) {
         qConnector.setAgentName(agentName);
+    }
+
+    public void addOffer(Offer offer) {
+        if(!offers.containsKey(offer))
+        {
+            offers.put(offer, new HashSet<>());
+        }
+    }
+
+    public void addOffer(String offer)
+    {
+        addOffer(new Offer(offer));
+    }
+
+    public void addOfferSupport(Offer offer, Argument support)
+    {
+        addOffer(offer);
+        offers.get(offer).add(support);
+    }
+
+    public void addOfferSupport(String offer, String supportArgument){
+        addOfferSupport(new Offer(offer), this.getArgument(supportArgument));
+    }
+
+    public void addOfferSupporters(String offer, Collection<String> supportingArguments)
+    {
+        supportingArguments.forEach(arg -> addOfferSupport(offer, arg));
     }
 }

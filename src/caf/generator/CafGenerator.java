@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class CafGenerator {
 
     private Pattern afPattern = Pattern.compile("^(arg\\([\\pL\\pN]+|att\\([\\pL\\pN]+,[\\pL\\pN]+)\\)\\.\\s*$");
-    private Pattern cafPattern = Pattern.compile("^(f_arg\\([\\pL\\pN]+|c_arg\\([\\pL\\pN]+|u_arg\\([\\pL\\pN]+|att\\([\\pL\\pN]+,[\\pL\\pN]+|u_att\\([\\pL\\pN]+,[\\pL\\pN]+|ud_att\\([\\pL\\pN]+,[\\pL\\pN]+)\\)\\.\\s*$");
+    private Pattern cafPattern = Pattern.compile("^(f_arg\\([\\pL\\pN]+|c_arg\\([\\pL\\pN]+|u_arg\\([\\pL\\pN]+|att\\([\\pL\\pN]+,[\\pL\\pN]+|u_att\\([\\pL\\pN]+,[\\pL\\pN]+|ud_att\\([\\pL\\pN]+,[\\pL\\pN]+|support\\([\\pL\\pN]+,[\\pL\\pN]+)\\)\\.\\s*$");
 
     public enum AfTag {
         arg,
@@ -32,7 +32,8 @@ public class CafGenerator {
         u_arg,
         att,
         u_att,
-        ud_att
+        ud_att,
+        support
     }
 
     private Caf parseAF(String filename) throws IOException {
@@ -105,6 +106,8 @@ public class CafGenerator {
                     case ud_att:
                         caf.addUndirectedAttack(words[0], words[1]);
                         break;
+                    case support:
+                        caf.addOfferSupport(words[1], words[0]);
                 }
             }
             else {
@@ -242,27 +245,30 @@ public class CafGenerator {
     public static void main(String[] args) {
         CafGenerator g = new CafGenerator();
         try {
-            String filename = "/Users/mickx/Desktop/A/1/stb_190_70.apx";
-            String outputPath = "/Users/mickx/Desktop";
-//            CafConfiguration conf = new CafConfiguration(50, 30, 30,30, 10);
-//            Caf caf = g.generateCafFromAF(filename, conf);
-//            System.out.println(caf);
+//            String filename = "/Users/mickx/Desktop/A/1/stb_190_70.apx";
+//            String outputPath = "/Users/mickx/Desktop";
+////            CafConfiguration conf = new CafConfiguration(50, 30, 30,30, 10);
+////            Caf caf = g.generateCafFromAF(filename, conf);
+////            System.out.println(caf);
+//
+//
+//            List<CafConfiguration> confs = new ArrayList<>();
+//            confs.add(new CafConfiguration(20, 30, 30,30));
+//            confs.add(new CafConfiguration(20, 30, 30,30, 10));
+//            CafCommonConfiguration cconf = new CafCommonConfiguration(confs,10);
+//
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS");
+//
+//            List<Caf> cafs = g.generateCafsFromAF(filename, cconf);
+//            for(Caf caf : cafs) {
+//                Path outputFileName = Paths.get(outputPath).resolve("caf" + sdf.format(new Date()));
+//                PrintWriter writer = new PrintWriter(outputFileName.toFile(), "UTF-8");
+//                writer.println(caf);
+//                writer.close();
+//            }
 
-
-            List<CafConfiguration> confs = new ArrayList<>();
-            confs.add(new CafConfiguration(20, 30, 30,30));
-            confs.add(new CafConfiguration(20, 30, 30,30, 10));
-            CafCommonConfiguration cconf = new CafCommonConfiguration(confs,10);
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS");
-
-            List<Caf> cafs = g.generateCafsFromAF(filename, cconf);
-            for(Caf caf : cafs) {
-                Path outputFileName = Paths.get(outputPath).resolve("caf" + sdf.format(new Date()));
-                PrintWriter writer = new PrintWriter(outputFileName.toFile(), "UTF-8");
-                writer.println(caf);
-                writer.close();
-            }
+            Caf caf = g.parseCAF("caf1.caf");
+            System.out.println(caf.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
