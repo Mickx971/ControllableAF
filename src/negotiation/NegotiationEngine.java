@@ -89,6 +89,7 @@ public class NegotiationEngine {
         }
     }
 
+    // TODO Choose arg in caf
     private void chooseSupportArg(Offer offer) throws Exception {
         String support = theory.getSupportForOffer(offer);
         if(support != null) {
@@ -100,6 +101,7 @@ public class NegotiationEngine {
         }
     }
 
+    // TODO compute all the path in the resons
     public boolean decideUponOffer(NegotiationMessage message) throws Exception {
         if(message.getJustificationArguments()!= null &&
                 !message.getJustificationArguments().isEmpty()) {
@@ -139,6 +141,7 @@ public class NegotiationEngine {
         return theory;
     }
 
+    // TODO remove addFixedArgument
     public void update(Collection<Argument> justificationArguments, Collection<Attack> justificationAttacks) throws Exception {
         Set<Argument> arguments = Streams.concat(
                 justificationArguments.stream(),
@@ -152,8 +155,6 @@ public class NegotiationEngine {
             else
                 caf.addFixedArgument(arg.getName());
         }
-
-
 
         for(Attack att : justificationAttacks) {
             Optional<caf.datastructure.Attack> uAtt = caf.getUncertainAttack(att.getSource().getName(), att.getTarget().getName());

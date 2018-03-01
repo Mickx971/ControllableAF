@@ -158,6 +158,7 @@ public class Caf {
         }).findFirst();
     }
 
+    // TODO all attacks
     public Set<Attack> getFUAttacksFor(Collection<Argument> potentSet) {
         Set<Attack> attacks = new HashSet<>();
         for(Argument arg : potentSet) {
