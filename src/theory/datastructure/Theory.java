@@ -10,12 +10,11 @@ import theory.generator.TheoryGenerator;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Theory{
 
     private DungTheory dungTheory;
-    private Map<Offer, Set<String>> offers = new HashMap<>();
+    private SortedMap<Offer, Set<String>> offers;
     private Set<net.sf.tweety.arg.dung.syntax.Argument> controlArguments;
     private Set<net.sf.tweety.arg.dung.syntax.Argument> epistemicArguments;
     private Set<net.sf.tweety.arg.dung.syntax.Argument> practicalArguments;
@@ -29,13 +28,11 @@ public class Theory{
         controlArguments = new HashSet<>();
         epistemicArguments = new HashSet<>();
         practicalArguments = new HashSet<>();
+        offers = new TreeMap<>();
     }
 
     public Theory(Theory model){
-        dungTheory = new DungTheory();
-        controlArguments = new HashSet<>();
-        epistemicArguments = new HashSet<>();
-        practicalArguments = new HashSet<>();
+        this();
         model.controlArguments.forEach(t-> addControlArgument(t));
         model.epistemicArguments.forEach(t -> addEpistemicArgument(t));
         model.practicalArguments.forEach(t -> addPracticalArgument(t));
@@ -59,7 +56,6 @@ public class Theory{
         practicalArguments.add(arg);
     }
 
-
     public void addControlArgument(String argName)
     {
         Argument argument = new Argument(argName);
@@ -73,14 +69,17 @@ public class Theory{
         dungTheory.add(argument);
         epistemicArguments.add(argument);
     }
+
     public void addAttack(Attack attack)
     {
         dungTheory.add(attack);
     }
+
     public void addAttack(String fromArg, String toArg)
     {
         dungTheory.add(new Attack(new Argument(fromArg), new Argument(toArg)));
     }
+
     public void addPracticalArgument(String argName)
     {
         Argument argument = new Argument(argName);
@@ -99,13 +98,16 @@ public class Theory{
         return null;
     }
 
-    // TODO remove argument
     public void removeOfferSupport(Offer offer, String argumentName) throws Exception {
         if(offers.containsKey(offer)) {
             offers.get(offer).remove(argumentName);
-
+            Argument arg = new Argument(argumentName);
+            epistemicArguments.remove(arg);
+            controlArguments.remove(arg);
+            practicalArguments.remove(arg);
+            dungTheory.remove(arg);
         }
-        else throw new Exception("Unknown offer: " + offer.getName());
+        else throw new Exception("Unknown offer in theory: " + offer.getName());
     }
 
     public boolean hasSupportForOffer(Offer offer) {
@@ -128,25 +130,25 @@ public class Theory{
         offers.remove(offer);
     }
 
-    public Offer getNextOffer() {
+    public SortedSet<Offer> getAcceptableOffers() {
         StableReasoner stableReasoner = new StableReasoner(dungTheory);
-        Collection<Extension> exts = stableReasoner.getExtensions().stream().filter(ext -> {
-            ext.retainAll(practicalArguments);
-            return !ext.isEmpty();
-        }).collect(Collectors.toSet());
+        Set<String> acceptableArgs = stableReasoner.getExtensions().stream()
+                .flatMap(ext -> {
+                    ext.retainAll(practicalArguments);
+                    return ext.stream();
+                }).map(arg -> arg.getName()).collect(Collectors.toSet());
 
-        for(Extension ext : exts) {
-            for(Argument PArg: ext)
-            {
-                for(Map.Entry<Offer, Set<String>> entry: offers.entrySet()) {
-                    if(entry.getValue().contains(PArg.getName())) {
-                        return entry.getKey();
-                    }
-                }
+        SortedSet<Offer> acceptableOffers = new TreeSet<>(getOffersComparator());
+
+        for(Map.Entry<Offer, Set<String>> entry: offers.entrySet()) {
+            Set<String> supports = entry.getValue();
+            supports.retainAll(acceptableArgs);
+            if(!supports.isEmpty()) {
+                acceptableOffers.add(entry.getKey());
             }
         }
 
-        return null;
+        return acceptableOffers;
     }
 
     public boolean argumentIsCredulouslyAccepted(Communication.datastructure.Argument practicalArgument) {
@@ -182,16 +184,19 @@ public class Theory{
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+
         epistemicArguments.forEach(
                 t -> sb.append(
                         TheoryGenerator.TheoryTag.e_arg.name()
                 ).append("(").append(t.getName()).append(").\n")
         );
+
         practicalArguments.forEach(
                 t -> sb.append(
                         TheoryGenerator.TheoryTag.p_arg.name()
                 ).append("(").append(t.getName()).append(").\n")
         );
+
         controlArguments.forEach(
                 t -> sb.append(
                         TheoryGenerator.TheoryTag.c_arg.name()
@@ -204,8 +209,8 @@ public class Theory{
                         .append(", ").append(t.getAttacked().getName())
                         .append(").\n")
         );
-        for(Map.Entry<Offer, Set<String>> e : offers.entrySet())
-        {
+
+        for(Map.Entry<Offer, Set<String>> e : offers.entrySet()) {
             for(String practicalArgument: e.getValue())
             {
                 sb.append(TheoryGenerator.TheoryTag.support.name())
@@ -222,7 +227,7 @@ public class Theory{
 
     public int getMaxNbOfAttacks(){
         return controlArguments.size() * (controlArguments.size() -1)
-                +epistemicArguments.size()*(epistemicArguments.size()-1)
+                + epistemicArguments.size()*(epistemicArguments.size()-1)
                 + practicalArguments.size()*(practicalArguments.size()-1)
                 + controlArguments.size()*epistemicArguments.size()
                 + (controlArguments.size()+epistemicArguments.size())
@@ -263,33 +268,34 @@ public class Theory{
         return offers;
     }
 
-    public void setOffers(Map<Offer, Set<String>> offers) {
+    public void setOffers(SortedMap<Offer, Set<String>> offers) {
         this.offers = offers;
     }
 
-    public void addOfferSupport(String practicalArgument, String offer)
-    {
+    public void addOfferSupport(String practicalArgument, String offer) {
         Offer copy = new Offer(offer);
         if(offers.get(copy) == null)
             offers.put(copy, new HashSet());
         offers.get(copy).add(practicalArgument);
-
-
     }
 
-    public boolean hasOffer() {
-        if (offers.isEmpty())
-            return false;
-        return getNextOffer() != null;
+    public Comparator<Offer> getOffersComparator() {
+        return (o1, o2) -> {
+            for(Offer offer: offers.keySet()) {
+                if(o1.equals(offer))
+                    return 1;
+                if(o2.equals(offer))
+                    return -1;
+            }
+            return 1;
+        };
     }
 
-    public boolean contains(String arg)
-    {
+    public boolean contains(String arg) {
         return dungTheory.contains(new Argument(arg));
     }
 
-    public void addTheory(Theory t)
-    {
+    public void addTheory(Theory t) {
         for(Argument ea: t.getEpistemicArguments())
             addEpistemicArgument(ea.getName());
 
@@ -298,8 +304,8 @@ public class Theory{
 
         for(Argument pa: t.getPracticalArguments())
             addPracticalArgument(pa.getName());
+
         for(Attack att: t.getDungTheory().getAttacks())
             addAttack(att.getAttacker().getName(), att.getAttacked().getName());
-
     }
 }

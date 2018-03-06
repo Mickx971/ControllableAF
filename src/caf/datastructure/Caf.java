@@ -285,29 +285,52 @@ public class Caf {
     }
 
     public void addOffer(Offer offer) {
-        if(!offers.containsKey(offer))
-        {
+        if(!offers.containsKey(offer)) {
             offers.put(offer, new HashSet<>());
         }
     }
 
-    public void addOffer(String offer)
-    {
+    public void addOffer(String offer) {
         addOffer(new Offer(offer));
     }
 
-    public void addOfferSupport(Offer offer, Argument support)
-    {
+    public void addOfferSupport(Offer offer, Argument support) {
         addOffer(offer);
         offers.get(offer).add(support);
     }
 
-    public void addOfferSupport(String offer, String supportArgument){
+    public void addOfferSupport(String offer, String supportArgument) {
         addOfferSupport(new Offer(offer), this.getArgument(supportArgument));
     }
 
-    public void addOfferSupporters(String offer, Collection<String> supportingArguments)
-    {
+    public void addOfferSupporters(String offer, Collection<String> supportingArguments) {
         supportingArguments.forEach(arg -> addOfferSupport(offer, arg));
+    }
+
+    public boolean hasSupportForOffer(Offer offer) {
+        return getSupportForOffer(offer) != null;
+    }
+
+    public Argument getSupportForOffer(Offer offer) {
+        Set<Argument> supports = offers.get(offer);
+        if(supports != null) {
+            offers.get(offer).stream().findFirst().get();
+        }
+        return null;
+    }
+
+    public void removeOfferSupport(Offer offer, String practicalArgument) throws Exception  {
+        if(offers.containsKey(offer)) {
+            offers.get(offer).remove(practicalArgument);
+            removeArgument(practicalArgument);
+        }
+        else throw new Exception("Unknown offer in caf: " + offer.getName());
+    }
+
+    public void removeOffer(Offer offer) {
+        for(Argument support : offers.get(offer)) {
+            removeArgument(support);
+        }
+        offers.remove(offer);
     }
 }

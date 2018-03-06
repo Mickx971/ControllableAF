@@ -13,9 +13,7 @@ import theory.datastructure.Offer;
 import theory.datastructure.TheoryGeneration;
 import theory.generator.TheoryGenerator;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class NegotiationEngine {
@@ -41,13 +39,22 @@ public class NegotiationEngine {
     }
 
     public void chooseBestOffer() throws Exception {
-        Offer offer = theory.getNextOffer();
+        Offer offer = computeNextOffer();
         if(offer != null) {
             chooseSupportArg(offer);
         }
         else {
             communicator.sendNothing();
         }
+    }
+
+    private Offer computeNextOffer() {
+        SortedSet<Offer> offers = theory.getAcceptableOffers();
+        for(Offer offer: offers) {
+            if(caf.hasSupportForOffer(offer))
+                return offer;
+        }
+        return null;
     }
 
     public void defendOffer(NegotiationMessage message) throws Exception {
@@ -63,7 +70,7 @@ public class NegotiationEngine {
         proposition.setType(NegotiationMessage.MessageType.OFFER);
 
         if(caf.argumentIsCredulouslyAcceptedWithoutControl(practicalArgument)) {
-            theory.removeOfferSupport(offer, practicalArgument);
+            removeOfferSupport(offer, practicalArgument);
             communicator.sendMessage(proposition);
         }
         else {
@@ -79,26 +86,34 @@ public class NegotiationEngine {
                         .map(a -> new Attack(a)).collect(Collectors.toSet())
                 );
 
-
                 communicator.sendMessage(proposition);
             }
             else {
-                theory.removeOfferSupport(offer, practicalArgument);
+                removeOfferSupport(offer, practicalArgument);
                 chooseSupportArg(offer);
             }
         }
     }
 
-    // TODO Choose arg in caf
+    private void removeOfferSupport(Offer offer, String practicalArgument) throws Exception {
+        theory.removeOfferSupport(offer, practicalArgument);
+        caf.removeOfferSupport(offer, practicalArgument);
+    }
+
     private void chooseSupportArg(Offer offer) throws Exception {
-        String support = theory.getSupportForOffer(offer);
+        caf.datastructure.Argument support = caf.getSupportForOffer(offer);
         if(support != null) {
-            defendOffer(offer, support);
+            defendOffer(offer, support.getName());
         }
         else {
-            theory.removeOffer(offer);
+            removeOffer(offer);
             communicator.sendGiveToken();
         }
+    }
+
+    private void removeOffer(Offer offer) {
+        theory.removeOffer(offer);
+        caf.removeOffer(offer);
     }
 
     // TODO compute all the path in the resons
@@ -141,7 +156,6 @@ public class NegotiationEngine {
         return theory;
     }
 
-    // TODO remove addFixedArgument
     public void update(Collection<Argument> justificationArguments, Collection<Attack> justificationAttacks) throws Exception {
         Set<Argument> arguments = Streams.concat(
                 justificationArguments.stream(),
@@ -150,10 +164,7 @@ public class NegotiationEngine {
         ).collect(Collectors.toSet());
 
         for(Argument arg : arguments) {
-            if(caf.hasArgument(arg.getName()))
-                caf.setArgumentCertain(arg.getName());
-            else
-                caf.addFixedArgument(arg.getName());
+            caf.setArgumentCertain(arg.getName());
         }
 
         for(Attack att : justificationAttacks) {
@@ -181,6 +192,6 @@ public class NegotiationEngine {
     }
 
     public boolean hasOffer() {
-        return theory.hasOffer();
+        return computeNextOffer() != null;
     }
 }
