@@ -158,11 +158,13 @@ public class Theory{
         return stableReasoner.getExtensions().stream().anyMatch(ext -> ext.contains(dungArg));
     }
 
-    // TODO update w.r.t on/off
     public void update(Collection<Communication.datastructure.Argument> justificationArguments, Collection<Communication.datastructure.Attack> justificationAttacks) {
-        Collection<Argument> arguments = justificationArguments.stream().map(arg -> new Argument(arg.getName())).collect(Collectors.toSet());
+        Collection<Argument> arguments = justificationArguments.stream()
+                .map(arg -> new Argument(arg.getName()))
+                .collect(Collectors.toSet());
         dungTheory.addAll(arguments);
-        justificationAttacks.stream().forEach(att -> addAttack(att.getSource().getName(), att.getTarget().getName()));
+        justificationAttacks.stream()
+                .forEach(att -> addAttack(att.getSource().getName(), att.getTarget().getName()));
     }
 
     public Set<Argument> getControlArguments() {

@@ -97,7 +97,6 @@ public class Caf {
         attacks.add(attack);
     }
 
-
     public void addUndirectedAttack(String arg1, String arg2) {
         Attack attack = new Attack(args.get(arg1), args.get(arg2), Attack.Type.UNDIRECTED);
         attacks.add(attack);
@@ -157,15 +156,12 @@ public class Caf {
         }).findFirst();
     }
 
-    // TODO all attacks
-    public Set<Attack> getFUAttacksFor(Collection<Argument> potentSet) {
+    // Les attaques undirected ne font pas parties des outAttaques
+    public Set<Attack> getOutAttacksFor(Collection<Argument> potentSet) {
         Set<Attack> attacks = new HashSet<>();
         for(Argument arg : potentSet) {
-            attacks.addAll(arg.getOutAttacks().stream().filter(att -> att.getType() == Attack.Type.CERTAIN)
-                .filter(att -> !isControlArgument(att.getTarget().getName())
-            ).collect(Collectors.toSet()));
+            attacks.addAll(arg.getOutAttacks());
         }
-
         return attacks;
     }
 
@@ -300,7 +296,7 @@ public class Caf {
     }
 
     public void addOfferSupport(String offer, String supportArgument) {
-        addOfferSupport(new Offer(offer), this.getArgument(supportArgument));
+        addOfferSupport(new Offer(offer), getArgument(supportArgument));
     }
 
     public void addOfferSupporters(String offer, Collection<String> supportingArguments) {

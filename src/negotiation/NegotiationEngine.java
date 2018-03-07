@@ -82,7 +82,7 @@ public class NegotiationEngine {
                     ).collect(Collectors.toSet())
                 );
                 proposition.setJustificationAttacks(
-                    caf.getFUAttacksFor(potentSet).stream()
+                    caf.getOutAttacksFor(potentSet).stream()
                         .map(a -> new Attack(a)).collect(Collectors.toSet())
                 );
 
@@ -120,8 +120,8 @@ public class NegotiationEngine {
     public boolean decideUponOffer(NegotiationMessage message) throws Exception {
         if(message.getJustificationArguments()!= null &&
                 !message.getJustificationArguments().isEmpty()) {
-            theory.update(message.getJustificationArguments(), message.getJustificationAttacks());
-            update(message.getJustificationArguments(), message.getJustificationAttacks());
+            updateTheory(message.getJustificationArguments(), message.getJustificationAttacks());
+            updateCaf(message.getJustificationArguments(), message.getJustificationAttacks());
         }
 
         String argName = message.getPracticalArgument().getName();
@@ -149,14 +149,23 @@ public class NegotiationEngine {
     }
 
     public void updateOnRejection(NegotiationMessage message) throws Exception {
-        update(message.getJustificationArguments(), message.getJustificationAttacks());
+        updateCaf(message.getJustificationArguments(), message.getJustificationAttacks());
     }
 
     public Theory getTheory() {
         return theory;
     }
 
-    public void update(Collection<Argument> justificationArguments, Collection<Attack> justificationAttacks) throws Exception {
+    public void updateTheory(Collection<Argument> justificationArguments, Collection<Attack> justificationAttacks) throws Exception {
+        Set<Argument> arguments = Streams.concat(
+                justificationArguments.stream(),
+                justificationAttacks.stream().map(Attack::getSource),
+                justificationAttacks.stream().map(Attack::getTarget)
+        ).collect(Collectors.toSet());
+        theory.update(arguments, justificationAttacks);
+    }
+
+    public void updateCaf(Collection<Argument> justificationArguments, Collection<Attack> justificationAttacks) throws Exception {
         Set<Argument> arguments = Streams.concat(
                 justificationArguments.stream(),
                 justificationAttacks.stream().map(Attack::getSource),
@@ -164,7 +173,10 @@ public class NegotiationEngine {
         ).collect(Collectors.toSet());
 
         for(Argument arg : arguments) {
-            caf.setArgumentCertain(arg.getName());
+            if(caf.hasArgument(arg.getName())) // on a préféré gérer le cas où l'argument n'existe pas dans le caf. Si ce cas n'est pas géré, pour une utilisation future, cela pourrait générer un bug.
+                caf.setArgumentCertain(arg.getName());
+            else
+                caf.addFixedArgument(arg.getName());
         }
 
         for(Attack att : justificationAttacks) {
