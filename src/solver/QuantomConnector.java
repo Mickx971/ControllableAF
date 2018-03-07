@@ -113,11 +113,11 @@ public class QuantomConnector {
 
             while ((line = buffer.readLine()) != null) {
 
-                System.out.println(line);
+                //System.out.println(line);
 
                 if(line.startsWith("s"))
                 {
-                    System.out.println();
+                    //System.out.println();
                     String res[] = line.split(" ");
 
                     if(res[1].equals("UNSATISFIABLE") || res[1].equals("UNKNOWN")) {

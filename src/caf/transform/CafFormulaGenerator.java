@@ -6,9 +6,7 @@ import caf.datastructure.Caf;
 import caf.generator.CafGenerator;
 import caf.transform.datastructure.*;
 
-import net.sf.tweety.arg.social.test.SafTest;
 import net.sf.tweety.commons.util.Pair;
-import net.sf.tweety.logics.pl.sat.Sat4jSolver;
 import net.sf.tweety.logics.pl.syntax.*;
 
 import java.io.BufferedWriter;
@@ -163,7 +161,6 @@ public class CafFormulaGenerator {
     public PropositionalQuantifiedFormula encodeCredulousQBF(Collection<Argument> arguments, boolean withControl)
     {
         CafFormula cafFormula = encodeCredulousFormulaForQBF(arguments, withControl);
-        System.out.println(cafFormula.getFormula());
 
         PropositionalQuantifiedFormula credulousQbf = new PropositionalQuantifiedFormula();
 

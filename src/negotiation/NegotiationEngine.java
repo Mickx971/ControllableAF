@@ -69,13 +69,24 @@ public class NegotiationEngine {
         proposition.setPracticalArgument(new Argument(practicalArgument));
         proposition.setType(NegotiationMessage.MessageType.OFFER);
 
+        System.out.println("\n");
+        System.out.println("# " + agent.getLocalName() + " wants to propose " + offer.getName() + " with the argument " + practicalArgument + ".");
+        System.out.println("# " + agent.getLocalName() + " is checking if " + practicalArgument + " is accepted without control.");
+
         if(caf.argumentIsCredulouslyAcceptedWithoutControl(practicalArgument)) {
             removeOfferSupport(offer, practicalArgument);
             communicator.sendMessage(proposition);
         }
         else {
+
+            System.out.println("# " + practicalArgument + " is not accepted without control.");
+            System.out.println("# " + agent.getLocalName() + " is searching a potent set to defend " + practicalArgument + ".");
+
             Collection<caf.datastructure.Argument> potentSet = caf.computePSA(practicalArgument);
             if(potentSet != null && !potentSet.isEmpty()) {
+
+                System.out.println("# Potent set found");
+
                 proposition.setJustificationArguments(
                     potentSet.stream().map(
                             arg -> new Argument(arg.getName())
@@ -89,6 +100,7 @@ public class NegotiationEngine {
                 communicator.sendMessage(proposition);
             }
             else {
+                System.out.println("# Potent set not found");
                 removeOfferSupport(offer, practicalArgument);
                 chooseSupportArg(offer);
             }

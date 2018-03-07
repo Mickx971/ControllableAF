@@ -13,6 +13,7 @@ public class Caf {
     private Map<String, Argument> args;
     private Set<Attack> attacks;
     private Map<Offer, Set<Argument>> offers = new HashMap<>();
+
     public Caf() {
         args = new HashMap<>();
         attacks = new HashSet<>();
