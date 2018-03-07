@@ -310,7 +310,7 @@ public class Caf {
 
     public Argument getSupportForOffer(Offer offer) {
         Set<Argument> supports = offers.get(offer);
-        if(supports != null) {
+        if(supports != null && !supports.isEmpty()) {
             return supports.stream().findFirst().get();
         }
         return null;
@@ -318,7 +318,7 @@ public class Caf {
 
     public void removeOfferSupport(Offer offer, String practicalArgument) throws Exception  {
         if(offers.containsKey(offer)) {
-            offers.get(offer).remove(practicalArgument);
+            offers.get(offer).remove(getArgument(practicalArgument));
             removeArgument(practicalArgument);
         }
         else throw new Exception("Unknown offer in caf: " + offer.getName());
