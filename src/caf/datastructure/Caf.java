@@ -314,7 +314,7 @@ public class Caf {
     public Argument getSupportForOffer(Offer offer) {
         Set<Argument> supports = offers.get(offer);
         if(supports != null) {
-            offers.get(offer).stream().findFirst().get();
+            return supports.stream().findFirst().get();
         }
         return null;
     }

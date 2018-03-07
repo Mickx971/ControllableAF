@@ -272,6 +272,13 @@ public class Theory{
         this.offers = offers;
     }
 
+    public void setOffers(HashMap<Offer, Set<String>> offers)
+    {
+        //todo
+        this.offers = new TreeMap<>(getOffersComparator());
+        this.offers.putAll(offers);
+    }
+
     public void addOfferSupport(String practicalArgument, String offer) {
         Offer copy = new Offer(offer);
         if(offers.get(copy) == null)

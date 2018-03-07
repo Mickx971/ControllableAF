@@ -1,6 +1,6 @@
 package theory.datastructure;
 
-public class Offer {
+public class Offer{
     String name;
 
     public Offer() {}
@@ -37,4 +37,8 @@ public class Offer {
     public String toString() {
         return name;
     }
+
+
+
+
 }

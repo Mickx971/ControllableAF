@@ -67,11 +67,13 @@ public class TheoryGenerator {
             Theory T2 = generateTheoryFromSharedTheory(
                     sharedTheory, generationConfig.getT2(), T2_ARG_NAME
             );
+
             Set<Argument> allPracticalArguments = new HashSet<>(T1.getPracticalArguments());
             allPracticalArguments.addAll(T2.getPracticalArguments());
 
             HashMap<Offer, Set<String>> offerSupports = generateOfferSupports(
                     generationConfig.getOffersRate(),allPracticalArguments);
+
             T1.setOffers(intersectWithTheoryPracticalArguments(T1, offerSupports));
             T2.setOffers(intersectWithTheoryPracticalArguments(T2, offerSupports));
 
