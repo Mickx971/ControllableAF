@@ -283,13 +283,8 @@ public class Theory{
 
     public Comparator<Offer> getOffersComparator() {
         return (o1, o2) -> {
-            for(Offer offer: offers.keySet()) {
-                if(o1.equals(offer))
-                    return 1;
-                if(o2.equals(offer))
-                    return -1;
-            }
-            return 1;
+            ArrayList<Offer> order = new ArrayList<>(offers.keySet());
+            return order.indexOf(o1) - order.indexOf(o2);
         };
     }
 
