@@ -371,18 +371,17 @@ public class TheoryGenerator {
 
     }
 
-    private HashMap<Offer, Set<String>> intersectWithTheoryPracticalArguments(
+    private LinkedHashMap<Offer, Set<String>> intersectWithTheoryPracticalArguments(
             Theory theory,
             HashMap<Offer, Set<String>> offerArgumentAttribution
             )
     {
-        HashMap<Offer, Set<String>> intersection = new HashMap<>();
+        LinkedHashMap<Offer, Set<String>> intersection = new LinkedHashMap<>();
 
         Set<String> allTheoryArguments = theory.getPracticalArguments().stream()
                 .map(a -> a.getName()).collect(Collectors.toSet());
 
-        offerArgumentAttribution.keySet().forEach(o->{
-
+        offerArgumentAttribution.keySet().forEach(o -> {
             HashSet clone = new HashSet<>(offerArgumentAttribution.get(o));
             clone.retainAll(allTheoryArguments);
             intersection.put(o, clone);

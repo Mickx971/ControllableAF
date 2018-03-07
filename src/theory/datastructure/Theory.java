@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class Theory{
 
     private DungTheory dungTheory;
-    private SortedMap<Offer, Set<String>> offers;
+    private LinkedHashMap<Offer, Set<String>> offers;
     private Set<net.sf.tweety.arg.dung.syntax.Argument> controlArguments;
     private Set<net.sf.tweety.arg.dung.syntax.Argument> epistemicArguments;
     private Set<net.sf.tweety.arg.dung.syntax.Argument> practicalArguments;
@@ -28,10 +28,10 @@ public class Theory{
         controlArguments = new HashSet<>();
         epistemicArguments = new HashSet<>();
         practicalArguments = new HashSet<>();
-        offers = new TreeMap<>();
+        offers = new LinkedHashMap<>();
     }
 
-    public Theory(Theory model){
+    public Theory(Theory model) {
         this();
         model.controlArguments.forEach(t-> addControlArgument(t));
         model.epistemicArguments.forEach(t -> addEpistemicArgument(t));
@@ -268,15 +268,8 @@ public class Theory{
         return offers;
     }
 
-    public void setOffers(SortedMap<Offer, Set<String>> offers) {
+    public void setOffers(LinkedHashMap<Offer, Set<String>> offers) {
         this.offers = offers;
-    }
-
-    public void setOffers(HashMap<Offer, Set<String>> offers)
-    {
-        //todo
-        this.offers = new TreeMap<>(getOffersComparator());
-        this.offers.putAll(offers);
     }
 
     public void addOfferSupport(String practicalArgument, String offer) {

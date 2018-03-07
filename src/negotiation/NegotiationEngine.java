@@ -186,9 +186,6 @@ public class NegotiationEngine {
                 caf.addAttack(att.getSource().getName(), att.getTarget().getName());
             }
         }
-
-
-
     }
 
     public boolean hasOffer() {

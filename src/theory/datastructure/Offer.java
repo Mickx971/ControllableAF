@@ -1,6 +1,7 @@
 package theory.datastructure;
 
-public class Offer{
+public class Offer {
+
     String name;
 
     public Offer() {}
@@ -19,12 +20,10 @@ public class Offer{
 
     @Override
     public boolean equals(Object o) {
-        if(o instanceof String) {
-            return o.equals(name);
-        }
-        if(o instanceof Offer) {
-            return ((Offer) o).name.equals(name);
-        }
+        if(o instanceof String)
+            return name.equals(o);
+        if(o instanceof Offer)
+            return name.equals(((Offer)o).name);
         return false;
     }
 
@@ -37,8 +36,4 @@ public class Offer{
     public String toString() {
         return name;
     }
-
-
-
-
 }
