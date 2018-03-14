@@ -1,5 +1,6 @@
 package theory.datastructure;
 
+import math.paths.PathsFinder;
 import net.sf.tweety.arg.dung.StableReasoner;
 import net.sf.tweety.arg.dung.semantics.Extension;
 import net.sf.tweety.arg.dung.syntax.Argument;
@@ -248,21 +249,22 @@ public class Theory{
                 +"\nNumberOfOffers:" + offers.size());
     }
 
-    public Pair<Extension, Set<Attack>> getNextExtensionAttackingArgument(String argName) throws Exception {
+    public Extension getNextExtensionAttackingArgument(String argName) throws Exception {
         StableReasoner stableReasoner = new StableReasoner(dungTheory);
         Argument theta = new Argument(argName);
         Optional<Extension> optEx = stableReasoner.getExtensions().stream().filter(x -> dungTheory.isAttacked(theta, x)).findAny();
         if(optEx.isPresent()) {
-            Extension ext = optEx.get();
-            Set<Argument> attakers = dungTheory.getAttackers(theta);
-            ext.retainAll(attakers);
-            Set<Attack> attacks = dungTheory.getAttacks().stream().filter(att -> att.getAttacked().equals(theta)).collect(Collectors.toSet());
-            attacks.removeIf(att -> !ext.contains(att.getAttacker()));
-            return new Pair<>(ext, attacks);
+            return optEx.get();
         }
         else {
             throw new Exception("Invalid state");
         }
+    }
+
+    public Pair<Collection<Argument>,List<Attack>> getRejectReasons(String argName) throws Exception {
+        Extension ext = getNextExtensionAttackingArgument(argName);
+        PathsFinder pFinder = new PathsFinder();
+        return pFinder.findReasonsFromExtension(this, ext, argName);
     }
 
     public Map<Offer, Set<String>> getOffers() {

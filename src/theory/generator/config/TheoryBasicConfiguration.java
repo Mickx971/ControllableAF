@@ -1,8 +1,8 @@
 package theory.generator.config;
 
 
-import math.ComplexeInterval;
-import math.SimpleInterval;
+import math.interval.ComplexeInterval;
+import math.interval.SimpleInterval;
 
 public class TheoryBasicConfiguration {
 
