@@ -100,15 +100,24 @@ public class Theory{
     }
 
     public void removeOfferSupport(Offer offer, String argumentName) throws Exception {
-        if(offers.containsKey(offer)) {
-            offers.get(offer).remove(argumentName);
+        if(offers.containsKey(offer) && offers.get(offer).contains(argumentName)) {
             Argument arg = new Argument(argumentName);
             epistemicArguments.remove(arg);
             controlArguments.remove(arg);
             practicalArguments.remove(arg);
             dungTheory.remove(arg);
         }
-        else throw new Exception("Unknown offer in theory: " + offer.getName());
+        else if(offers.containsKey(offer))
+            throw new Exception("Unknown offer in theory: " + offer.getName());
+    }
+
+    public void removeOffer(Offer offer) {
+        for(String support : offers.get(offer)) {
+            Argument practicalArgument = new Argument(support);
+            dungTheory.remove(practicalArgument);
+            practicalArguments.remove(practicalArgument);
+        }
+        offers.remove(offer);
     }
 
     public boolean hasSupportForOffer(Offer offer) {
@@ -120,15 +129,6 @@ public class Theory{
             return offers.get(offer).stream().findFirst().get();
         }
         return null;
-    }
-
-    public void removeOffer(Offer offer) {
-        for(String support : offers.get(offer)) {
-            Argument practicalArgument = new Argument(support);
-            dungTheory.remove(practicalArgument);
-            practicalArguments.remove(practicalArgument);
-        }
-        offers.remove(offer);
     }
 
     public SortedSet<Offer> getAcceptableOffers() {

@@ -317,11 +317,11 @@ public class Caf {
     }
 
     public void removeOfferSupport(Offer offer, String practicalArgument) throws Exception  {
-        if(offers.containsKey(offer)) {
-            offers.get(offer).remove(getArgument(practicalArgument));
+        if(offers.containsKey(offer) && offers.get(offer).contains(offer)) {
             removeArgument(practicalArgument);
         }
-        else throw new Exception("Unknown offer in caf: " + offer.getName());
+        else if(offers.containsKey(offer))
+            throw new Exception("Unknown offer in caf: " + offer.getName());
     }
 
     public void removeOffer(Offer offer) {

@@ -106,7 +106,6 @@ public class NegotiationEngine {
         }
     }
 
-    // TODO test: je ne suis pas sur qu'il faut retirer le support de la théorie
     private void removeOfferSupport(Offer offer, String practicalArgument) throws Exception {
         theory.removeOfferSupport(offer, practicalArgument);
         caf.removeOfferSupport(offer, practicalArgument);
