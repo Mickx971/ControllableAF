@@ -1,5 +1,6 @@
 package theory.datastructure;
 
+import math.paths.PathsFinder;
 import net.sf.tweety.arg.dung.StableReasoner;
 import net.sf.tweety.arg.dung.semantics.Extension;
 import net.sf.tweety.arg.dung.syntax.Argument;
@@ -99,15 +100,24 @@ public class Theory{
     }
 
     public void removeOfferSupport(Offer offer, String argumentName) throws Exception {
-        if(offers.containsKey(offer)) {
-            offers.get(offer).remove(argumentName);
+        if(offers.containsKey(offer) && offers.get(offer).contains(argumentName)) {
             Argument arg = new Argument(argumentName);
             epistemicArguments.remove(arg);
             controlArguments.remove(arg);
             practicalArguments.remove(arg);
             dungTheory.remove(arg);
         }
-        else throw new Exception("Unknown offer in theory: " + offer.getName());
+        else if(offers.containsKey(offer))
+            throw new Exception("Unknown offer in theory: " + offer.getName());
+    }
+
+    public void removeOffer(Offer offer) {
+        for(String support : offers.get(offer)) {
+            Argument practicalArgument = new Argument(support);
+            dungTheory.remove(practicalArgument);
+            practicalArguments.remove(practicalArgument);
+        }
+        offers.remove(offer);
     }
 
     public boolean hasSupportForOffer(Offer offer) {
@@ -119,15 +129,6 @@ public class Theory{
             return offers.get(offer).stream().findFirst().get();
         }
         return null;
-    }
-
-    public void removeOffer(Offer offer) {
-        for(String support : offers.get(offer)) {
-            Argument practicalArgument = new Argument(support);
-            dungTheory.remove(practicalArgument);
-            practicalArguments.remove(practicalArgument);
-        }
-        offers.remove(offer);
     }
 
     public SortedSet<Offer> getAcceptableOffers() {
@@ -248,21 +249,22 @@ public class Theory{
                 +"\nNumberOfOffers:" + offers.size());
     }
 
-    public Pair<Extension, Set<Attack>> getNextExtensionAttackingArgument(String argName) throws Exception {
+    public Extension getNextExtensionAttackingArgument(String argName) throws Exception {
         StableReasoner stableReasoner = new StableReasoner(dungTheory);
         Argument theta = new Argument(argName);
         Optional<Extension> optEx = stableReasoner.getExtensions().stream().filter(x -> dungTheory.isAttacked(theta, x)).findAny();
         if(optEx.isPresent()) {
-            Extension ext = optEx.get();
-            Set<Argument> attakers = dungTheory.getAttackers(theta);
-            ext.retainAll(attakers);
-            Set<Attack> attacks = dungTheory.getAttacks().stream().filter(att -> att.getAttacked().equals(theta)).collect(Collectors.toSet());
-            attacks.removeIf(att -> !ext.contains(att.getAttacker()));
-            return new Pair<>(ext, attacks);
+            return optEx.get();
         }
         else {
             throw new Exception("Invalid state");
         }
+    }
+
+    public Pair<Collection<Argument>,List<Attack>> getRejectReasons(String argName) throws Exception {
+        Extension ext = getNextExtensionAttackingArgument(argName);
+        PathsFinder pFinder = new PathsFinder();
+        return pFinder.findReasonsFromExtension(this, ext, argName);
     }
 
     public Map<Offer, Set<String>> getOffers() {

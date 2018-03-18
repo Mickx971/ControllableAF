@@ -1,4 +1,4 @@
-package math;
+package math.interval;
 
 public abstract class Interval {
     public abstract boolean isEmpty();

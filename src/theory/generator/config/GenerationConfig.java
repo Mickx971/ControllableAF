@@ -1,12 +1,10 @@
 package theory.generator.config;
 
 
-import caf.datastructure.Caf;
-import math.ComplexeInterval;
-import math.SimpleInterval;
+import math.interval.ComplexeInterval;
+import math.interval.SimpleInterval;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
-import theory.datastructure.Offer;
 
 import java.io.FileInputStream;
 import java.io.InputStream;

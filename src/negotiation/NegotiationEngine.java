@@ -6,7 +6,6 @@ import Communication.datastructure.Attack;
 import caf.datastructure.Caf;
 import caf.generator.CafGenerator;
 import com.google.common.collect.Streams;
-import net.sf.tweety.arg.dung.semantics.Extension;
 import net.sf.tweety.commons.util.Pair;
 import theory.datastructure.Theory;
 import theory.datastructure.Offer;
@@ -107,7 +106,6 @@ public class NegotiationEngine {
         }
     }
 
-    // TODO test: je ne suis pas sur qu'il faut retirer le support de la théorie
     private void removeOfferSupport(Offer offer, String practicalArgument) throws Exception {
         theory.removeOfferSupport(offer, practicalArgument);
         caf.removeOfferSupport(offer, practicalArgument);
@@ -129,7 +127,6 @@ public class NegotiationEngine {
         caf.removeOffer(offer);
     }
 
-    // TODO compute all the path in the resons
     public boolean decideUponOffer(NegotiationMessage message) throws Exception {
         if(message.getJustificationArguments()!= null &&
                 !message.getJustificationArguments().isEmpty()) {
@@ -143,10 +140,13 @@ public class NegotiationEngine {
             return true;
         }
         else {
-            Pair<Extension, Set<net.sf.tweety.arg.dung.syntax.Attack>> reason = theory.getNextExtensionAttackingArgument(argName);
-            Collection<Argument> arguments = reason.getFirst().stream().map(arg -> new Argument(arg))
+            Pair<Collection<net.sf.tweety.arg.dung.syntax.Argument>,
+                    List<net.sf.tweety.arg.dung.syntax.Attack>>
+                    reasons = theory.getRejectReasons(argName);
+
+            Collection<Argument> arguments = reasons.getFirst().stream().map(arg -> new Argument(arg))
                     .collect(Collectors.toSet());
-            Collection<Attack> attacks = reason.getSecond().stream().map(att -> new Attack(att))
+            Collection<Attack> attacks = reasons.getSecond().stream().map(att -> new Attack(att))
                     .collect(Collectors.toSet());
 
             NegotiationMessage reject = new NegotiationMessage();
