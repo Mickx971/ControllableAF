@@ -1,29 +1,27 @@
 #sharedTheory
 p_arg(a).
 p_arg(b).
-p_arg(c).
 p_arg(d).
-p_arg(g).
+p_arg(e).
+p_arg(x).
 
+att(a,x).
+att(x,a).
 att(b,a).
-att(c,a).
-att(c,g).
-
-
+att(e,b).
+att(d,x).
 
 #T1
-c_arg(f).
-c_arg(e).
-att(e,b).
-att(e,c).
-att(f,d).
-
-
 
 support(a,O1).
+support(x, O2).
 
 #T2
-att(g,c).
-att(d,a).
+c_arg(f).
+
+att(f,a).
+att(f,d).
+att(f,e).
 
 support(a,O1).
+support(x, O2).

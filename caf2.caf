@@ -1,5 +1,15 @@
 f_arg(a).
 f_arg(b).
-f_arg(c).
+u_arg(d).
+f_arg(e).
+f_arg(x).
+c_arg(f).
+
+att(a,x).
+att(x,a).
 att(b,a).
-att(c,a).
+u_att(e,b).
+att(d,x).
+att(f,a).
+att(f,d).
+att(f,e).
