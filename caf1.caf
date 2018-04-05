@@ -3,9 +3,10 @@ f_arg(b).
 f_arg(d).
 f_arg(e).
 f_arg(x).
-
 att(a,x).
 att(x,a).
 u_att(b,a).
 att(e,b).
 att(d,x).
+support(a,O1).
+support(x,O2).

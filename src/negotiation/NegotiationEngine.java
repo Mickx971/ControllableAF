@@ -72,6 +72,7 @@ public class NegotiationEngine {
         System.out.println("# " + agent.getLocalName() + " wants to propose " + offer.getName() + " with the argument " + practicalArgument + ".");
         System.out.println("# " + agent.getLocalName() + " is checking if " + practicalArgument + " is accepted without control.");
 
+        System.out.println(caf);
         if(caf.argumentIsCredulouslyAcceptedWithoutControl(practicalArgument)) {
             removeOfferSupport(offer, practicalArgument);
             communicator.sendMessage(proposition);

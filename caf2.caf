@@ -4,7 +4,6 @@ u_arg(d).
 f_arg(e).
 f_arg(x).
 c_arg(f).
-
 att(a,x).
 att(x,a).
 att(b,a).
@@ -13,3 +12,5 @@ att(d,x).
 att(f,a).
 att(f,d).
 att(f,e).
+support(a,O1).
+support(x,O2).
