@@ -50,6 +50,7 @@ public class TheoryCommand {
                 System.exit(1);
                 return;
             }
+
             TheoryGenerator generator = new TheoryGenerator();
             if(cmd.hasOption('g'))
             {

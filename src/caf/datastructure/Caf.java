@@ -317,8 +317,12 @@ public class Caf {
     }
 
     public void removeOfferSupport(Offer offer, String practicalArgument) throws Exception  {
+<<<<<<< HEAD
         if(offers.containsKey(offer) && offers.get(offer).stream()
                 .map(Argument::getName).anyMatch(argName -> argName.equals(practicalArgument))) {
+=======
+        if(offers.containsKey(offer) && !offers.get(offer).isEmpty()) {
+>>>>>>> ccdca4c983dab37c2adbaa5531410fbaec78423b
             removeArgument(practicalArgument);
         }
         else if(offers.containsKey(offer))

@@ -77,9 +77,18 @@ public class TheoryGenerator {
             T1.setOffers(intersectWithTheoryPracticalArguments(T1, offerSupports));
             T2.setOffers(intersectWithTheoryPracticalArguments(T2, offerSupports));
 
+            generateAttacksBetweenAllPracticalArguments(T1);
+            generateAttacksBetweenAllPracticalArguments(T2);
+            generateAttacksBetweenAllPracticalArguments(sharedTheory);
+
             return new TheoryGeneration(T1, T2, sharedTheory);
         }
         return null;
+    }
+
+    private void generateAttacksBetweenAllPracticalArguments(Theory theory) {
+        List<Attack> attacksBetweenPracticalArguments = getAllPossibleAttacks(theory.getPracticalArguments(), theory.getPracticalArguments());
+        theory.getDungTheory().addAllAttacks(attacksBetweenPracticalArguments);
     }
 
     public TheoryGeneration parseFromFile(String fileName) throws Exception{
@@ -320,10 +329,10 @@ public class TheoryGenerator {
     private List<Attack> getAllPossibleAttacks(Set<Argument> attacker, Set<Argument> attacked)
     {
         List<Attack> possibleAttacks = new ArrayList<>();
-        attacker.forEach(t ->{
-            attacked.forEach(s ->{
-                if(!t.equals(s)){
-                    possibleAttacks.add(new Attack(t, s));
+        attacker.forEach(_attacker ->{
+            attacked.forEach(_attacked ->{
+                if(!_attacker.equals(_attacked)){
+                    possibleAttacks.add(new Attack(_attacker, _attacked));
                 }
             });
         });

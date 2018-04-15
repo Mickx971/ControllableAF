@@ -41,13 +41,5 @@ public class Main {
         }
 
 
-//        try {
-//            SatSolver.setDefaultSolver(new Sat4jSolver());
-//            TheoryGenerator g = new TheoryGenerator();
-//            StableReasoner sr = new StableReasoner(g.parseFromFile("theory.theory").getT1().getDungTheory());
-//            System.out.println(sr.getExtensions());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 }
