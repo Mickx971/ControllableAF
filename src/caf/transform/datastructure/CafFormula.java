@@ -65,6 +65,15 @@ public class CafFormula {
         uattPropositions.put(pair, attPropositions.get(pair));
     }
 
+    public void setUdAtt(Attack att) {
+        Pair<Argument, Argument> pair = new Pair<>(att.getArguments()[0], att.getArguments()[1]);
+        uattPropositions.put(pair, attPropositions.get(pair));
+
+        pair = new Pair<>(att.getArguments()[1], att.getArguments()[0]);
+        uattPropositions.put(pair, attPropositions.get(pair));
+    }
+
+
     public Proposition getOnAcFor(Argument arg) {
         return onAcPropositions.get(arg);
     }

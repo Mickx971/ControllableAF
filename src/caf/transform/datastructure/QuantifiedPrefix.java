@@ -36,4 +36,12 @@ public abstract class QuantifiedPrefix {
     public QuantifiedPrefixType getType() {
         return type;
     }
+
+    @Override
+    public String toString() {
+        return "QuantifiedPrefix{" +
+                "type=" + type +
+                ", quantifiedPropositions=" + quantifiedPropositions +
+                '}';
+    }
 }

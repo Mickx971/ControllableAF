@@ -8,6 +8,7 @@ import caf.transform.datastructure.*;
 
 import net.sf.tweety.commons.util.Pair;
 import net.sf.tweety.logics.pl.syntax.*;
+import scala.collection.parallel.ParIterableLike;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -91,61 +92,30 @@ public class CafFormulaGenerator {
     public CafFormula createCafFormula(boolean withControl) {
         CafFormula cafFormula = new CafFormula();
         caf.getArguments().forEach(a1 -> caf.getArguments().forEach(a2 -> cafFormula.addAttFor(a1, a2)));
+
         caf.getUncertainAttacks().forEach(att -> cafFormula.setUAtt(att));
+        caf.getUndirectedAttacks().forEach(att -> cafFormula.setUdAtt(att));
         caf.getUncertainArguments().forEach(a -> cafFormula.addOnUFor(a));
         caf.getArguments().forEach(arg -> cafFormula.addAccFor(arg));
         if(withControl) {
             caf.getControlArguments().forEach(a -> cafFormula.addOnAcFor(a));
         }
+
+        createFormula(cafFormula, caf.getUndirectedAttacks());
         return cafFormula;
     }
 
-    public CafFormula addCredulousAcceptanceFormula(CafFormula cafFormula, Attack ua, Collection<Argument> arguments)
-    {
-        Conjunction formula = createStableSemanticFormula(cafFormula);
-        arguments.forEach(t-> formula.add(cafFormula.getAccFor(t)));
 
-        if(ua != null) {
-
-            Argument[] args = ua.getArguments();
-            Proposition att01 = cafFormula.getAttFor(args[0], args[1]);
-            Proposition att10 = cafFormula.getAttFor(args[1], args[0]);
-
-            Disjunction d = new Disjunction();
-            d.add(new Conjunction(new Negation(att01), att10              ).combineWithAnd(formula));
-            d.add(new Conjunction(att01,               new Negation(att10)).combineWithAnd(formula));
-            d.add(new Conjunction(att01,               att10              ).combineWithAnd(formula));
-
-            if(cafFormula.getFormula() == null) {
-                Conjunction temp = new Conjunction();
-                temp.add(d);
-                cafFormula.setFormula(temp);
-            }
-            else {
-                cafFormula.setFormula(cafFormula.getFormula().combineWithAnd(d).collapseAssociativeFormulas());
-            }
-
-        }
-        else {
-            cafFormula.setFormula(formula);
-        }
-
-        return cafFormula;
-    }
 
     public CafFormula encodeCredulousFormulaForQBF(Collection<Argument> arguments, boolean withControl)
     {
         CafFormula cafFormula = createCafFormula(withControl);
-        if(caf.getUndirectedAttacks().isEmpty()) {
-            addCredulousAcceptanceFormula(cafFormula, null, arguments);
-        }
-        else {
-            for (Attack ua : caf.getUndirectedAttacks()) {
-                addCredulousAcceptanceFormula(cafFormula, ua, arguments);
-            }
-        }
+        addAccArgumentsToFormula(cafFormula, arguments);
+        System.out.println(cafFormula.getFormula());
+        //return TseitinTransformation.toCNF(cafFormula);
+        cafFormula.setFormula(cafFormula.getFormula().toCnf());
+        return cafFormula;
 
-        return TseitinTransformation.toCNF(cafFormula);
     }
 
     public PropositionalQuantifiedFormula encodeCredulousQBFWithControl(Collection<Argument> arguments)
@@ -216,6 +186,70 @@ public class CafFormulaGenerator {
         {
             e.printStackTrace();
         }
+
+    }
+//    public CafFormula addCredulousAcceptanceFormula(CafFormula cafFormula, Attack ua, Collection<Argument> arguments)
+//    {
+//
+//
+//        if(ua != null) {
+//
+//            Argument[] args = ua.getArguments();
+//            Proposition att01 = cafFormula.getAttFor(args[0], args[1]);
+//            Proposition att10 = cafFormula.getAttFor(args[1], args[0]);
+//
+//            Conjunction d = new Conjunction();
+//
+//            if(cafFormula.getFormula() == null) {
+//                Conjunction temp = new Conjunction();
+//                temp.add(d);
+//                cafFormula.setFormula(temp);
+//            }
+//            else {
+//                cafFormula.setFormula(cafFormula.getFormula().combineWithAnd(d).collapseAssociativeFormulas());
+//            }
+//
+//        }
+//        else {
+//            Conjunction formula = createStableSemanticFormula(cafFormula);
+//            cafFormula.setFormula(formula.collapseAssociativeFormulas());
+//        }
+//        System.out.println(formula);
+//        System.out.println(cafFormula.getFormula());
+//
+//        return cafFormula;
+//    }
+
+    private void addAccArgumentsToFormula(CafFormula cafFormula,Collection<Argument> arguments)
+    {
+        PropositionalFormula formula = cafFormula.getFormula();
+        for (Argument arg: arguments)
+        {
+            formula = formula.combineWithAnd(cafFormula.getAccFor(arg));
+        }
+
+        cafFormula.setFormula(formula);
+
+    }
+    private void createFormula(CafFormula cafFormula, Collection<Attack> undirectedAttacks)
+    {
+        Conjunction stableSemanticFormula = createStableSemanticFormula(cafFormula);
+        Disjunction formula = new Disjunction();
+        formula.add(stableSemanticFormula);
+        if(undirectedAttacks == null)
+            return;
+
+        for(Attack ua: undirectedAttacks)
+        {
+            Argument[] args = ua.getArguments();
+            Proposition att01 = cafFormula.getAttFor(args[0], args[1]);
+            Proposition att10 = cafFormula.getAttFor(args[1], args[0]);
+
+            Conjunction temp = (new Negation(att01)).combineWithAnd(new Negation(att10));
+            formula.add(temp);
+        }
+
+        cafFormula.setFormula(formula.collapseAssociativeFormulas());
 
     }
 }
