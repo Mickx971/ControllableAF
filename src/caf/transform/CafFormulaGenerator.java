@@ -111,10 +111,9 @@ public class CafFormulaGenerator {
     {
         CafFormula cafFormula = createCafFormula(withControl);
         addAccArgumentsToFormula(cafFormula, arguments);
-        System.out.println(cafFormula.getFormula());
-        //return TseitinTransformation.toCNF(cafFormula);
-        cafFormula.setFormula(cafFormula.getFormula().toCnf());
-        return cafFormula;
+        return TseitinTransformation.toCNF(cafFormula);
+//        cafFormula.setFormula(cafFormula.getFormula().toCnf());
+//        return cafFormula;
 
     }
 

@@ -71,8 +71,6 @@ public class NegotiationEngine {
         System.out.println("\n");
         System.out.println("# " + agent.getLocalName() + " wants to propose " + offer.getName() + " with the argument " + practicalArgument + ".");
         System.out.println("# " + agent.getLocalName() + " is checking if " + practicalArgument + " is accepted without control.");
-
-        System.out.println(caf);
         if(caf.argumentIsCredulouslyAcceptedWithoutControl(practicalArgument)) {
             removeOfferSupport(offer, practicalArgument);
             communicator.sendMessage(proposition);
@@ -115,6 +113,7 @@ public class NegotiationEngine {
     private void chooseSupportArg(Offer offer) throws Exception {
         caf.datastructure.Argument support = caf.getSupportForOffer(offer);
         if(support != null) {
+            System.out.println("support argument; " + support.getName());
             defendOffer(offer, support.getName());
         }
         else {

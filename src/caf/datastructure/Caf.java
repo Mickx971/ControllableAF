@@ -41,6 +41,7 @@ public class Caf {
     }
 
     public void removeArgument(String argName) {
+
         Argument arg = args.remove(argName);
         arg.getAllAttacks().forEach(att -> {
             try {
@@ -51,7 +52,9 @@ public class Caf {
             }
         });
         attacks.removeAll(arg.getAllAttacks());
+
     }
+
 
     private Collection<Argument> getTypedArguments(Argument.Type type) {
         return args.values().stream().filter(arg -> arg.getType() == type).collect(Collectors.toSet());
@@ -317,13 +320,22 @@ public class Caf {
     }
 
     public void removeOfferSupport(Offer offer, String practicalArgument) throws Exception  {
-<<<<<<< HEAD
+        System.out.println(offers);
         if(offers.containsKey(offer) && offers.get(offer).stream()
                 .map(Argument::getName).anyMatch(argName -> argName.equals(practicalArgument))) {
-=======
-        if(offers.containsKey(offer) && !offers.get(offer).isEmpty()) {
->>>>>>> ccdca4c983dab37c2adbaa5531410fbaec78423b
+
             removeArgument(practicalArgument);
+//            Set<Argument> tmp = offers.get(offer);
+//            tmp.remove(getArgument(practicalArgument));
+//            offers.put(offer, tmp);
+
+//            if(offers.get(offer).isEmpty())
+//            {
+//                offers.remove(offer);
+//            }
+            offers.remove(offer);
+
+
         }
         else if(offers.containsKey(offer))
             throw new Exception("Unknown offer in caf: " + offer.getName());

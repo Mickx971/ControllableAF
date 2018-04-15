@@ -1,0 +1,202 @@
+#sharedTheory
+e_arg(SE3).
+e_arg(SE2).
+e_arg(SE1).
+e_arg(SE0).
+p_arg(SP0).
+p_arg(SP2).
+p_arg(SP1).
+p_arg(SP3).
+att(SE0, SP3).
+att(SP3, SP1).
+att(SP3, SP0).
+att(SP1, SP3).
+att(SE3, SE1).
+att(SP2, SP1).
+att(SE3, SE2).
+att(SE1, SE2).
+att(SP0, SP1).
+att(SE2, SE1).
+att(SP1, SP0).
+att(SE0, SE3).
+att(SE2, SP0).
+att(SE0, SE1).
+att(SE2, SP3).
+
+#T1
+e_arg(SE3).
+e_arg(AE4).
+e_arg(SE2).
+e_arg(AE5).
+e_arg(AE6).
+e_arg(AE7).
+e_arg(AE8).
+e_arg(AE9).
+e_arg(AE11).
+e_arg(AE10).
+e_arg(SE1).
+e_arg(SE0).
+p_arg(SP0).
+p_arg(SP2).
+p_arg(SP1).
+p_arg(SP3).
+c_arg(AC2).
+c_arg(AC3).
+c_arg(AC0).
+c_arg(AC1).
+att(AC3, AC0).
+att(AE4, AE6).
+att(AE4, AE5).
+att(AC2, AC3).
+att(AE11, SP1).
+att(AE5, AE8).
+att(AE9, SP0).
+att(AE6, SE0).
+att(AC1, SP0).
+att(AE6, SE3).
+att(AE10, SP3).
+att(AE7, AE9).
+att(AE5, SE1).
+att(AE9, AE5).
+att(AC3, SP2).
+att(AE10, SE0).
+att(AE11, AE9).
+att(AE7, SE0).
+att(AE7, SE1).
+att(SP2, SP1).
+att(AC2, SP3).
+att(SE0, AE11).
+att(AC0, AE6).
+att(AC0, AE4).
+att(AC1, AE9).
+att(AE9, SE1).
+att(AE9, SE2).
+att(AE10, AE8).
+att(AC1, AE4).
+att(AC3, AE4).
+att(AC1, SE1).
+att(AC1, SE2).
+att(AC2, AE7).
+att(AC2, AE6).
+att(AC2, SE0).
+att(SE1, SP1).
+att(AC2, AE4).
+att(AC1, AE11).
+att(AC0, SE0).
+att(AC0, SE2).
+att(AC3, AE7).
+att(SE3, SP0).
+att(SE2, SP3).
+att(AC3, SE1).
+att(AC3, AE11).
+att(SE1, AE6).
+att(SE1, AE5).
+att(SE1, AE7).
+att(SE1, AE9).
+att(AE8, AE10).
+att(SE0, AE4).
+att(SE0, AE6).
+att(SE3, AE6).
+att(SE1, SE3).
+att(SE3, AE8).
+att(AE9, AE10).
+att(AC0, AC2).
+att(SE2, SE1).
+att(AE8, AE11).
+att(SE0, SE3).
+att(SE0, SE1).
+att(SE2, AE6).
+att(AC1, AC3).
+support(SP0,O0).
+support(SP3,O1).
+support(SP1,O2).
+support(SP2,O3).
+
+#T2
+e_arg(SE3).
+e_arg(BE4).
+e_arg(SE2).
+e_arg(BE6).
+e_arg(BE5).
+e_arg(BE8).
+e_arg(BE7).
+e_arg(BE9).
+e_arg(BE11).
+e_arg(BE10).
+e_arg(SE1).
+e_arg(SE0).
+p_arg(SP0).
+p_arg(SP2).
+p_arg(SP1).
+p_arg(SP3).
+c_arg(BC2).
+c_arg(BC1).
+c_arg(BC3).
+c_arg(BC0).
+att(BC0, SE2).
+att(BC3, BE10).
+att(SE3, SE1).
+att(BC3, SE2).
+att(BC1, SE2).
+att(BE5, BE6).
+att(BE5, BE7).
+att(BE11, BE5).
+att(BE10, BE9).
+att(BC2, SE1).
+att(BC2, SE2).
+att(BE6, BE5).
+att(BE8, BE9).
+att(BE4, SP0).
+att(SE1, BE4).
+att(SE1, BE7).
+att(SE2, BE11).
+att(BE4, SP2).
+att(BE9, BE8).
+att(BE7, BE9).
+att(SE0, BE6).
+att(SP2, SP1).
+att(SE3, BE10).
+att(BE8, BE7).
+att(SE3, BE5).
+att(BC0, BE4).
+att(SE3, BE6).
+att(BC0, BE7).
+att(BC0, BE9).
+att(BE5, SP0).
+att(SE2, BE7).
+att(BC2, BE4).
+att(BE8, SP2).
+att(BC2, BE6).
+att(BC2, BE9).
+att(BE9, SP1).
+att(BE5, BE11).
+att(BE7, SP1).
+att(BC1, BE4).
+att(BE8, SP1).
+att(SE3, SP1).
+att(BE5, SE3).
+att(BE9, SP3).
+att(BC3, BE5).
+att(SE2, SP0).
+att(BC3, BE6).
+att(BC3, BE7).
+att(BE9, BE11).
+att(SE2, SP1).
+att(BE7, SE0).
+att(BE7, SE1).
+att(BC2, SP2).
+att(BC2, SP3).
+att(BE10, BE11).
+att(BE6, SE0).
+att(BE6, SE2).
+att(BC0, BC2).
+att(BE9, SE3).
+att(BC1, BC0).
+att(SE0, SE2).
+att(BE8, SE1).
+att(SE0, SE1).
+att(SE1, SE0).
+support(SP0,O0).
+support(SP3,O1).
+support(SP1,O2).
+support(SP2,O3).
