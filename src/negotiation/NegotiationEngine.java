@@ -113,7 +113,6 @@ public class NegotiationEngine {
     private void chooseSupportArg(Offer offer) throws Exception {
         caf.datastructure.Argument support = caf.getSupportForOffer(offer);
         if(support != null) {
-            System.out.println("support argument; " + support.getName());
             defendOffer(offer, support.getName());
         }
         else {

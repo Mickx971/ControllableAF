@@ -320,28 +320,22 @@ public class Caf {
     }
 
     public void removeOfferSupport(Offer offer, String practicalArgument) throws Exception  {
-        System.out.println(offers);
         if(offers.containsKey(offer) && offers.get(offer).stream()
                 .map(Argument::getName).anyMatch(argName -> argName.equals(practicalArgument))) {
 
+            Set<Argument> tmp = offers.get(offer);
+            tmp.remove(getArgument(practicalArgument));
+            offers.put(offer, tmp);
             removeArgument(practicalArgument);
-//            Set<Argument> tmp = offers.get(offer);
-//            tmp.remove(getArgument(practicalArgument));
-//            offers.put(offer, tmp);
-
-//            if(offers.get(offer).isEmpty())
-//            {
-//                offers.remove(offer);
-//            }
-            offers.remove(offer);
-
-
         }
-        else if(offers.containsKey(offer))
+        else if(!offers.containsKey(offer))
             throw new Exception("Unknown offer in caf: " + offer.getName());
     }
 
     public void removeOffer(Offer offer) {
+        if(offers.get(offer) == null)
+            return;
+
         for(Argument support : offers.get(offer)) {
             removeArgument(support);
         }
