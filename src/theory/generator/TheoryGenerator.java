@@ -74,8 +74,8 @@ public class TheoryGenerator {
             HashMap<Offer, Set<String>> offerSupports = generateOfferSupports(
                     generationConfig.getOffersRate(),allPracticalArguments);
 
-            T1.setOffers(intersectWithTheoryPracticalArguments(T1, offerSupports));
-            T2.setOffers(intersectWithTheoryPracticalArguments(T2, offerSupports));
+            T1.setOffers(reorderRandomly(intersectWithTheoryPracticalArguments(T1, offerSupports)));
+            T2.setOffers(reorderRandomly(intersectWithTheoryPracticalArguments(T2, offerSupports)));
 
             generateAttacksBetweenAllPracticalArguments(T1);
             generateAttacksBetweenAllPracticalArguments(T2);
@@ -399,6 +399,23 @@ public class TheoryGenerator {
        return intersection;
     }
 
+    private LinkedHashMap<Offer, Set<String>> reorderRandomly(LinkedHashMap<Offer, Set<String>> map)
+    {
+        List<Map.Entry<Offer, Set<String>>> entryList = new ArrayList<>(map.entrySet());
+
+        LinkedHashMap<Offer, Set<String>> newOrder = new LinkedHashMap<>();
+
+        int random = 0;
+        while(!entryList.isEmpty())
+        {
+            random = r.nextInt(entryList.size());
+            newOrder.put(entryList.get(random).getKey(), entryList.get(random).getValue());
+            entryList.remove(random);
+        }
+
+        return newOrder;
+
+    }
 
 
 

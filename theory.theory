@@ -1,202 +1,231 @@
 #sharedTheory
-e_arg(SE3).
-e_arg(SE2).
-e_arg(SE1).
 e_arg(SE0).
 p_arg(SP0).
-p_arg(SP2).
-p_arg(SP1).
-p_arg(SP3).
-att(SE0, SP3).
-att(SP3, SP1).
-att(SP3, SP0).
-att(SP1, SP3).
-att(SE3, SE1).
-att(SP2, SP1).
-att(SE3, SE2).
-att(SE1, SE2).
-att(SP0, SP1).
-att(SE2, SE1).
-att(SP1, SP0).
-att(SE0, SE3).
-att(SE2, SP0).
-att(SE0, SE1).
-att(SE2, SP3).
 
 #T1
-e_arg(SE3).
 e_arg(AE4).
-e_arg(SE2).
 e_arg(AE5).
 e_arg(AE6).
 e_arg(AE7).
 e_arg(AE8).
 e_arg(AE9).
-e_arg(AE11).
-e_arg(AE10).
-e_arg(SE1).
+e_arg(AE1).
+e_arg(AE2).
 e_arg(SE0).
+e_arg(AE3).
 p_arg(SP0).
-p_arg(SP2).
-p_arg(SP1).
-p_arg(SP3).
-c_arg(AC2).
-c_arg(AC3).
+p_arg(AP1).
+p_arg(AP2).
+p_arg(AP3).
+p_arg(AP4).
+p_arg(AP5).
+p_arg(AP6).
 c_arg(AC0).
 c_arg(AC1).
-att(AC3, AC0).
+att(SP0, AP3).
+att(AE5, AE3).
+att(SP0, AP2).
+att(AE4, AE9).
+att(SP0, AP5).
+att(SP0, AP4).
 att(AE4, AE6).
-att(AE4, AE5).
-att(AC2, AC3).
-att(AE11, SP1).
-att(AE5, AE8).
-att(AE9, SP0).
-att(AE6, SE0).
-att(AC1, SP0).
-att(AE6, SE3).
-att(AE10, SP3).
-att(AE7, AE9).
-att(AE5, SE1).
-att(AE9, AE5).
-att(AC3, SP2).
-att(AE10, SE0).
-att(AE11, AE9).
-att(AE7, SE0).
-att(AE7, SE1).
-att(SP2, SP1).
-att(AC2, SP3).
-att(SE0, AE11).
-att(AC0, AE6).
-att(AC0, AE4).
-att(AC1, AE9).
-att(AE9, SE1).
-att(AE9, SE2).
-att(AE10, AE8).
-att(AC1, AE4).
-att(AC3, AE4).
-att(AC1, SE1).
-att(AC1, SE2).
-att(AC2, AE7).
-att(AC2, AE6).
-att(AC2, SE0).
-att(SE1, SP1).
-att(AC2, AE4).
-att(AC1, AE11).
+att(SP0, AP6).
+att(AE4, SE0).
+att(AC1, AP4).
+att(SP0, AP1).
+att(AC0, AP5).
+att(AP2, AP1).
+att(AE7, AE5).
+att(AP1, AP6).
+att(AP1, AP5).
+att(AE7, AE2).
+att(AP1, AP4).
+att(AE7, AE1).
+att(AP1, AP3).
+att(AP1, AP2).
+att(AP3, AP2).
+att(AP3, AP1).
+att(AP2, AP6).
+att(AP2, AP5).
+att(AP2, AP4).
+att(AE8, AE2).
+att(AP2, AP3).
+att(AE7, AE8).
+att(AP4, AP3).
+att(AP2, SP0).
+att(AE9, AE7).
+att(AP4, AP2).
+att(AE9, AE6).
+att(AP4, AP1).
+att(AP3, AP6).
+att(AP3, AP5).
+att(AE9, AE2).
+att(AP3, AP4).
+att(AP3, SP0).
+att(AP5, AP4).
+att(AP5, AP3).
+att(AP1, SP0).
+att(AP5, AP2).
+att(AP5, AP1).
+att(AP4, AP6).
+att(AP4, AP5).
+att(SE0, AP6).
+att(AP6, AP5).
+att(AC1, AE1).
+att(AP6, AP4).
+att(AC0, AE7).
+att(AP6, AP3).
+att(AP6, AP2).
+att(AP6, AP1).
+att(AP5, SP0).
+att(AC0, AE3).
+att(AP5, AP6).
+att(AE9, SE0).
+att(AC1, AE6).
+att(AP4, SP0).
+att(SE0, AP3).
+att(AC1, AE3).
 att(AC0, SE0).
-att(AC0, SE2).
-att(AC3, AE7).
-att(SE3, SP0).
-att(SE2, SP3).
-att(AC3, SE1).
-att(AC3, AE11).
-att(SE1, AE6).
-att(SE1, AE5).
-att(SE1, AE7).
-att(SE1, AE9).
-att(AE8, AE10).
+att(AE3, AP2).
+att(AP6, SP0).
+att(AE2, AP5).
+att(AE4, AP6).
+att(AE4, AP5).
+att(AE7, AP1).
+att(AE6, AP6).
+att(AE6, AP1).
+att(AE8, AP2).
 att(SE0, AE4).
-att(SE0, AE6).
-att(SE3, AE6).
-att(SE1, SE3).
-att(SE3, AE8).
-att(AE9, AE10).
-att(AC0, AC2).
-att(SE2, SE1).
-att(AE8, AE11).
-att(SE0, SE3).
-att(SE0, SE1).
-att(SE2, AE6).
-att(AC1, AC3).
+att(AE4, SP0).
+att(AE7, AP5).
+att(AE1, AE3).
+att(AE7, AP4).
+att(SE0, AE9).
+att(AE7, SP0).
+att(AE2, AE7).
+att(AE2, AE5).
+att(AE8, AP6).
+att(AE3, AE9).
+att(AE3, AE4).
+att(AE9, AP4).
+support(AP5,O2).
+support(AP1,O1).
+support(AP2,O1).
+support(AP4,O1).
+support(AP6,O3).
 support(SP0,O0).
-support(SP3,O1).
-support(SP1,O2).
-support(SP2,O3).
+support(AP3,O0).
 
 #T2
-e_arg(SE3).
 e_arg(BE4).
-e_arg(SE2).
+e_arg(BE3).
 e_arg(BE6).
 e_arg(BE5).
 e_arg(BE8).
 e_arg(BE7).
 e_arg(BE9).
-e_arg(BE11).
-e_arg(BE10).
-e_arg(SE1).
+e_arg(BE2).
 e_arg(SE0).
+e_arg(BE1).
 p_arg(SP0).
-p_arg(SP2).
-p_arg(SP1).
-p_arg(SP3).
-c_arg(BC2).
+p_arg(BP1).
+p_arg(BP3).
+p_arg(BP2).
+p_arg(BP5).
+p_arg(BP4).
+p_arg(BP6).
 c_arg(BC1).
-c_arg(BC3).
 c_arg(BC0).
-att(BC0, SE2).
-att(BC3, BE10).
-att(SE3, SE1).
-att(BC3, SE2).
-att(BC1, SE2).
-att(BE5, BE6).
-att(BE5, BE7).
-att(BE11, BE5).
-att(BE10, BE9).
-att(BC2, SE1).
-att(BC2, SE2).
+att(BP6, SP0).
+att(BC0, BP1).
+att(BE5, BE1).
+att(BC0, BP4).
+att(BE9, BP5).
+att(BP5, SP0).
+att(BE3, BE9).
+att(BE4, BE3).
+att(BP1, BP2).
+att(BP1, BP3).
+att(BE7, BE2).
+att(BP1, BP4).
+att(BP1, BP5).
+att(BP1, BP6).
+att(BP2, BP1).
+att(BE5, BE8).
+att(BE1, SP0).
 att(BE6, BE5).
-att(BE8, BE9).
-att(BE4, SP0).
-att(SE1, BE4).
-att(SE1, BE7).
-att(SE2, BE11).
-att(BE4, SP2).
+att(BP3, BP4).
+att(BP3, BP5).
+att(BP3, BP6).
+att(BE9, BE5).
+att(BE9, BE6).
+att(BP4, BP1).
+att(BE9, BE7).
+att(BP4, BP2).
 att(BE9, BE8).
-att(BE7, BE9).
-att(SE0, BE6).
-att(SP2, SP1).
-att(SE3, BE10).
+att(BP4, BP3).
+att(BE8, BE1).
+att(BP2, BP3).
+att(BE8, BE2).
+att(BP2, BP4).
+att(SE0, BE3).
+att(BP2, BP5).
+att(BP2, BP6).
+att(SE0, BE5).
+att(BP3, BP1).
 att(BE8, BE7).
-att(SE3, BE5).
+att(BP3, BP2).
+att(BC0, BE3).
+att(BP5, BP6).
 att(BC0, BE4).
-att(SE3, BE6).
-att(BC0, BE7).
-att(BC0, BE9).
-att(BE5, SP0).
-att(SE2, BE7).
-att(BC2, BE4).
-att(BE8, SP2).
-att(BC2, BE6).
-att(BC2, BE9).
-att(BE9, SP1).
-att(BE5, BE11).
-att(BE7, SP1).
-att(BC1, BE4).
-att(BE8, SP1).
-att(SE3, SP1).
-att(BE5, SE3).
-att(BE9, SP3).
-att(BC3, BE5).
-att(SE2, SP0).
-att(BC3, BE6).
-att(BC3, BE7).
-att(BE9, BE11).
-att(SE2, SP1).
+att(BP6, BP1).
+att(BP6, BP2).
+att(BP6, BP3).
+att(BC0, BE8).
+att(BP6, BP4).
+att(BE7, SP0).
+att(BP6, BP5).
+att(BP4, BP5).
+att(BP4, BP6).
+att(BP5, BP1).
+att(BP5, BP2).
+att(BP5, BP3).
+att(BP5, BP4).
+att(SP0, BP2).
+att(SP0, BP1).
+att(SP0, BP4).
+att(SP0, BP3).
+att(SP0, BP6).
+att(SP0, BP5).
+att(BC1, BE3).
+att(BC1, BE6).
+att(BE1, BP3).
+att(SE0, SP0).
+att(BE4, BP2).
+att(BC0, SP0).
+att(BE4, BP4).
+att(BP1, SP0).
 att(BE7, SE0).
-att(BE7, SE1).
-att(BC2, SP2).
-att(BC2, SP3).
-att(BE10, BE11).
-att(BE6, SE0).
-att(BE6, SE2).
-att(BC0, BC2).
-att(BE9, SE3).
-att(BC1, BC0).
-att(SE0, SE2).
-att(BE8, SE1).
-att(SE0, SE1).
-att(SE1, SE0).
+att(BE6, BP3).
+att(BE6, BP5).
+att(BE6, BP6).
+att(BP2, SP0).
+att(BE5, BP3).
+att(BE1, BE9).
+att(BC0, BC1).
+att(BE2, BE4).
+att(BE8, BP6).
+att(BP4, SP0).
+att(BE7, BP3).
+att(BE7, BP4).
+att(BE1, BE5).
+att(BE1, BE7).
+att(BP3, SP0).
+att(SE0, BP2).
 support(SP0,O0).
-support(SP3,O1).
-support(SP1,O2).
-support(SP2,O3).
+support(BP3,O0).
+support(BP1,O3).
+support(BP6,O3).
+support(BP2,O1).
+support(BP5,O2).
+support(BP4,O2).
