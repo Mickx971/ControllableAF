@@ -112,8 +112,6 @@ public class CafFormulaGenerator {
         CafFormula cafFormula = createCafFormula(withControl);
         addAccArgumentsToFormula(cafFormula, arguments);
         return TseitinTransformation.toCNF(cafFormula);
-//        cafFormula.setFormula(cafFormula.getFormula().toCnf());
-//        return cafFormula;
 
     }
 
@@ -187,37 +185,6 @@ public class CafFormulaGenerator {
         }
 
     }
-//    public CafFormula addCredulousAcceptanceFormula(CafFormula cafFormula, Attack ua, Collection<Argument> arguments)
-//    {
-//
-//
-//        if(ua != null) {
-//
-//            Argument[] args = ua.getArguments();
-//            Proposition att01 = cafFormula.getAttFor(args[0], args[1]);
-//            Proposition att10 = cafFormula.getAttFor(args[1], args[0]);
-//
-//            Conjunction d = new Conjunction();
-//
-//            if(cafFormula.getFormula() == null) {
-//                Conjunction temp = new Conjunction();
-//                temp.add(d);
-//                cafFormula.setFormula(temp);
-//            }
-//            else {
-//                cafFormula.setFormula(cafFormula.getFormula().combineWithAnd(d).collapseAssociativeFormulas());
-//            }
-//
-//        }
-//        else {
-//            Conjunction formula = createStableSemanticFormula(cafFormula);
-//            cafFormula.setFormula(formula.collapseAssociativeFormulas());
-//        }
-//        System.out.println(formula);
-//        System.out.println(cafFormula.getFormula());
-//
-//        return cafFormula;
-//    }
 
     private void addAccArgumentsToFormula(CafFormula cafFormula,Collection<Argument> arguments)
     {

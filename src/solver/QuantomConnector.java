@@ -29,7 +29,7 @@ public class QuantomConnector {
 
     public QuantomConnector() {
         this.path = Paths.get(System.getProperty("user.dir"));
-        solverCommand = "./bin/quantom --solvemode=0 ";
+        solverCommand = "./quantom --solvemode=0 ";
     }
 
     public void setAgentName(String agentName) {

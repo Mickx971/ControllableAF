@@ -106,7 +106,9 @@ public class NegotiationEngine {
     }
 
     private void removeOfferSupport(Offer offer, String practicalArgument) throws Exception {
-        theory.removeOfferSupport(offer, practicalArgument);
+        if(theory.getOffers().containsKey(offer) &&
+                theory.getOffers().get(offer).contains(practicalArgument))
+            theory.removeOfferSupport(offer, practicalArgument);
         caf.removeOfferSupport(offer, practicalArgument);
     }
 
