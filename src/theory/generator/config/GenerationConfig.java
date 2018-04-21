@@ -226,6 +226,12 @@ public class GenerationConfig {
                         prop.getProperty("caf1.rateOfControlArguments")
                 )
         );
+
+        c.setRateOfUncertainArguments(
+                Double.parseDouble(
+                        prop.getProperty("caf1.rateOfUncertainArguments")
+                )
+        );
         c.setRateOfCertainAttacks(
                 Double.parseDouble(
                         prop.getProperty("caf1.rateOfCertainAttacks")
@@ -260,6 +266,13 @@ public class GenerationConfig {
                         prop.getProperty("caf2.rateOfControlArguments")
                 )
         );
+
+        c.setRateOfUncertainArguments(
+                Double.parseDouble(
+                        prop.getProperty("caf2.rateOfUncertainArguments")
+                )
+        );
+
         c.setRateOfCertainAttacks(
                 Double.parseDouble(
                         prop.getProperty("caf2.rateOfCertainAttacks")
@@ -304,6 +317,7 @@ public class GenerationConfig {
     public List<Double> getOffersRate() {
         return offersRate;
     }
+
 
     public void setOffersRate(List<Double> offersRate) {
         this.offersRate = offersRate;
