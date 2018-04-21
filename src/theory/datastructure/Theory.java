@@ -107,7 +107,7 @@ public class Theory{
             practicalArguments.remove(arg);
             dungTheory.remove(arg);
         }
-        else if(offers.containsKey(offer))
+        else if(!offers.containsKey(offer))
             throw new Exception("Unknown offer in theory: " + offer.getName());
     }
 

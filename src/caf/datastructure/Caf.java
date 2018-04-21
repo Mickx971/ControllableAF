@@ -341,4 +341,12 @@ public class Caf {
         }
         offers.remove(offer);
     }
+
+    public void removeOnlyOfferSupport(Offer offer, String practicalArgument) {
+        if (!offers.containsKey(offer))
+            return;
+
+        offers.get(offer).remove(practicalArgument);
+    }
+
 }

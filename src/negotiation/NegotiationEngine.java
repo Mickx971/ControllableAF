@@ -72,7 +72,7 @@ public class NegotiationEngine {
         System.out.println("# " + agent.getLocalName() + " wants to propose " + offer.getName() + " with the argument " + practicalArgument + ".");
         System.out.println("# " + agent.getLocalName() + " is checking if " + practicalArgument + " is accepted without control.");
         if(caf.argumentIsCredulouslyAcceptedWithoutControl(practicalArgument)) {
-            removeOfferSupport(offer, practicalArgument);
+            removeOnlyOfferSupport(offer, practicalArgument);
             communicator.sendMessage(proposition);
         }
         else {
@@ -105,10 +105,15 @@ public class NegotiationEngine {
         }
     }
 
+    private void removeOnlyOfferSupport(Offer offer, String practicalArgument) throws Exception{
+        caf.removeOnlyOfferSupport(offer, practicalArgument);
+        theory.removeOfferSupport(offer, practicalArgument);
+    }
+
     private void removeOfferSupport(Offer offer, String practicalArgument) throws Exception {
-        if(theory.getOffers().containsKey(offer) &&
-                theory.getOffers().get(offer).contains(practicalArgument))
+        if(theory.getOffers().containsKey(offer) && theory.getOffers().get(offer).contains(practicalArgument))
             theory.removeOfferSupport(offer, practicalArgument);
+
         caf.removeOfferSupport(offer, practicalArgument);
     }
 
