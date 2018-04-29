@@ -77,6 +77,10 @@ public class TheoryGenerator {
             T1.setOffers(reorderRandomly(intersectWithTheoryPracticalArguments(T1, offerSupports)));
             T2.setOffers(reorderRandomly(intersectWithTheoryPracticalArguments(T2, offerSupports)));
 
+            deleteAllAttacksFromControlToPracticalArguments(sharedTheory);
+            deleteAllAttacksFromControlToPracticalArguments(T1);
+            deleteAllAttacksFromControlToPracticalArguments(T2);
+
             generateAttacksBetweenAllPracticalArguments(T1);
             generateAttacksBetweenAllPracticalArguments(T2);
             generateAttacksBetweenAllPracticalArguments(sharedTheory);
@@ -85,6 +89,8 @@ public class TheoryGenerator {
         }
         return null;
     }
+
+
 
     private void generateAttacksBetweenAllPracticalArguments(Theory theory) {
         List<Attack> attacksBetweenPracticalArguments = getAllPossibleAttacks(theory.getPracticalArguments(), theory.getPracticalArguments());
@@ -417,6 +423,16 @@ public class TheoryGenerator {
 
     }
 
+    private void deleteAllAttacksFromControlToPracticalArguments(Theory theory) {
+        Set<Attack> attacksToDelete = theory.getDungTheory().getAttacks().stream().filter(attack -> {
+            return theory.getControlArguments().contains(attack.getAttacker()) &&
+                    theory.getPracticalArguments().contains(attack.getAttacked());
+        }).collect(Collectors.toSet());
+
+        for(Attack attack: attacksToDelete){
+            theory.getDungTheory().remove(attack);
+        }
+    }
 
 
 }
