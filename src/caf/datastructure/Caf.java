@@ -169,10 +169,14 @@ public class Caf {
         return attacks;
     }
 
-    public Collection<Argument> computePSA(String practicalArgument) throws Exception {
+    public Set<Argument> computePSA(String practicalArgument) throws Exception {
+        return computePSA(practicalArgument, null);
+    }
+
+    public Set<Argument> computePSA(String practicalArgument, Set<Set<Argument>> potentSetsUsed) throws Exception {
         Caf tempCaf = createTempCaf(true);
         if(tempCaf.hasArgument(practicalArgument))
-            return qConnector.isCredulouslyAcceptedWithControl(tempCaf, practicalArgument)
+            return qConnector.isCredulouslyAcceptedWithControl(tempCaf, practicalArgument, potentSetsUsed)
                 .stream().map(arg -> getArgument(arg.getName())).collect(Collectors.toSet());
         else
             return new HashSet<>();

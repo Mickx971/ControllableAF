@@ -22,7 +22,7 @@ public class CafFormulaGenerator {
 
     private Caf caf;
 
-    public Conjunction createStableSemanticFormula(CafFormula cafFormula)
+    public void addStableSemanticFormula(CafFormula cafFormula)
     {
         Conjunction stableFormula = new Conjunction();
         Conjunction conjunction;
@@ -86,7 +86,7 @@ public class CafFormulaGenerator {
             })
         );
 
-        return stableFormula;
+        cafFormula.setFormula(stableFormula);
     }
 
     public CafFormula createCafFormula(boolean withControl) {
@@ -101,33 +101,34 @@ public class CafFormulaGenerator {
             caf.getControlArguments().forEach(a -> cafFormula.addOnAcFor(a));
         }
 
-        createFormula(cafFormula, caf.getUndirectedAttacks());
         return cafFormula;
     }
 
 
 
-    public CafFormula encodeCredulousFormulaForQBF(Collection<Argument> arguments, boolean withControl)
+    public CafFormula encodeCredulousFormulaForQBF(Collection<Argument> arguments, boolean withControl, Set<Set<Argument>> potentSetsUsed)
     {
         CafFormula cafFormula = createCafFormula(withControl);
+        addStableSemanticFormula(cafFormula);
         addAccArgumentsToFormula(cafFormula, arguments);
+        addPotentSetsUsedToFormula(cafFormula, potentSetsUsed);
+        addUndirectedConstraintClauses(cafFormula, caf.getUndirectedAttacks());
         return TseitinTransformation.toCNF(cafFormula);
-
     }
 
-    public PropositionalQuantifiedFormula encodeCredulousQBFWithControl(Collection<Argument> arguments)
+    public PropositionalQuantifiedFormula encodeCredulousQBFWithControl(Collection<Argument> arguments, Set<Set<Argument>> potentSetsUsed)
     {
-        return encodeCredulousQBF(arguments, true);
+        return encodeCredulousQBF(arguments, true, potentSetsUsed);
     }
 
     public PropositionalQuantifiedFormula encodeCredulousQBFWithoutControl(Collection<Argument> arguments)
     {
-        return encodeCredulousQBF(arguments, false);
+        return encodeCredulousQBF(arguments, false, null);
     }
 
-    public PropositionalQuantifiedFormula encodeCredulousQBF(Collection<Argument> arguments, boolean withControl)
+    public PropositionalQuantifiedFormula encodeCredulousQBF(Collection<Argument> arguments, boolean withControl, Set<Set<Argument>> potentSetsUsed)
     {
-        CafFormula cafFormula = encodeCredulousFormulaForQBF(arguments, withControl);
+        CafFormula cafFormula = encodeCredulousFormulaForQBF(arguments, withControl, potentSetsUsed);
 
         PropositionalQuantifiedFormula credulousQbf = new PropositionalQuantifiedFormula();
 
@@ -175,7 +176,7 @@ public class CafFormulaGenerator {
             try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream("caf2017.txt"), "utf-8"))) {
                 writer.write(formulaGenerator.encodeCredulousFormulaForQBF(
-                        formulaGenerator.getCaf().getFixedArguments(), false
+                        formulaGenerator.getCaf().getFixedArguments(), false, null
                 ).getFormula().toString());
             }
         }
@@ -186,7 +187,7 @@ public class CafFormulaGenerator {
 
     }
 
-    private void addAccArgumentsToFormula(CafFormula cafFormula,Collection<Argument> arguments)
+    private void addAccArgumentsToFormula(CafFormula cafFormula, Collection<Argument> arguments)
     {
         PropositionalFormula formula = cafFormula.getFormula();
         for (Argument arg: arguments)
@@ -195,11 +196,12 @@ public class CafFormulaGenerator {
         }
 
         cafFormula.setFormula(formula);
-
     }
-    private void createFormula(CafFormula cafFormula, Collection<Attack> undirectedAttacks)
+
+    private void addUndirectedConstraintClauses(CafFormula cafFormula, Collection<Attack> undirectedAttacks)
     {
-        Conjunction stableSemanticFormula = createStableSemanticFormula(cafFormula);
+        Conjunction stableSemanticFormula = (Conjunction) cafFormula.getFormula();
+
         Disjunction formula = new Disjunction();
         formula.add(stableSemanticFormula);
         if(undirectedAttacks == null)
@@ -216,6 +218,16 @@ public class CafFormulaGenerator {
         }
 
         cafFormula.setFormula(formula.collapseAssociativeFormulas());
+    }
 
+    private void addPotentSetsUsedToFormula(CafFormula cafFormula, Set<Set<Argument>> potentSetsUsed) {
+        if(potentSetsUsed == null)
+            return;
+        Conjunction stableSemanticFormula = (Conjunction) cafFormula.getFormula();
+        for(Set<Argument> ps: potentSetsUsed) {
+            Conjunction potentSetConjunction = new Conjunction();
+            ps.stream().forEach(a -> potentSetConjunction.add(cafFormula.getAccFor(a)));
+            stableSemanticFormula.add(new Negation(potentSetConjunction));
+        }
     }
 }

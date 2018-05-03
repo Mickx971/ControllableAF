@@ -21,10 +21,12 @@ public class NegotiationEngine {
     private final NegotiationAgent agent;
     private Caf caf;
     private Theory theory;
+    private Set<Set<caf.datastructure.Argument>> potentSetsUsed;
 
     public NegotiationEngine(NegotiationBehaviour communicator, NegotiationAgent agent) throws Exception{
         this.communicator = communicator;
         this.agent = agent;
+        this.potentSetsUsed = new HashSet<>();
         TheoryGenerator g = new TheoryGenerator();
         TheoryGeneration generation = g.parseFromFile(NegotiationAgent.theoryFileName);
         if(communicator.getAgent().getId() == 1)
@@ -80,7 +82,14 @@ public class NegotiationEngine {
             System.out.println("# " + practicalArgument + " is not accepted without control.");
             System.out.println("# " + agent.getLocalName() + " is searching a potent set to defend " + practicalArgument + ".");
 
-            Collection<caf.datastructure.Argument> potentSet = caf.computePSA(practicalArgument);
+            Set<caf.datastructure.Argument> potentSet;
+            if(this.agent.isUseMaxQBF()) {
+                potentSet = caf.computePSA(practicalArgument);
+            }
+            else {
+                potentSet = caf.computePSA(practicalArgument, potentSetsUsed);
+                potentSetsUsed.add(potentSet);
+            }
             if(potentSet != null && !potentSet.isEmpty()) {
 
                 System.out.println("# Potent set found");
@@ -99,6 +108,7 @@ public class NegotiationEngine {
             }
             else {
                 System.out.println("# Potent set not found");
+                potentSetsUsed = new HashSet<>();
                 removeOfferSupport(offer, practicalArgument);
                 chooseSupportArg(offer);
             }

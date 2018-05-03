@@ -25,18 +25,23 @@ public class QuantomConnector {
 
     private final Path path;
     private String cnfFileName = "tempcaf.cnf";
-    private String solverCommand;
+    private String[] solverCommand;
 
     public QuantomConnector() {
         this.path = Paths.get(System.getProperty("user.dir"));
-        solverCommand = "./quantom --solvemode=0 ";
+        solverCommand = new String[2];
+        solverCommand[0] = "./quantom --solvemode=0 ";
+        solverCommand[1] = "./quantom --solvemode=1 ";
     }
 
     public void setAgentName(String agentName) {
         cnfFileName = agentName + "Caf.cnf";
     }
 
-    public Collection<Argument> isCredulouslyAcceptedWithControl(Caf tempCaf, String argName) throws Exception {
+    public Collection<Argument> isCredulouslyAcceptedWithControl(Caf tempCaf, String argName, Set<Set<Argument>> potentSetsUsed) throws Exception {
+
+        int useMaxQBF = potentSetsUsed == null ? 0 : 1;
+
         CafFormulaGenerator formulaGen = new CafFormulaGenerator();
         formulaGen.setCaf(tempCaf);
         Argument theta = tempCaf.getArgument(argName);
@@ -44,7 +49,7 @@ public class QuantomConnector {
         if(theta == null)
             throw new Exception("Unknown argument in Caf named: " + argName);
 
-        PropositionalQuantifiedFormula qbfFormula = formulaGen.encodeCredulousQBFWithControl(Arrays.asList(new Argument[]{theta}));
+        PropositionalQuantifiedFormula qbfFormula = formulaGen.encodeCredulousQBFWithControl(Arrays.asList(new Argument[]{theta}), potentSetsUsed);
 
         PropositionalFormula formula = qbfFormula.getCafFormula().getFormula();
         if(formula instanceof Tautology) {
@@ -55,7 +60,7 @@ public class QuantomConnector {
         }
 
         HashSet<Argument> res = new HashSet<>();
-        computePotentSet(qbfFormula, res);
+        computePotentSet(qbfFormula, res, useMaxQBF);
         return res;
     }
 
@@ -75,12 +80,12 @@ public class QuantomConnector {
             return false;
         }
 
-        return computePotentSet(qbfFormula, new HashSet<>());
+        return computePotentSet(qbfFormula, new HashSet<>(), 0);
     }
 
-    private boolean computePotentSet(PropositionalQuantifiedFormula qbfFormula, Set<Argument> res) throws Exception {
+    private boolean computePotentSet(PropositionalQuantifiedFormula qbfFormula, Set<Argument> res, int mode) throws Exception {
         createCNFFile(qbfFormula, path.resolve(cnfFileName));
-        Process p = Runtime.getRuntime().exec(solverCommand + cnfFileName);
+        Process p = Runtime.getRuntime().exec(solverCommand[mode] + cnfFileName);
         return readResult(p, qbfFormula, res);
     }
 
@@ -204,7 +209,7 @@ public class QuantomConnector {
             qConnector.setAgentName("temp");
 
 
-            Collection<Argument> result = qConnector.isCredulouslyAcceptedWithControl(caf, "SP0");
+            Collection<Argument> result = qConnector.isCredulouslyAcceptedWithControl(caf, "SP0", new HashSet<>());
             System.out.println(result);
         }
         catch (Exception e)
