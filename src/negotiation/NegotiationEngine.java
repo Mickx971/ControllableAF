@@ -83,7 +83,7 @@ public class NegotiationEngine {
             System.out.println("# " + agent.getLocalName() + " is searching a potent set to defend " + practicalArgument + ".");
 
             Set<caf.datastructure.Argument> potentSet;
-            if(this.agent.isUseMaxQBF()) {
+            if(!this.agent.isUseMaxQBF()) {
                 potentSet = caf.computePSA(practicalArgument);
             }
             else {
