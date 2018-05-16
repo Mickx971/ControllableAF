@@ -15,9 +15,9 @@ public class CafConfig {
     public void testCoherence() throws Exception
     {
         if(rateOfFixedArguments + rateOfUncertainArguments<0 ||
-                rateOfFixedArguments + rateOfCertainAttacks > 1)
+                rateOfFixedArguments + rateOfUncertainArguments > 1)
         {
-            throw new Exception("error: rateOfFixedArguments + rateOfCertainAttacks must be in [0,1]");
+            throw new Exception("error: rateOfFixedArguments + rateOfUncertainArguments must be in [0,1]");
         }
 
         if(rateOfControlArguments<0 || rateOfControlArguments > 1)
