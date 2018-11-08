@@ -98,6 +98,20 @@ public class CafGenerator {
 
         ).intValue();
 
+        if(cafConfig.getRateOfUncertainArguments() + cafConfig.getRateOfFixedArguments() == 1){
+            Double uncertainNumber = cafConfig.getRateOfUncertainArguments()
+                    - (int)(cafConfig.getRateOfUncertainArguments());
+
+            Double fixedNumber = cafConfig.getRateOfFixedArguments() -
+                    (int)cafConfig.getRateOfFixedArguments();
+
+            if(fixedNumber >= uncertainNumber)
+                nbFixedArguments++;
+            else
+                nbUncertainArguments++;
+
+        }
+
         for(int i = 0; i<nbFixedArguments; i++)
         {
             random = r.nextInt(temp.size());
@@ -114,10 +128,13 @@ public class CafGenerator {
 
 
 
+
+
         
         fixedArguments.forEach(arg-> caf.addFixedArgument(arg.getName()));
         controlArguments.forEach(arg-> caf.addControlArgument(arg.getName()));
         uncertainArguments.forEach(arg->caf.addUncertainArgument(arg.getName()));
+
         List<Attack> certainAttacks ;
         List<Attack> uncertainAttacks = new ArrayList<>();
         List<Attack> undirectedAttacks = new ArrayList<>();
