@@ -3,6 +3,7 @@ package theory.generator.config;
 public class CafConfig {
     private double rateOfFixedArguments ;
     private double rateOfControlArguments;
+    private double rateOfUncertainArguments;
     private double rateOfCertainAttacks;
     private double rateOfUncertainAttacks;
     private double rateOfUndirectedAttacks;
@@ -13,9 +14,10 @@ public class CafConfig {
 
     public void testCoherence() throws Exception
     {
-        if(rateOfFixedArguments<0 || rateOfFixedArguments > 1)
+        if(rateOfFixedArguments + rateOfUncertainArguments<0 ||
+                rateOfFixedArguments + rateOfUncertainArguments > 1)
         {
-            throw new Exception("rateOfFixedArguments must be in [0,1]");
+            throw new Exception("error: rateOfFixedArguments + rateOfUncertainArguments must be in [0,1]");
         }
 
         if(rateOfControlArguments<0 || rateOfControlArguments > 1)
@@ -95,5 +97,13 @@ public class CafConfig {
 
     public void setDensityOfControlAttacks(double densityOfControlAttacks) {
         this.densityOfControlAttacks = densityOfControlAttacks;
+    }
+
+    public double getRateOfUncertainArguments() {
+        return rateOfUncertainArguments;
+    }
+
+    public void setRateOfUncertainArguments(double rateOfUncertainArguments) {
+        this.rateOfUncertainArguments = rateOfUncertainArguments;
     }
 }

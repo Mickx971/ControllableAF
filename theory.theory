@@ -1,161 +1,29 @@
 #sharedTheory
-e_arg(SE0).
-p_arg(SP0).
+p_arg(a).
+p_arg(b).
+p_arg(c).
+p_arg(d).
+p_arg(g).
+
+att(b,a).
+att(c,a).
+att(c,g).
+
+
 
 #T1
-e_arg(AE4).
-e_arg(AE5).
-e_arg(AE1).
-e_arg(AE2).
-e_arg(SE0).
-e_arg(AE3).
-p_arg(SP0).
-p_arg(AP1).
-p_arg(AP2).
-p_arg(AP3).
-p_arg(AP4).
-p_arg(AP5).
-p_arg(AP6).
-c_arg(AC2).
-c_arg(AC3).
-c_arg(AC4).
-c_arg(AC5).
-c_arg(AC0).
-c_arg(AC1).
-att(AC3, AC0).
-att(AC2, AC5).
-att(AC2, AC4).
-att(AE4, AE5).
-att(AE2, SE0).
-att(AC1, AP4).
-att(AC4, AC2).
-att(AC1, AP2).
-att(AC4, AC0).
-att(AC5, AC1).
-att(AC4, AC5).
-att(AC3, AP5).
-att(AC3, AP2).
-att(AE5, SE0).
-att(AP4, AP1).
-att(AC4, AP3).
-att(AP3, AP4).
-att(AP3, SP0).
-att(AC4, AP1).
-att(AP5, AP4).
-att(AP5, AP2).
-att(AC2, SP0).
-att(AC5, AP5).
-att(AP6, AP5).
-att(AP6, AP3).
-att(AP6, AP1).
-att(AC0, AE5).
-att(AC0, AE3).
-att(AC0, AE2).
-att(AE1, AP1).
-att(SE0, AP2).
-att(SE0, AP3).
-att(AC2, SE0).
-att(AC2, AE5).
-att(AC2, AE4).
-att(AC4, AE4).
-att(AE3, AP3).
-att(AC4, AE3).
-att(AC3, AE5).
-att(AE2, AP5).
-att(AC1, SE0).
-att(AC5, AE5).
-att(AE4, AP3).
-att(AE4, AP1).
-att(AE1, AE3).
-att(AE1, SE0).
-att(AE2, AE5).
-att(AE4, AE3).
-att(AC2, AC0).
-att(AE3, AE5).
-att(AE3, AE4).
-support(SP0,O0).
-support(AP4,O0).
-support(AP3,O1).
-support(AP5,O1).
-support(AP1,O2).
-support(AP2,O3).
-support(AP6,O3).
+c_arg(f).
+c_arg(e).
+att(e,b).
+att(e,c).
+att(f,d).
+
+
+
+support(a,O1).
 
 #T2
-e_arg(BE4).
-e_arg(BE3).
-e_arg(BE5).
-e_arg(BE2).
-e_arg(SE0).
-e_arg(BE1).
-p_arg(SP0).
-p_arg(BP1).
-p_arg(BP3).
-p_arg(BP2).
-p_arg(BP5).
-p_arg(BP4).
-p_arg(BP6).
-c_arg(BC2).
-c_arg(BC1).
-c_arg(BC4).
-c_arg(BC3).
-c_arg(BC5).
-c_arg(BC0).
-att(BC2, BC3).
-att(BC2, BC4).
-att(BE5, BE4).
-att(BC3, BC2).
-att(BE3, BE5).
-att(BE4, BE2).
-att(BC2, BC1).
-att(BC4, BC5).
-att(BP1, BP2).
-att(BC2, BP1).
-att(BC5, BC4).
-att(BC0, BP5).
-att(BC1, BP3).
-att(BC4, BC1).
-att(BP3, BP5).
-att(BP4, BP3).
-att(BC5, BP1).
-att(BC4, SE0).
-att(BE3, SP0).
-att(BC0, BE2).
-att(BC0, BE3).
-att(BP6, BP2).
-att(BP6, BP4).
-att(BC1, BE2).
-att(BE5, SP0).
-att(BP5, BP2).
-att(SP0, BP6).
-att(BE2, BP2).
-att(BE3, SE0).
-att(BE2, BP3).
-att(BC3, BE4).
-att(BC2, BE1).
-att(BE1, BP1).
-att(BE2, SE0).
-att(BE3, BP6).
-att(BC5, BE3).
-att(BE4, BP3).
-att(BE4, BP4).
-att(BC5, BE5).
-att(BE3, BP3).
-att(BC4, BE4).
-att(BE3, BP4).
-att(BP1, SP0).
-att(BE5, BP1).
-att(BE5, BP3).
-att(BE5, BP6).
-att(SE0, BP5).
-att(BE2, BE3).
-att(BE2, BE5).
-att(BE1, BE2).
-att(BE1, BE5).
-support(SP0,O0).
-support(BP3,O0).
-support(BP5,O1).
-support(BP1,O2).
-support(BP6,O2).
-support(BP2,O3).
-support(BP4,O3).
+att(g,c).
+att(d,a).
+
+support(a,O1).

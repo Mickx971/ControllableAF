@@ -67,17 +67,34 @@ public class TheoryGenerator {
             Theory T2 = generateTheoryFromSharedTheory(
                     sharedTheory, generationConfig.getT2(), T2_ARG_NAME
             );
+
             Set<Argument> allPracticalArguments = new HashSet<>(T1.getPracticalArguments());
             allPracticalArguments.addAll(T2.getPracticalArguments());
 
             HashMap<Offer, Set<String>> offerSupports = generateOfferSupports(
                     generationConfig.getOffersRate(),allPracticalArguments);
-            T1.setOffers(intersectWithTheoryPracticalArguments(T1, offerSupports));
-            T2.setOffers(intersectWithTheoryPracticalArguments(T2, offerSupports));
+
+            T1.setOffers(reorderRandomly(intersectWithTheoryPracticalArguments(T1, offerSupports)));
+            T2.setOffers(reorderRandomly(intersectWithTheoryPracticalArguments(T2, offerSupports)));
+
+            deleteAllAttacksFromControlToPracticalArguments(sharedTheory);
+            deleteAllAttacksFromControlToPracticalArguments(T1);
+            deleteAllAttacksFromControlToPracticalArguments(T2);
+
+            generateAttacksBetweenAllPracticalArguments(T1);
+            generateAttacksBetweenAllPracticalArguments(T2);
+            generateAttacksBetweenAllPracticalArguments(sharedTheory);
 
             return new TheoryGeneration(T1, T2, sharedTheory);
         }
         return null;
+    }
+
+
+
+    private void generateAttacksBetweenAllPracticalArguments(Theory theory) {
+        List<Attack> attacksBetweenPracticalArguments = getAllPossibleAttacks(theory.getPracticalArguments(), theory.getPracticalArguments());
+        theory.getDungTheory().addAllAttacks(attacksBetweenPracticalArguments);
     }
 
     public TheoryGeneration parseFromFile(String fileName) throws Exception{
@@ -318,10 +335,10 @@ public class TheoryGenerator {
     private List<Attack> getAllPossibleAttacks(Set<Argument> attacker, Set<Argument> attacked)
     {
         List<Attack> possibleAttacks = new ArrayList<>();
-        attacker.forEach(t ->{
-            attacked.forEach(s ->{
-                if(!t.equals(s)){
-                    possibleAttacks.add(new Attack(t, s));
+        attacker.forEach(_attacker ->{
+            attacked.forEach(_attacked ->{
+                if(!_attacker.equals(_attacked)){
+                    possibleAttacks.add(new Attack(_attacker, _attacked));
                 }
             });
         });
@@ -369,18 +386,17 @@ public class TheoryGenerator {
 
     }
 
-    private HashMap<Offer, Set<String>> intersectWithTheoryPracticalArguments(
+    private LinkedHashMap<Offer, Set<String>> intersectWithTheoryPracticalArguments(
             Theory theory,
             HashMap<Offer, Set<String>> offerArgumentAttribution
             )
     {
-        HashMap<Offer, Set<String>> intersection = new HashMap<>();
+        LinkedHashMap<Offer, Set<String>> intersection = new LinkedHashMap<>();
 
         Set<String> allTheoryArguments = theory.getPracticalArguments().stream()
                 .map(a -> a.getName()).collect(Collectors.toSet());
 
-        offerArgumentAttribution.keySet().forEach(o->{
-
+        offerArgumentAttribution.keySet().forEach(o -> {
             HashSet clone = new HashSet<>(offerArgumentAttribution.get(o));
             clone.retainAll(allTheoryArguments);
             intersection.put(o, clone);
@@ -389,7 +405,34 @@ public class TheoryGenerator {
        return intersection;
     }
 
+    private LinkedHashMap<Offer, Set<String>> reorderRandomly(LinkedHashMap<Offer, Set<String>> map)
+    {
+        List<Map.Entry<Offer, Set<String>>> entryList = new ArrayList<>(map.entrySet());
 
+        LinkedHashMap<Offer, Set<String>> newOrder = new LinkedHashMap<>();
+
+        int random = 0;
+        while(!entryList.isEmpty())
+        {
+            random = r.nextInt(entryList.size());
+            newOrder.put(entryList.get(random).getKey(), entryList.get(random).getValue());
+            entryList.remove(random);
+        }
+
+        return newOrder;
+
+    }
+
+    private void deleteAllAttacksFromControlToPracticalArguments(Theory theory) {
+        Set<Attack> attacksToDelete = theory.getDungTheory().getAttacks().stream().filter(attack -> {
+            return theory.getControlArguments().contains(attack.getAttacker()) &&
+                    theory.getPracticalArguments().contains(attack.getAttacked());
+        }).collect(Collectors.toSet());
+
+        for(Attack attack: attacksToDelete){
+            theory.getDungTheory().remove(attack);
+        }
+    }
 
 
 }

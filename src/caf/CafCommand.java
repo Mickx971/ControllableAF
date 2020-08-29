@@ -1,12 +1,16 @@
-package theory;
-import net.sf.tweety.arg.dung.syntax.Argument;
+package caf;
+
+
 import org.apache.commons.cli.*;
+import theory.datastructure.CafGeneration;
+import theory.datastructure.Theory;
 import theory.datastructure.TheoryGeneration;
+import theory.generator.CafGenerator;
 import theory.generator.TheoryGenerator;
 import theory.generator.config.GenerationConfig;
 
+public class CafCommand {
 
-public class theory {
     public static void main(String argv[])
     {
         try {
@@ -15,6 +19,10 @@ public class theory {
             Option generate = new Option("g", "generate", false,
                     "if the command must generate a theory.");
             generate.setRequired(true);
+
+            Option input = new Option("i", "input", true,
+                    "theory input file.");
+            input.setRequired(false);
 
             Option seed = new Option("s", "seed", true, "seed");
             seed.setRequired(false);
@@ -34,6 +42,7 @@ public class theory {
             options.addOptionGroup(exclusiveOptions);
             options.addOption(seed);
             options.addOption(output);
+            options.addOption(input);
 
 
 
@@ -41,42 +50,53 @@ public class theory {
             CommandLineParser parser = new DefaultParser();
             HelpFormatter formatter = new HelpFormatter();
             CommandLine cmd;
+            CafGenerator cafGenerator = new CafGenerator();
             try {
                 cmd = parser.parse(options, argv);
             } catch (ParseException e) {
                 System.out.println(e.getMessage());
-                formatter.printHelp("theory", options);
+                formatter.printHelp("caf", options);
 
                 System.exit(1);
                 return;
             }
-            TheoryGenerator generator = new TheoryGenerator();
+
             if(cmd.hasOption('g'))
             {
+                TheoryGenerator theoryGenerator = new TheoryGenerator();
+                if(!cmd.hasOption('i'))
+                {
+                    System.out.println("option i is required.");
+                    formatter.printHelp("caf", options);
+                    System.exit(1);
+                }
 
-                generator.getGenerationConfig().loadConfigFromFile(GenerationConfig.generationConfigFile);
-                generator.getGenerationConfig().setCoherent();
+                TheoryGeneration theoryGeneration =
+                        theoryGenerator.parseFromFile(cmd.getOptionValue('i'));
+
+                cafGenerator.setConfigFile(GenerationConfig.generationConfigFile);
+
+                cafGenerator.setTheoryGeneration(theoryGeneration);
                 if(cmd.hasOption('s'))
                 {
-                    generator.setSeed(Long.parseLong(cmd.getOptionValue("s")));
+                    cafGenerator.setSeed(Long.parseLong(cmd.getOptionValue("s")));
                 }
-                TheoryGeneration g = generator.generate();
-                String outputFile = "theory.theory";
+                CafGeneration cafGeneration = cafGenerator.generate();
+                String outputFile = ".caf";
                 if(cmd.hasOption('o'))
                 {
                     outputFile = cmd.getOptionValue("o");
                 }
-                g.writeToFile(outputFile);
+                cafGeneration.writeToFiles(outputFile);
 
             }
-            else if(cmd.hasOption("d"))
+            else
             {
-                TheoryGeneration g = generator.parseFromFile(cmd.getOptionValue('d'));
+                CafGeneration g = cafGenerator.parseFiles(cmd.getOptionValue('d'));
                 System.out.println(g.getStats());
             }
-
-
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }

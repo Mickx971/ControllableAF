@@ -38,7 +38,7 @@ public class NegotiationMessage {
     public static NegotiationMessage getNegotiationMessage(ACLMessage message) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         NegotiationMessage negMess = objectMapper.readValue(message.getContent(), NegotiationMessage.class);
-        negMess.setSender(message.getSender().getName());
+        negMess.setSender(message.getSender().getLocalName());
         return negMess;
     }
 
@@ -100,20 +100,20 @@ public class NegotiationMessage {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Message: \n");
-        sb.append("Sender: " + sender + "\n");
-        sb.append("Type: " + type + "\n");
-        sb.append("Offer: " + offer + "\n");
-        sb.append("arg: " + (practicalArgument==null ? null:practicalArgument.getName()) + "\n");
+        sb.append("\tSender:\t" + sender + "\n");
+        sb.append("\tType:\t" + type + "\n");
+        sb.append("\tOffer:\t" + offer + "\n");
+        sb.append("\targ:\t" + (practicalArgument==null ? null:practicalArgument.getName()) + "\n");
         if(justificationArguments != null && !justificationArguments.isEmpty()) {
-            sb.append("reason arg :\n");
+            sb.append("\treason arg :\n");
             for (Argument arg : justificationArguments) {
-                sb.append("\t" + arg.getName() + "\n");
+                sb.append("\t\t" + arg.getName() + "\n");
             }
         }
         if(justificationAttacks != null && !justificationAttacks.isEmpty()) {
-            sb.append("reason att :\n");
+            sb.append("\treason att :\n");
             for (Attack att : justificationAttacks) {
-                sb.append("\t(" + att.getSource().getName() +", "+ att.getTarget().getName() + ")\n");
+                sb.append("\t\t(" + att.getSource().getName() +", "+ att.getTarget().getName() + ")\n");
             }
         }
         return sb.toString();

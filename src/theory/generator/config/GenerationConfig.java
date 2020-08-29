@@ -1,12 +1,10 @@
 package theory.generator.config;
 
 
-import caf.datastructure.Caf;
-import math.ComplexeInterval;
-import math.SimpleInterval;
+import math.interval.ComplexeInterval;
+import math.interval.SimpleInterval;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
-import theory.datastructure.Offer;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -228,6 +226,12 @@ public class GenerationConfig {
                         prop.getProperty("caf1.rateOfControlArguments")
                 )
         );
+
+        c.setRateOfUncertainArguments(
+                Double.parseDouble(
+                        prop.getProperty("caf1.rateOfUncertainArguments")
+                )
+        );
         c.setRateOfCertainAttacks(
                 Double.parseDouble(
                         prop.getProperty("caf1.rateOfCertainAttacks")
@@ -262,6 +266,13 @@ public class GenerationConfig {
                         prop.getProperty("caf2.rateOfControlArguments")
                 )
         );
+
+        c.setRateOfUncertainArguments(
+                Double.parseDouble(
+                        prop.getProperty("caf2.rateOfUncertainArguments")
+                )
+        );
+
         c.setRateOfCertainAttacks(
                 Double.parseDouble(
                         prop.getProperty("caf2.rateOfCertainAttacks")
@@ -306,6 +317,7 @@ public class GenerationConfig {
     public List<Double> getOffersRate() {
         return offersRate;
     }
+
 
     public void setOffersRate(List<Double> offersRate) {
         this.offersRate = offersRate;

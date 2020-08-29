@@ -1,12 +1,11 @@
 package theory.generator;
 
 import caf.datastructure.Caf;
-import javafx.util.Pair;
-import net.sf.tweety.arg.dung.semantics.ArgumentStatus;
 import net.sf.tweety.arg.dung.syntax.Argument;
 import net.sf.tweety.arg.dung.syntax.Attack;
-import scala.collection.parallel.ParIterableLike;
+import net.sf.tweety.commons.util.Pair;
 import theory.datastructure.CafGeneration;
+import theory.datastructure.Offer;
 import theory.datastructure.Theory;
 import theory.generator.config.CafConfig;
 import theory.generator.config.GenerationConfig;
@@ -49,63 +48,99 @@ public class CafGenerator {
     {
         Theory sharedTheory = theoryGeneration.getSharedTheory();
         Caf caf = new Caf();
+
         List<Argument> controlArguments = new ArrayList<>();
         controlArguments.addAll(myTheory.getControlArguments());
         controlArguments.removeAll(sharedTheory.getControlArguments());
+
         int nbControlArguments =
                 new Double(
                         cafConfig.getRateOfControlArguments()*controlArguments.size()
                 ).intValue();
-        List<Argument> rest = controlArguments;
+
+
+        List<Argument> temp = controlArguments;
         controlArguments = new ArrayList<>();
+
         int random;
         for(int i = 0; i<nbControlArguments; i++)
         {
-            random = r.nextInt(rest.size());
-            controlArguments.add(rest.get(random));
-            rest.remove(random);
+            random = r.nextInt(temp.size());
+            controlArguments.add(temp.get(random));
+            temp.remove(random);
         }
 
+        //adding all the shared theory to the fixed part
+        temp = new ArrayList<>();
+        temp.addAll(sharedTheory.getControlArguments());
+        temp.addAll(sharedTheory.getEpistemicArguments());
+        temp.addAll(otherTheory.getPracticalArguments());
+        temp.addAll(myTheory.getPracticalArguments());
 
-        List<Argument> fixedArguments = new ArrayList<>();
-        fixedArguments.addAll(sharedTheory.getControlArguments());
-        fixedArguments.addAll(sharedTheory.getEpistemicArguments());
-        fixedArguments.addAll(sharedTheory.getPracticalArguments());
+        List<Argument> fixedArguments = new HashSet<>(temp).stream().collect(Collectors.toList());
 
-        rest = new ArrayList<>();
-        rest.addAll(otherTheory.getEpistemicArguments());
-        rest.addAll(otherTheory.getPracticalArguments());
-        rest.addAll(otherTheory.getControlArguments());
-        rest.removeAll(controlArguments);
-        rest.removeAll(fixedArguments);
+
+        temp = new ArrayList<>();
+        temp.addAll(otherTheory.getEpistemicArguments());
+        temp.addAll(otherTheory.getControlArguments());
+        temp.removeAll(controlArguments);
+        temp.removeAll(fixedArguments);
         
 
         int nbFixedArguments = new Double(
-                rest.size()*cafConfig.getRateOfFixedArguments()
+                temp.size()*cafConfig.getRateOfFixedArguments()
+
+        ).intValue();
+
+
+        int nbUncertainArguments = new Double(
+                temp.size()*cafConfig.getRateOfUncertainArguments()
 
         ).intValue();
 
         for(int i = 0; i<nbFixedArguments; i++)
         {
-            random = r.nextInt(rest.size());
-            fixedArguments.add(rest.get(random));
-            rest.remove(random);
+            random = r.nextInt(temp.size());
+            fixedArguments.add(temp.get(random));
+            temp.remove(random);
         }
-        
-        fixedArguments.forEach(t-> caf.addFixedArgument(t.getName()));
-        controlArguments.forEach(t-> caf.addControlArgument(t.getName()));
-        rest.forEach(t->caf.addUncertainArgument(t.getName()));
 
+        List<Argument> uncertainArguments = new ArrayList<>();
+        for(int i = 0; i < nbUncertainArguments; i++){
+            random = r.nextInt(temp.size());
+            uncertainArguments.add(temp.get(random));
+            temp.remove(random);
+        }
+
+
+
+        
+        fixedArguments.forEach(arg-> caf.addFixedArgument(arg.getName()));
+        controlArguments.forEach(arg-> caf.addControlArgument(arg.getName()));
+        uncertainArguments.forEach(arg->caf.addUncertainArgument(arg.getName()));
         List<Attack> certainAttacks ;
         List<Attack> uncertainAttacks = new ArrayList<>();
         List<Attack> undirectedAttacks = new ArrayList<>();
+
         List<Attack> attacks = new ArrayList<>(otherTheory.getDungTheory().getAttacks());
+
+        List<Attack> attacksToDelete = new ArrayList<>();
+        for(Attack att: attacks){
+            if(temp.contains(att.getAttacker()) || temp.contains(att.getAttacked()))
+            {
+                attacksToDelete.add(att);
+            }
+        }
+
+        attacks.removeAll(attacksToDelete);
+
 
         certainAttacks = attacks.stream().filter(t->
             fixedArguments.contains(t.getAttacker()) &&
                     fixedArguments.contains(t.getAttacked())
         ).collect(Collectors.toList());
         attacks.removeAll(certainAttacks);
+
         int nbCertainAttacks = new Double(
                 cafConfig.getRateOfCertainAttacks() * attacks.size()
         ).intValue();
@@ -139,6 +174,7 @@ public class CafGenerator {
             attacks.remove(random);
         }
 
+
         certainAttacks.forEach(t->{
             caf.addAttack(t.getAttacker().getName(), t.getAttacked().getName());
         });
@@ -154,13 +190,14 @@ public class CafGenerator {
 
         List<caf.datastructure.Argument> otherArgumentsThanControl =
                 new ArrayList<>(caf.getFixedArguments());
+
         otherArgumentsThanControl.addAll(caf.getUncertainArguments());
 
         //random generation of attacks from c to u and f
         for(Pair<String, String> attack: generateRandomAttacks(caf.getControlArguments(),
                 otherArgumentsThanControl, cafConfig.getDensityOfControlAttacks()))
         {
-            caf.addAttack(attack.getKey(), attack.getValue());
+            caf.addAttack(attack.getFirst(), attack.getSecond());
         }
 
         //adding existing attacks from c to f from my theory
@@ -177,7 +214,10 @@ public class CafGenerator {
         }
 
 
-
+        //adding offers
+        for(Map.Entry<Offer, Set<String>> offerSupporters: otherTheory.getOffers().entrySet()){
+            caf.addOfferSupporters(offerSupporters.getKey().getName(), offerSupporters.getValue());
+        }
 
 
         return caf;

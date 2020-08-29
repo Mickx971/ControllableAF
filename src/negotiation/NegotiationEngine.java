@@ -6,16 +6,13 @@ import Communication.datastructure.Attack;
 import caf.datastructure.Caf;
 import caf.generator.CafGenerator;
 import com.google.common.collect.Streams;
-import javafx.util.Pair;
-import net.sf.tweety.arg.dung.semantics.Extension;
+import net.sf.tweety.commons.util.Pair;
 import theory.datastructure.Theory;
 import theory.datastructure.Offer;
 import theory.datastructure.TheoryGeneration;
 import theory.generator.TheoryGenerator;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class NegotiationEngine {
@@ -24,10 +21,12 @@ public class NegotiationEngine {
     private final NegotiationAgent agent;
     private Caf caf;
     private Theory theory;
+    private Set<Set<caf.datastructure.Argument>> potentSetsUsed;
 
     public NegotiationEngine(NegotiationBehaviour communicator, NegotiationAgent agent) throws Exception{
         this.communicator = communicator;
         this.agent = agent;
+        this.potentSetsUsed = new HashSet<>();
         TheoryGenerator g = new TheoryGenerator();
         TheoryGeneration generation = g.parseFromFile(NegotiationAgent.theoryFileName);
         if(communicator.getAgent().getId() == 1)
@@ -41,14 +40,22 @@ public class NegotiationEngine {
     }
 
     public void chooseBestOffer() throws Exception {
-        Offer offer = theory.getNextOffer();
-        System.out.println("nextOffer: " + offer);
+        Offer offer = computeNextOffer();
         if(offer != null) {
             chooseSupportArg(offer);
         }
         else {
             communicator.sendNothing();
         }
+    }
+
+    private Offer computeNextOffer() {
+        SortedSet<Offer> offers = theory.getAcceptableOffers();
+        for(Offer offer: offers) {
+            if(caf.hasSupportForOffer(offer))
+                return offer;
+        }
+        return null;
     }
 
     public void defendOffer(NegotiationMessage message) throws Exception {
@@ -63,53 +70,84 @@ public class NegotiationEngine {
         proposition.setPracticalArgument(new Argument(practicalArgument));
         proposition.setType(NegotiationMessage.MessageType.OFFER);
 
+        System.out.println("\n");
+        System.out.println("# " + agent.getLocalName() + " wants to propose " + offer.getName() + " with the argument " + practicalArgument + ".");
+        System.out.println("# " + agent.getLocalName() + " is checking if " + practicalArgument + " is accepted without control.");
         if(caf.argumentIsCredulouslyAcceptedWithoutControl(practicalArgument)) {
-            theory.removeOfferSupport(offer, practicalArgument);
+            removeOnlyOfferSupport(offer, practicalArgument);
             communicator.sendMessage(proposition);
         }
         else {
-            Collection<caf.datastructure.Argument> potentSet = caf.computePSA(practicalArgument);
+
+            System.out.println("# " + practicalArgument + " is not accepted without control.");
+            System.out.println("# " + agent.getLocalName() + " is searching a potent set to defend " + practicalArgument + ".");
+
+            Set<caf.datastructure.Argument> potentSet;
+            if(this.agent.isUseMaxQBF()) {
+                potentSet = caf.computePSA(practicalArgument);
+            }
+            else {
+                potentSet = caf.computePSA(practicalArgument, potentSetsUsed);
+                potentSetsUsed.add(potentSet);
+            }
             if(potentSet != null && !potentSet.isEmpty()) {
+
+                System.out.println("# Potent set found");
+
                 proposition.setJustificationArguments(
                     potentSet.stream().map(
                             arg -> new Argument(arg.getName())
                     ).collect(Collectors.toSet())
                 );
                 proposition.setJustificationAttacks(
-                    caf.getFUAttacksFor(potentSet).stream()
+                    caf.getOutAttacksFor(potentSet).stream()
                         .map(a -> new Attack(a)).collect(Collectors.toSet())
                 );
 
-                System.out.println("proposition:{\n" +
-                        "justificationArguments:"+proposition.getJustificationArguments() +
-                        "\njustificationAttacks"+proposition.getJustificationAttacks() +
-                        "\n}");
                 communicator.sendMessage(proposition);
             }
             else {
-                theory.removeOfferSupport(offer, practicalArgument);
+                System.out.println("# Potent set not found");
+                potentSetsUsed = new HashSet<>();
+                removeOfferSupport(offer, practicalArgument);
                 chooseSupportArg(offer);
             }
         }
     }
 
+    private void removeOnlyOfferSupport(Offer offer, String practicalArgument) throws Exception{
+        caf.removeOnlyOfferSupport(offer, practicalArgument);
+        theory.removeOfferSupport(offer, practicalArgument);
+    }
+
+    private void removeOfferSupport(Offer offer, String practicalArgument) throws Exception {
+        if(theory.getOffers().containsKey(offer) && theory.getOffers().get(offer).contains(practicalArgument))
+            theory.removeOfferSupport(offer, practicalArgument);
+
+        caf.removeOfferSupport(offer, practicalArgument);
+    }
+
     private void chooseSupportArg(Offer offer) throws Exception {
-        String support = theory.getSupportForOffer(offer);
-        System.out.println(support);
+        caf.datastructure.Argument support = caf.getSupportForOffer(offer);
         if(support != null) {
-            defendOffer(offer, support);
+            defendOffer(offer, support.getName());
         }
         else {
-            theory.removeOffer(offer);
+            removeOffer(offer);
             communicator.sendGiveToken();
         }
+    }
+
+    private void removeOffer(Offer offer) {
+        theory.removeOffer(offer);
+        caf.removeOffer(offer);
     }
 
     public boolean decideUponOffer(NegotiationMessage message) throws Exception {
         if(message.getJustificationArguments()!= null &&
                 !message.getJustificationArguments().isEmpty()) {
-            theory.update(message.getJustificationArguments(), message.getJustificationAttacks());
-            update(message.getJustificationArguments(), message.getJustificationAttacks());
+            updateTheory(message.getJustificationArguments(), message.getJustificationAttacks());
+            updateCaf(message.getJustificationArguments(), message.getJustificationAttacks());
         }
 
         String argName = message.getPracticalArgument().getName();
@@ -118,10 +156,13 @@ public class NegotiationEngine {
             return true;
         }
         else {
-            Pair<Extension, Set<net.sf.tweety.arg.dung.syntax.Attack>> reason = theory.getNextExtensionAttackingArgument(argName);
-            Collection<Argument> arguments = reason.getKey().stream().map(arg -> new Argument(arg))
+            Pair<Collection<net.sf.tweety.arg.dung.syntax.Argument>,
+                    List<net.sf.tweety.arg.dung.syntax.Attack>>
+                    reasons = theory.getRejectReasons(argName);
+
+            Collection<Argument> arguments = reasons.getFirst().stream().map(arg -> new Argument(arg))
                     .collect(Collectors.toSet());
-            Collection<Attack> attacks = reason.getValue().stream().map(att -> new Attack(att))
+            Collection<Attack> attacks = reasons.getSecond().stream().map(att -> new Attack(att))
                     .collect(Collectors.toSet());
 
             NegotiationMessage reject = new NegotiationMessage();
@@ -137,10 +178,23 @@ public class NegotiationEngine {
     }
 
     public void updateOnRejection(NegotiationMessage message) throws Exception {
-        update(message.getJustificationArguments(), message.getJustificationAttacks());
+        updateCaf(message.getJustificationArguments(), message.getJustificationAttacks());
     }
 
-    public void update(Collection<Argument> justificationArguments, Collection<Attack> justificationAttacks) throws Exception {
+    public Theory getTheory() {
+        return theory;
+    }
+
+    public void updateTheory(Collection<Argument> justificationArguments, Collection<Attack> justificationAttacks) throws Exception {
+        Set<Argument> arguments = Streams.concat(
+                justificationArguments.stream(),
+                justificationAttacks.stream().map(Attack::getSource),
+                justificationAttacks.stream().map(Attack::getTarget)
+        ).collect(Collectors.toSet());
+        theory.update(arguments, justificationAttacks);
+    }
+
+    public void updateCaf(Collection<Argument> justificationArguments, Collection<Attack> justificationAttacks) throws Exception {
         Set<Argument> arguments = Streams.concat(
                 justificationArguments.stream(),
                 justificationAttacks.stream().map(Attack::getSource),
@@ -148,13 +202,11 @@ public class NegotiationEngine {
         ).collect(Collectors.toSet());
 
         for(Argument arg : arguments) {
-            if(caf.hasArgument(arg.getName()))
+            if(caf.hasArgument(arg.getName())) // on a préféré gérer le cas où l'argument n'existe pas dans le caf. Si ce cas n'est pas géré, pour une utilisation future, cela pourrait générer un bug.
                 caf.setArgumentCertain(arg.getName());
             else
                 caf.addFixedArgument(arg.getName());
         }
-
-
 
         for(Attack att : justificationAttacks) {
             Optional<caf.datastructure.Attack> uAtt = caf.getUncertainAttack(att.getSource().getName(), att.getTarget().getName());
@@ -175,10 +227,9 @@ public class NegotiationEngine {
                 caf.addAttack(att.getSource().getName(), att.getTarget().getName());
             }
         }
-
     }
 
     public boolean hasOffer() {
-        return theory.hasOffer();
+        return computeNextOffer() != null;
     }
 }

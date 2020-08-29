@@ -1,8 +1,8 @@
 package theory.generator.config;
 
 
-import math.ComplexeInterval;
-import math.SimpleInterval;
+import math.interval.ComplexeInterval;
+import math.interval.SimpleInterval;
 
 public class TheoryBasicConfiguration {
 
@@ -24,10 +24,7 @@ public class TheoryBasicConfiguration {
     }
     public boolean totalCoherenceCheck()
     {
-        return  nbEpistemicArguments>=0 &&
-                nbPracticalArguments >=0&&
-                nbAttacks >=0&&
-                nbControlArguments >=0 &&
+        return  minimalCoherenceCheck() &&
                 nbControlArguments<=nbEpistemicArguments &&
                 nbAttacks<= getMaxNbAttacks();
     }

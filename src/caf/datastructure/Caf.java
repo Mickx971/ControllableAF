@@ -1,10 +1,9 @@
 package caf.datastructure;
 
-import caf.transform.CafFormulaGenerator;
-import net.sf.tweety.logics.pl.syntax.PropositionalFormula;
+import caf.generator.CafGenerator;
 import solver.QuantomConnector;
+import theory.datastructure.Offer;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,6 +12,7 @@ public class Caf {
     private final QuantomConnector qConnector;
     private Map<String, Argument> args;
     private Set<Attack> attacks;
+    private Map<Offer, Set<Argument>> offers = new HashMap<>();
 
     public Caf() {
         args = new HashMap<>();
@@ -41,6 +41,7 @@ public class Caf {
     }
 
     public void removeArgument(String argName) {
+
         Argument arg = args.remove(argName);
         arg.getAllAttacks().forEach(att -> {
             try {
@@ -51,7 +52,9 @@ public class Caf {
             }
         });
         attacks.removeAll(arg.getAllAttacks());
+
     }
+
 
     private Collection<Argument> getTypedArguments(Argument.Type type) {
         return args.values().stream().filter(arg -> arg.getType() == type).collect(Collectors.toSet());
@@ -97,7 +100,6 @@ public class Caf {
         Attack attack = new Attack(args.get(fromArg), args.get(toArg), Attack.Type.UNCERTAIN);
         attacks.add(attack);
     }
-
 
     public void addUndirectedAttack(String arg1, String arg2) {
         Attack attack = new Attack(args.get(arg1), args.get(arg2), Attack.Type.UNDIRECTED);
@@ -158,21 +160,23 @@ public class Caf {
         }).findFirst();
     }
 
-    public Set<Attack> getFUAttacksFor(Collection<Argument> potentSet) {
+    // Les attaques undirected ne font pas parties des outAttaques
+    public Set<Attack> getOutAttacksFor(Collection<Argument> potentSet) {
         Set<Attack> attacks = new HashSet<>();
         for(Argument arg : potentSet) {
-            attacks.addAll(arg.getOutAttacks().stream().filter(att -> att.getType() == Attack.Type.CERTAIN)
-                .filter(att -> !isControlArgument(att.getTarget().getName())
-            ).collect(Collectors.toSet()));
+            attacks.addAll(arg.getOutAttacks());
         }
-
         return attacks;
     }
 
-    public Collection<Argument> computePSA(String practicalArgument) throws Exception {
+    public Set<Argument> computePSA(String practicalArgument) throws Exception {
+        return computePSA(practicalArgument, null);
+    }
+
+    public Set<Argument> computePSA(String practicalArgument, Set<Set<Argument>> potentSetsUsed) throws Exception {
         Caf tempCaf = createTempCaf(true);
         if(tempCaf.hasArgument(practicalArgument))
-            return qConnector.isCredulouslyAcceptedWithControl(tempCaf, practicalArgument)
+            return qConnector.isCredulouslyAcceptedWithControl(tempCaf, practicalArgument, potentSetsUsed)
                 .stream().map(arg -> getArgument(arg.getName())).collect(Collectors.toSet());
         else
             return new HashSet<>();
@@ -264,10 +268,89 @@ public class Caf {
             sb.append(att.toString()).append("\n");
         }
 
+        for(Offer key: offers.keySet())
+        {
+            for(Argument supportingArgument: offers.get(key))
+            {
+                sb.append(CafGenerator.CafTag.support.name())
+                        .append("(")
+                        .append(supportingArgument.getName())
+                        .append(",")
+                        .append(key.getName())
+                        .append(").\n");
+            }
+        }
+
         return sb.toString();
     }
 
     public void setAgentName(String agentName) {
         qConnector.setAgentName(agentName);
     }
+
+    public void addOffer(Offer offer) {
+        if(!offers.containsKey(offer)) {
+            offers.put(offer, new HashSet<>());
+        }
+    }
+
+    public void addOffer(String offer) {
+        addOffer(new Offer(offer));
+    }
+
+    public void addOfferSupport(Offer offer, Argument support) {
+        addOffer(offer);
+        offers.get(offer).add(support);
+    }
+
+    public void addOfferSupport(String offer, String supportArgument) {
+        addOfferSupport(new Offer(offer), getArgument(supportArgument));
+    }
+
+    public void addOfferSupporters(String offer, Collection<String> supportingArguments) {
+        supportingArguments.forEach(arg -> addOfferSupport(offer, arg));
+    }
+
+    public boolean hasSupportForOffer(Offer offer) {
+        return getSupportForOffer(offer) != null;
+    }
+
+    public Argument getSupportForOffer(Offer offer) {
+        Set<Argument> supports = offers.get(offer);
+        if(supports != null && !supports.isEmpty()) {
+            return supports.stream().findFirst().get();
+        }
+        return null;
+    }
+
+    public void removeOfferSupport(Offer offer, String practicalArgument) throws Exception  {
+        if(offers.containsKey(offer) && offers.get(offer).stream()
+                .map(Argument::getName).anyMatch(argName -> argName.equals(practicalArgument))) {
+
+            Set<Argument> tmp = offers.get(offer);
+            tmp.remove(getArgument(practicalArgument));
+            offers.put(offer, tmp);
+            removeArgument(practicalArgument);
+        }
+        else if(!offers.containsKey(offer))
+            throw new Exception("Unknown offer in caf: " + offer.getName());
+    }
+
+    public void removeOffer(Offer offer) {
+        if(offers.get(offer) == null)
+            return;
+
+        for(Argument support : offers.get(offer)) {
+            removeArgument(support);
+        }
+        offers.remove(offer);
+    }
+
+    public void removeOnlyOfferSupport(Offer offer, String practicalArgument) {
+        if (!offers.containsKey(offer))
+            return;
+
+        offers.get(offer).remove(practicalArgument);
+    }
+
 }
